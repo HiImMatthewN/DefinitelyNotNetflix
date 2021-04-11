@@ -18,10 +18,10 @@ via REST.
 
 
  
- Design Pattern
+   Design Pattern
  * MVVM
 
- Tools Used
+  Tools Used
 * Retrofit
 * Navigation Component
 * Glide
