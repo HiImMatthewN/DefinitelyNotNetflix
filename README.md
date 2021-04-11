@@ -27,8 +27,8 @@ via REST.
 * Glide
 * CircleImageView
   
-  Tools to be used
- * Dagger2/Hilt
- * RxJava
+ Tools to be used
+* Dagger2/Hilt
+* RxJava
  
           
