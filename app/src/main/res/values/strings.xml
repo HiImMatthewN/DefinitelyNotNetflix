@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">DefinitelyNotNetflix</string>
+    <string name="tmdb_api_key">1a9be3fd53844f172e7fb74a75a6c5fd</string>
+    <string name="youtube_player_developer_key">AIzaSyDWZ0jbYT_KNPRhItwqtwJKgpJTPVteRNo</string>
+</resources>
