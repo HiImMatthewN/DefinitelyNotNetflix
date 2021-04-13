@@ -16,4 +16,8 @@
     <color name="netflix_btn_enabled">#FFFFFF</color>
     <color name="netflix_movie_details">#2b2b2b</color>
     <color name="netflix_semi_transparent">#80484848</color>
+    <color name="netflix_semi_transparent_2">#40484848</color>
+    <color name="netflix_category_not_selected">#80FFFFFF</color>
+    <color name="netflix_category_selected">#FFFFFF</color>
+
 </resources>

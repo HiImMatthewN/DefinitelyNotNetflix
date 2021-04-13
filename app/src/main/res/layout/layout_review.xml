@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView
-    android:backgroundTint="@color/netflix_semi_transparent"
+    android:backgroundTint="@color/netflix_semi_transparent_2"
 
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -36,8 +36,9 @@
             app:layout_constraintStart_toEndOf="@id/avatarIv" />
 
         <TextView
+            app:layout_constraintEnd_toEndOf="parent"
             android:id="@+id/authorName"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:fontFamily="@font/main_font"
@@ -49,6 +50,7 @@
             app:layout_constraintStart_toEndOf="@id/avatarIv" />
 
         <androidx.core.widget.NestedScrollView
+            android:padding="8dp"
             android:fadingEdge="vertical"
             android:fadingEdgeLength="8dp"
             android:orientation="vertical"

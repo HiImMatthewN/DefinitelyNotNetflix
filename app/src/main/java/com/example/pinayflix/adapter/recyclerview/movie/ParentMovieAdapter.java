@@ -1,6 +1,7 @@
-package com.example.pinayflix.adapter.recyclerview;
+package com.example.pinayflix.adapter.recyclerview.movie;
 
 import android.content.res.Resources;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.pinayflix.MovieClassification;
+import com.example.pinayflix.DataGenre;
 import com.example.pinayflix.R;
 import com.example.pinayflix.callback.OnMovieRequest;
 import com.example.pinayflix.databinding.ItemCategoryBinding;
@@ -25,22 +26,30 @@ import java.util.ArrayList;
 public class ParentMovieAdapter extends RecyclerView.Adapter<ParentMovieAdapter.ParentMovieViewHolder> implements OnMovieRequest {
     private ArrayList<MovieCategoryModel> data;
     private String TAG = "ParentMovieAdapter";
-    private MutableLiveData<MovieClassification> movieClassificationMutableLiveData;
+    private MutableLiveData<DataGenre> movieClassificationMutableLiveData;
     private MutableLiveData<Movie> movieSelectedLiveData;
-    private MovieClassification requestingMovieClassification;
+    private DataGenre requestingDataGenre;
     public ParentMovieAdapter() {
         movieClassificationMutableLiveData = new MutableLiveData<>();
         movieSelectedLiveData = new MutableLiveData<>();
         data = new ArrayList<>();
+        notifyDataSetChanged();
+
     }
 
     public void insertData(MovieCategoryModel categoryModel) {
             data.add(categoryModel);
             notifyItemInserted(data.indexOf(categoryModel));
     }
+    public void clear(){
+        data.clear();
+        notifyDataSetChanged();
+    }
     public int getAdapterPosition(){
+
         for (int i = 0;i<data.size();i++){
-            if(data.get(i).getCategoryName().equals(requestingMovieClassification)){
+            if(data.get(i).getCategoryName().equals(requestingDataGenre)){
+                Log.d(TAG, "getAdapterPosition: Requesing Classification " + requestingDataGenre);
                 return i;
 
             }
@@ -89,7 +98,7 @@ public class ParentMovieAdapter extends RecyclerView.Adapter<ParentMovieAdapter.
         return data.size();
     }
 
-    public LiveData<MovieClassification> onRequestLiveData() {
+    public LiveData<DataGenre> onRequestLiveData() {
         return movieClassificationMutableLiveData;
     }
     public LiveData<Movie> getSelectedMovie(){
@@ -104,7 +113,7 @@ public class ParentMovieAdapter extends RecyclerView.Adapter<ParentMovieAdapter.
         public ParentMovieViewHolder(@NonNull ItemCategoryBinding binder) {
             super(binder.getRoot());
             category = binder.category;
-            movies = binder.movieList;
+            movies = binder.dataList;
             swipeRefreshLayout = binder.swipeRefreshLayout;
         }
 
@@ -119,7 +128,7 @@ public class ParentMovieAdapter extends RecyclerView.Adapter<ParentMovieAdapter.
                     int pos = layoutManager.findLastCompletelyVisibleItemPosition();
                     int numItems = movies.getAdapter().getItemCount();
                     if (pos +1 >= numItems){
-                        requestingMovieClassification = categoryModel.getCategoryName();
+                        requestingDataGenre = categoryModel.getCategoryName();
                         movieClassificationMutableLiveData.postValue(categoryModel.getCategoryName());
                         swipeRefreshLayout.setRefreshing(true);
                     }

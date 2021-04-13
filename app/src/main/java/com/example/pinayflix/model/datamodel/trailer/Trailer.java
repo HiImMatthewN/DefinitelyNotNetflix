@@ -1,8 +1,8 @@
-package com.example.pinayflix.model.datamodel;
+package com.example.pinayflix.model.datamodel.trailer;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Video {
+public class Trailer {
 
     @SerializedName("id")
     private String id;

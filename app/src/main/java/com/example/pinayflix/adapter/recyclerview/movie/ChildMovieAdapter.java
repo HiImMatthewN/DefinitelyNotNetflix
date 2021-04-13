@@ -1,4 +1,4 @@
-package com.example.pinayflix.adapter.recyclerview;
+package com.example.pinayflix.adapter.recyclerview.movie;
 
 import android.net.Uri;
 import android.util.Log;
@@ -14,7 +14,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.example.pinayflix.R;
 import com.example.pinayflix.callback.OnMovieRequest;
-import com.example.pinayflix.databinding.ItemMovieBinding;
+import com.example.pinayflix.databinding.ItemChildBinding;
 import com.example.pinayflix.model.datamodel.movie.Movie;
 import com.example.pinayflix.model.uimodel.MovieCategoryModel;
 
@@ -28,6 +28,8 @@ public class ChildMovieAdapter extends RecyclerView.Adapter<ChildMovieAdapter.Ch
     public ChildMovieAdapter(MovieCategoryModel movieCategoryModel,OnMovieRequest callback) {
         this.callback = callback;
         this.data = movieCategoryModel.getMovies();
+        notifyDataSetChanged();
+
     }
     public void insertData(List<Movie> movies){
         Log.d(TAG, "insertData: new Movies added ");
@@ -38,8 +40,8 @@ public class ChildMovieAdapter extends RecyclerView.Adapter<ChildMovieAdapter.Ch
     @NonNull
     @Override
     public ChildMovieAdapter.ChildMovieViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_movie,parent,false);
-        ItemMovieBinding binder = ItemMovieBinding.bind(view);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_child,parent,false);
+        ItemChildBinding binder = ItemChildBinding.bind(view);
         return new ChildMovieViewHolder(binder);
     }
 
@@ -64,7 +66,7 @@ public class ChildMovieAdapter extends RecyclerView.Adapter<ChildMovieAdapter.Ch
     class ChildMovieViewHolder extends RecyclerView.ViewHolder{
         private ImageView posterImageView;
 
-        public ChildMovieViewHolder(@NonNull ItemMovieBinding binder) {
+        public ChildMovieViewHolder(@NonNull ItemChildBinding binder) {
             super(binder.getRoot());
             posterImageView = binder.moviePosterIv;
         }

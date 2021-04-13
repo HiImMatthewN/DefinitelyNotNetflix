@@ -4,7 +4,7 @@ import com.example.pinayflix.model.datamodel.movie.Movie;
 import com.example.pinayflix.model.datamodel.movie.MovieDetails;
 import com.example.pinayflix.model.datamodel.movie.MovieResult;
 import com.example.pinayflix.model.datamodel.review.ReviewResult;
-import com.example.pinayflix.model.datamodel.VideoResult;
+import com.example.pinayflix.model.datamodel.trailer.TrailerResult;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -33,7 +33,7 @@ public interface MovieService {
                                        @Query("primary_release_date.gte") String release,
                                        @Query("vote_count.gte") int voteCount);
     @GET("movie/{id}/videos")
-    Call<VideoResult> getVideos(@Path("id")int movieId);
+    Call<TrailerResult> getTrailer(@Path("id")int movieId);
 
     @GET("movie/{movie_id}/reviews")
     Call<ReviewResult> getMovieReviews(@Path("movie_id") int movieId);

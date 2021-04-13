@@ -23,8 +23,8 @@ import com.bumptech.glide.load.resource.bitmap.GranularRoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.pinayflix.R;
 import com.example.pinayflix.databinding.DialogDetailsBinding;
-import com.example.pinayflix.model.datamodel.movie.Movie;
 import com.example.pinayflix.model.datamodel.trailer.Trailer;
+import com.example.pinayflix.model.datamodel.tvshow.TVShow;
 import com.example.pinayflix.viewmodel.MainFragmentViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
@@ -34,11 +34,11 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTube
 import java.util.List;
 import java.util.Objects;
 
-public class MovieDetailsDialog extends BottomSheetDialogFragment {
+public class TVShowDetailsDialog extends BottomSheetDialogFragment {
     private DialogDetailsBinding binder;
     private ImageView backDropIV;
-    private TextView movieTitle;
-    private TextView movieYear;
+    private TextView tvShowTitle;
+    private TextView tvShowYear;
     private AppCompatButton playBtn;
     private AppCompatButton detailsBtn;
     private ImageButton closeBtn;
@@ -46,13 +46,13 @@ public class MovieDetailsDialog extends BottomSheetDialogFragment {
     private YouTubePlayer player;
 
     private MainFragmentViewModel mainFragmentViewModel;
-    private Movie movie;
-    private String TAG = "MovieDetailsDialog";
+    private TVShow tvShow;
+    private static final String TAG = "TVShowDetailsDialog";
     private final String IMAGE_PATH = "https://image.tmdb.org/t/p/w1280";
 
 
-    public MovieDetailsDialog(Movie selectedMovie) {
-        this.movie = selectedMovie;
+    public TVShowDetailsDialog(TVShow selectedTvShow) {
+        this.tvShow = selectedTvShow;
     }
 
     @Nullable
@@ -69,8 +69,8 @@ public class MovieDetailsDialog extends BottomSheetDialogFragment {
         super.onViewCreated(view, savedInstanceState);
         mainFragmentViewModel = new ViewModelProvider(getParentFragment()).get(MainFragmentViewModel.class);
         backDropIV = binder.backDropIV;
-        movieTitle = binder.movieTitle;
-        movieYear = binder.movieYear;
+        tvShowTitle = binder.movieTitle;
+        tvShowYear = binder.movieYear;
         playBtn = binder.playTrailerBtn;
         detailsBtn = binder.movieDetailsBtn;
         closeBtn = binder.closeBtn;
@@ -92,7 +92,7 @@ public class MovieDetailsDialog extends BottomSheetDialogFragment {
             }
         });
         detailsBtn.setOnClickListener(btn ->{
-            mainFragmentViewModel.requestMovieDetails(movie.getMovieId());
+            mainFragmentViewModel.requestTvShowTrailer(tvShow.getId());
             dismiss();
         });
 
@@ -100,12 +100,12 @@ public class MovieDetailsDialog extends BottomSheetDialogFragment {
             dismiss();
         });
 
-        movieTitle.setText(movie.getTitle());
-        movieYear.setText(movie.getReleaseDate().substring(0, 4));
+        tvShowTitle.setText(tvShow.getName());
+        tvShowYear.setText(tvShow.getFirstAirDate().substring(0, 4));
         RequestOptions requestOptions = new RequestOptions();
         GranularRoundedCorners roundedCorners = new GranularRoundedCorners(48, 48, 0, 0);
         requestOptions = requestOptions.transforms(new CenterCrop(), roundedCorners);
-        Glide.with(requireContext()).load(IMAGE_PATH + movie.getBackdropPath()).apply(requestOptions)
+        Glide.with(requireContext()).load(IMAGE_PATH + tvShow.getBackDropPath()).apply(requestOptions)
                 .into(backDropIV);
 
     }
@@ -131,9 +131,9 @@ public class MovieDetailsDialog extends BottomSheetDialogFragment {
         youTubePlayerView.setVisibility(View.VISIBLE);
 
 
-        mainFragmentViewModel.requestMovieTrailer(movie.getMovieId());
-        mainFragmentViewModel.getMovieTrailer().observe(getViewLifecycleOwner(), videos -> {
-            String videoId = getTrailerYoutubeKey(videos);
+        mainFragmentViewModel.requestTvShowTrailer(tvShow.getId());
+        mainFragmentViewModel.getTvShowTrailer().observe(getViewLifecycleOwner(), trailers -> {
+            String videoId = getTrailerYoutubeKey(trailers);
             player.loadVideo(videoId, 0);
 
         });

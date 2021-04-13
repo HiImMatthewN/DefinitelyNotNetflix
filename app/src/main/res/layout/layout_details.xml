@@ -28,7 +28,7 @@
         app:layout_constraintBottom_toBottomOf="@id/backDropIV"
         app:layout_constraintDimensionRatio="3:4"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintWidth_percent=".3" />
+        app:layout_constraintWidth_percent=".25" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -42,6 +42,7 @@
         app:layout_constraintStart_toStartOf="@id/ratingBar" />
 
     <RatingBar
+        android:layout_marginStart="8dp"
         android:id="@+id/ratingBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

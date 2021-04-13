@@ -28,10 +28,11 @@ import com.example.pinayflix.ui.custom.AutoScrollViewPager;
 import com.example.pinayflix.ui.custom.ExpandableTextView;
 import com.example.pinayflix.ui.custom.FadingImageView;
 import com.example.pinayflix.viewmodel.MovieDetailsFragmentViewModel;
-import com.example.pinayflix.viewmodel.custom.ViewModelFactoryWithParams;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import jp.wasabeef.glide.transformations.BlurTransformation;
 
+@AndroidEntryPoint
 public class MovieDetailsFragment extends Fragment {
     private LayoutDetailsBinding binder;
     private ImageView moviePoster;
@@ -78,8 +79,7 @@ public class MovieDetailsFragment extends Fragment {
 
         Bundle bundle = getArguments();
         if (bundle == null) return;
-            movieDetailsFragmentViewModel = new ViewModelProvider(this,
-                    new ViewModelFactoryWithParams((int) bundle.get(DETAILS_KEY)))
+            movieDetailsFragmentViewModel = new ViewModelProvider(this)
                     .get(MovieDetailsFragmentViewModel.class);
 
 
