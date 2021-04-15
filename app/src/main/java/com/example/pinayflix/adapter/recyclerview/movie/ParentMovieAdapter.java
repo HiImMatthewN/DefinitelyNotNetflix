@@ -98,7 +98,7 @@ public class ParentMovieAdapter extends RecyclerView.Adapter<ParentMovieAdapter.
         return data.size();
     }
 
-    public LiveData<DataGenre> onRequestLiveData() {
+    public LiveData<DataGenre> onRequestOfNewData() {
         return movieClassificationMutableLiveData;
     }
     public LiveData<Movie> getSelectedMovie(){

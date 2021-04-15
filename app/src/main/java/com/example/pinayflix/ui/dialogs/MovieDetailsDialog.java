@@ -77,20 +77,26 @@ public class MovieDetailsDialog extends BottomSheetDialogFragment {
 
         youTubePlayerView = binder.youtubePlayerView;
 
-        enableButton(false);
+        mainFragmentViewModel.enableBtn(false);
 
         getLifecycle().addObserver(youTubePlayerView);
         youTubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
             @Override
             public void onReady(@NonNull YouTubePlayer youTubePlayer) {
                 player = youTubePlayer;
-                enableButton(true);
-
-                playBtn.setOnClickListener( btn->{
-                    playTrailer();
-                });
+            mainFragmentViewModel.enableBtn(true);
             }
         });
+        mainFragmentViewModel.getEnablePlayBtn().observe(getViewLifecycleOwner(),value ->{
+            enableButton(value);
+            if(value)
+            playBtn.setOnClickListener( btn->{
+                playTrailer();
+            });
+
+        });
+
+
         detailsBtn.setOnClickListener(btn ->{
             mainFragmentViewModel.requestMovieDetails(movie.getMovieId());
             dismiss();

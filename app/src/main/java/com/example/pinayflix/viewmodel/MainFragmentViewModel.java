@@ -1,13 +1,15 @@
 package com.example.pinayflix.viewmodel;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.pinayflix.DataClassification;
 import com.example.pinayflix.DataGenre;
-import com.example.pinayflix.model.datamodel.trailer.Trailer;
 import com.example.pinayflix.model.datamodel.movie.Movie;
+import com.example.pinayflix.model.datamodel.trailer.Trailer;
 import com.example.pinayflix.model.datamodel.tvshow.TVShow;
 import com.example.pinayflix.model.datamodel.utilities.Event;
 import com.example.pinayflix.repository.MovieRepository;
@@ -21,8 +23,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 
 @HiltViewModel
 public class MainFragmentViewModel extends ViewModel {
-     MovieRepository movieRepository ;
-    TVShowRepository tvShowRepository ;
+    MovieRepository movieRepository;
+    TVShowRepository tvShowRepository;
     private String TAG = "MainFragmentViewModel";
     //Initialize Page count to 1;
     private int upcomingMoviesPageCount = 1;
@@ -40,12 +42,22 @@ public class MainFragmentViewModel extends ViewModel {
     private int documentaryTvShowsPageCount = 1;
 
 
+    //Highlighted Shows
+    private MutableLiveData<Movie> highlightedMovieLiveData = new MutableLiveData<>();
+    private MutableLiveData<TVShow> highlightedTvShowLiveData = new MutableLiveData<>();
+
+
     private MutableLiveData<Event<Integer>> requestMovieDetailsLiveData = new MutableLiveData<>();
     private MutableLiveData<DataClassification> onDataClassificationChange = new MutableLiveData<>();
     private DataClassification currentSelectClassification;
 
+
+    //Play Button in Movie Details Dialog
+    private MutableLiveData<Boolean> enablePlayBtnLiveData = new MutableLiveData<>();
+
+
     @Inject
-    public MainFragmentViewModel(MovieRepository movieRepository,TVShowRepository tvShowRepository) {
+    public MainFragmentViewModel(MovieRepository movieRepository, TVShowRepository tvShowRepository) {
         this.movieRepository = movieRepository;
         this.tvShowRepository = tvShowRepository;
         requestMovieData();
@@ -53,13 +65,12 @@ public class MainFragmentViewModel extends ViewModel {
 
 
     public void requestData(DataClassification dataClassification) {
-        if(currentSelectClassification == dataClassification) return;
-        if (dataClassification == DataClassification.MOVIE){
+        if (currentSelectClassification == dataClassification) return;
+        if (dataClassification == DataClassification.MOVIE) {
             requestMovieData();
             onDataClassificationChange.setValue(DataClassification.MOVIE);
 
-        }
-        else if (dataClassification == DataClassification.TV_SHOW){
+        } else if (dataClassification == DataClassification.TV_SHOW) {
             requestTvShowData();
             onDataClassificationChange.setValue(DataClassification.TV_SHOW);
         }
@@ -159,9 +170,11 @@ public class MainFragmentViewModel extends ViewModel {
     public void requestMovieTrailer(int movieId) {
         movieRepository.requestVideos(movieId);
     }
+
     public void requestTvShowTrailer(int tvShowId) {
         tvShowRepository.requestTvShowTrailer(tvShowId);
     }
+
     public LiveData<List<Movie>> getPopularMovies() {
         return movieRepository.getPopularMoviesLiveData();
     }
@@ -189,9 +202,24 @@ public class MainFragmentViewModel extends ViewModel {
         return movieRepository.getNowPlayingMoviesLiveData();
     }
 
-    public void requestNewData(DataGenre classification) {
+    public LiveData<Movie> getHighlightedMovieLiveData() {
+        LiveData<List<Movie>> liveData = movieRepository.getNowPlayingMoviesLiveData();
+        liveData.observeForever(movies -> {
+            int randomNum = (int) (Math.random() * movies.size());
+            highlightedMovieLiveData.setValue(movies.get(randomNum));
 
-        switch (classification) {
+        });
+
+        return highlightedMovieLiveData;
+    }
+
+    public void enableBtn(boolean value) {
+        enablePlayBtnLiveData.setValue(value);
+    }
+
+    public void requestNewMovie(DataGenre genre) {
+
+        switch (genre) {
             case Popular:
                 popularMoviesPageCount++;
                 movieRepository.requestNewPopularMovies(popularMoviesPageCount);
@@ -215,6 +243,35 @@ public class MainFragmentViewModel extends ViewModel {
                 movieRepository.requestNewMovieByGenre("99", documentariesPageCount, "2015-01-01", 250);
 
         }
+    }
+
+    public void requestNewTVShow(DataGenre genre) {
+        switch (genre) {
+            case Popular:
+                popularTvShowsPageCount++;
+                tvShowRepository.requestNewPopularTvShows(popularTvShowsPageCount);
+                break;
+            case Upcoming:
+                upcomingTvShowsPageCount++;
+                tvShowRepository.requestNewUpcomingTvShows(upcomingTvShowsPageCount);
+                break;
+            case Horror:
+                mysteryTvShowsPageCount++;
+                tvShowRepository.requestNewTvShowsByGenre("9648", mysteryTvShowsPageCount, "2010-01-01", 0);
+                break;
+
+            case Romance:
+                romanceTvShowsPageCount++;
+                tvShowRepository.requestNewTvShowsByGenre("10749", romanceTvShowsPageCount, "2010-01-01", 0);
+                break;
+
+            case Documentary:
+                documentaryTvShowsPageCount++;
+                tvShowRepository.requestNewTvShowsByGenre("99", documentaryTvShowsPageCount, "2010-01-01", 0);
+
+        }
+
+
     }
 
     public void requestMovieDetails(int movieId) {
@@ -247,6 +304,8 @@ public class MainFragmentViewModel extends ViewModel {
     }
 
     public LiveData<List<TVShow>> getNowPlayingTvShows() {
+
+
         return tvShowRepository.getNowPlayingTvShowsLiveData();
     }
 
@@ -257,16 +316,42 @@ public class MainFragmentViewModel extends ViewModel {
     public LiveData<List<TVShow>> getRomanceTvShows() {
         return tvShowRepository.getRomanceTvShowsLiveData();
     }
+    public LiveData<TVShow> getHighlightedTvShow() {
+        LiveData<List<TVShow>> liveData = tvShowRepository.getNowPlayingTvShowsLiveData();
+        liveData.observeForever(tvShows -> {
+            int randomNum = (int) (Math.random() * tvShows.size());
+            highlightedTvShowLiveData.setValue(tvShows.get(randomNum));
+
+        });
+
+        return highlightedTvShowLiveData;
+    }
+
 
     public LiveData<List<TVShow>> getDocumentaryTvShows() {
         return tvShowRepository.getDocumentaryTvShowsLiveData();
     }
-    public LiveData<List<Trailer>> getTvShowTrailer(){
+
+    public LiveData<List<TVShow>> getNewRequestedTvShow() {
+        return tvShowRepository.getNewTVShowsLiveData();
+
+    }
+
+    public LiveData<List<Trailer>> getTvShowTrailer() {
         return tvShowRepository.getTvShowTrailerLiveData();
     }
 
-    public LiveData<DataClassification> getOnDataClassification(){
+    public LiveData<DataClassification> getOnDataClassification() {
         return onDataClassificationChange;
     }
 
+    public LiveData<Boolean> getEnablePlayBtn() {
+        return enablePlayBtnLiveData;
+
+    }
+
+    @Override
+    protected void onCleared() {
+        Log.d(TAG, "onCleared: Called ");
+    }
 }

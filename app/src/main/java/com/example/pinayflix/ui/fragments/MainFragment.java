@@ -2,7 +2,6 @@ package com.example.pinayflix.ui.fragments;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,11 +25,11 @@ import com.example.pinayflix.R;
 import com.example.pinayflix.adapter.recyclerview.movie.ChildMovieAdapter;
 import com.example.pinayflix.adapter.recyclerview.movie.HighlightedMovieAdapter;
 import com.example.pinayflix.adapter.recyclerview.movie.ParentMovieAdapter;
+import com.example.pinayflix.adapter.tvshow.ChildTVShowAdapter;
 import com.example.pinayflix.adapter.tvshow.HighlightedTVShowAdapter;
 import com.example.pinayflix.adapter.tvshow.ParentTVShowAdapter;
 import com.example.pinayflix.databinding.FragmentMainBinding;
 import com.example.pinayflix.databinding.LayoutContentBinding;
-import com.example.pinayflix.model.datamodel.Genre;
 import com.example.pinayflix.model.uimodel.MovieCategoryModel;
 import com.example.pinayflix.model.uimodel.TVShowCategoryModel;
 import com.example.pinayflix.ui.custom.SpeedyLinearLayoutManager;
@@ -143,8 +142,8 @@ public class MainFragment extends Fragment {
 
                 }
         );
-        movieParentAdapter.onRequestLiveData().observe(getViewLifecycleOwner(), requestedMovie -> {
-            mainFragmentViewModel.requestNewData(requestedMovie);
+        movieParentAdapter.onRequestOfNewData().observe(getViewLifecycleOwner(), requestedMovie -> {
+            mainFragmentViewModel.requestNewMovie(requestedMovie);
         });
         //Handle when user swiped to load new data
         mainFragmentViewModel.getNewRequestedMovie().observe(getViewLifecycleOwner(), requestedMovies -> {
@@ -175,19 +174,41 @@ public class MainFragment extends Fragment {
         tvShowParentAdapter.getSelectedTvShow().observe(getViewLifecycleOwner(),
                 selectedTvShow -> {
                     TVShowDetailsDialog dialog = new TVShowDetailsDialog(selectedTvShow);
-                    dialog.show(getChildFragmentManager(),"Show TV Show Details");
+                    dialog.show(getChildFragmentManager(), "Show TV Show Details");
+
+                });
+        tvShowParentAdapter.onRequestLiveData().observe(getViewLifecycleOwner(), dataGenre -> {
+            mainFragmentViewModel.requestNewTVShow(dataGenre);
 
         });
+        mainFragmentViewModel.getNewRequestedTvShow().observe(getViewLifecycleOwner(), newTvShows -> {
+            View adapterView = parentRv.getLayoutManager().findViewByPosition(tvShowParentAdapter.getAdapterPosition() + 1);
+            if (adapterView == null) return;
+            RecyclerView selectedRV = adapterView.findViewById(R.id.dataList);
+            SwipeRefreshLayout swipeRefreshLayout = adapterView.findViewById(R.id.swipeRefreshLayout);
+            new Handler().postDelayed(() -> {
+                ChildTVShowAdapter childTVShowAdapter = (ChildTVShowAdapter) selectedRV.getAdapter();
+                if (childTVShowAdapter != null)
+                    childTVShowAdapter.insertData(newTvShows);
+            }, 500);
+            new Handler().postDelayed(() -> {
+                if (swipeRefreshLayout != null) {
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+            }, 500);
 
+
+        });
     }
 
     private void initTVShowLiveData() {
         mainFragmentViewModel.getNowPlayingTvShows().observe(getViewLifecycleOwner(), nowPlayingTVShows -> {
-            int randomNum = (int) (Math.random() * nowPlayingTVShows.size());
-            highlightedTVShowAdapter.insertData(nowPlayingTVShows.get(randomNum));
+//            highlightedTVShowAdapter.insertData(nowPlayingTVShows.get(randomNum));
 
         });
-
+        mainFragmentViewModel.getHighlightedTvShow().observe(getViewLifecycleOwner(), tvShow -> {
+            highlightedTVShowAdapter.insertData(tvShow);
+        });
         mainFragmentViewModel.getPopularTvShows().observe(getViewLifecycleOwner(), popularTvShows -> {
             tvShowParentAdapter.insertData(new TVShowCategoryModel(DataGenre.Popular, popularTvShows));
         });
@@ -213,18 +234,18 @@ public class MainFragment extends Fragment {
     private void initMovieDataLiveData() {
 
 
-        mainFragmentViewModel.getNowPlayingMovies().observe(getViewLifecycleOwner(), nowPlayingMovies -> {
-            int randomNum = (int) (Math.random() * nowPlayingMovies.size());
-            highlightedMovieAdapter.insertData(nowPlayingMovies.get(randomNum));
+//        mainFragmentViewModel.getNowPlayingMovies().observe(getViewLifecycleOwner(), nowPlayingMovies -> {
+//            highlightedMovieAdapter.insertData(nowPlayingMovies.get(randomNum));
+//
+//        });
+
+        mainFragmentViewModel.getHighlightedMovieLiveData().observe(getViewLifecycleOwner(), movie -> {
+            highlightedMovieAdapter.insertData(movie);
 
         });
 
         mainFragmentViewModel.getLatestMovie().observe(getViewLifecycleOwner(), latestMovie -> {
-            for (Genre genre : latestMovie.getGenres()) {
-                Log.d(TAG, "onViewCreated: Genres" + genre.getName());
-            }
-            Log.d(TAG, "onViewCreated: Movie Name" + latestMovie.getTitle());
-            Log.d(TAG, "onViewCreated: Genre Size" + latestMovie.getGenres().size());
+//            movieParentAdapter.insertData(new MovieCategoryModel(DataGenre.Latest, latestMovie));
 
 
         });

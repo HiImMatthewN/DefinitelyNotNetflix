@@ -77,26 +77,32 @@ public class TVShowDetailsDialog extends BottomSheetDialogFragment {
 
         youTubePlayerView = binder.youtubePlayerView;
 
-        enableButton(false);
-
+        mainFragmentViewModel.enableBtn(false);
         getLifecycle().addObserver(youTubePlayerView);
         youTubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
             @Override
             public void onReady(@NonNull YouTubePlayer youTubePlayer) {
                 player = youTubePlayer;
-                enableButton(true);
+                mainFragmentViewModel.enableBtn(true);
 
-                playBtn.setOnClickListener( btn->{
-                    playTrailer();
-                });
+
             }
         });
-        detailsBtn.setOnClickListener(btn ->{
+        mainFragmentViewModel.getEnablePlayBtn().observe(getViewLifecycleOwner(), value -> {
+            enableButton(value);
+            if (value)
+                playBtn.setOnClickListener(btn -> {
+                    playTrailer();
+                });
+
+        });
+
+        detailsBtn.setOnClickListener(btn -> {
             mainFragmentViewModel.requestTvShowTrailer(tvShow.getId());
             dismiss();
         });
 
-        closeBtn.setOnClickListener(btn ->{
+        closeBtn.setOnClickListener(btn -> {
             dismiss();
         });
 
@@ -109,23 +115,25 @@ public class TVShowDetailsDialog extends BottomSheetDialogFragment {
                 .into(backDropIV);
 
     }
-    private void enableButton(boolean isEnable){
-        if(isEnable){
-            playBtn.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.bg_button_enable));
-            playBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.netflix_black));
-            playBtn.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(requireContext(),R.drawable.ic_play),null,null,null);
-        }else{
-            playBtn.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.bg_button_disabled));
-            playBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.netflix_white));
-            playBtn.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(requireContext(),R.drawable.ic_play_white),null,null,null);
+
+    private void enableButton(boolean isEnable) {
+        if (isEnable) {
+            playBtn.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.bg_button_enable));
+            playBtn.setTextColor(ContextCompat.getColor(requireContext(), R.color.netflix_black));
+            playBtn.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(requireContext(), R.drawable.ic_play), null, null, null);
+        } else {
+            playBtn.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.bg_button_disabled));
+            playBtn.setTextColor(ContextCompat.getColor(requireContext(), R.color.netflix_white));
+            playBtn.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(requireContext(), R.drawable.ic_play_white), null, null, null);
 
         }
         playBtn.setEnabled(isEnable);
 
 
     }
-    private void playTrailer(){
-        if(player == null) return;
+
+    private void playTrailer() {
+        if (player == null) return;
 
         //Show Youtube Player View
         youTubePlayerView.setVisibility(View.VISIBLE);
@@ -133,11 +141,14 @@ public class TVShowDetailsDialog extends BottomSheetDialogFragment {
 
         mainFragmentViewModel.requestTvShowTrailer(tvShow.getId());
         mainFragmentViewModel.getTvShowTrailer().observe(getViewLifecycleOwner(), trailers -> {
+            if(trailers == null || trailers.size() ==0) return;
+
             String videoId = getTrailerYoutubeKey(trailers);
             player.loadVideo(videoId, 0);
 
         });
     }
+
     private String getTrailerYoutubeKey(List<Trailer> trailers) {
         for (Trailer trailer : trailers) {
             if (trailer.getType().equals("Trailer"))
@@ -158,7 +169,6 @@ public class TVShowDetailsDialog extends BottomSheetDialogFragment {
             dialog.getWindow().setLayout(width, height);
         }
     }
-
 
 
     @Override

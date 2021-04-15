@@ -30,6 +30,9 @@ public class TVShowRepository {
     private MutableLiveData<List<TVShow>> romanceTvShowsLiveData;
     private MutableLiveData<List<TVShow>> documentaryTvShowsLiveData;
     private MutableLiveData<List<Trailer>> trailerTvShowLiveData;
+
+    private MutableLiveData<List<TVShow>> requestNewTvShows;
+
     private String TAG = "TVShowRepository";
 
 
@@ -44,7 +47,7 @@ public class TVShowRepository {
         romanceTvShowsLiveData = new MutableLiveData<>();
         documentaryTvShowsLiveData = new MutableLiveData<>();
         trailerTvShowLiveData = new MutableLiveData<>();
-
+        requestNewTvShows = new MutableLiveData<>();
 
 
     }
@@ -181,6 +184,55 @@ public class TVShowRepository {
 
     }
 
+    public void requestNewPopularTvShows(int page) {
+
+        tvShowService.getPopularTVShow(page).enqueue(new Callback<TVShowResult>() {
+            @Override
+            public void onResponse(Call<TVShowResult> call, Response<TVShowResult> response) {
+                if (response.isSuccessful() && response.body() != null)
+                    requestNewTvShows.postValue(response.body().getTvShows());
+            }
+
+            @Override
+            public void onFailure(Call<TVShowResult> call, Throwable t) {
+
+            }
+        });
+
+    }
+    public void requestNewUpcomingTvShows(int page) {
+
+        tvShowService.getAiringToday(page).enqueue(new Callback<TVShowResult>() {
+            @Override
+            public void onResponse(Call<TVShowResult> call, Response<TVShowResult> response) {
+                if (response.isSuccessful() && response.body() != null)
+                    requestNewTvShows.postValue(response.body().getTvShows());
+            }
+
+            @Override
+            public void onFailure(Call<TVShowResult> call, Throwable t) {
+
+            }
+        });
+
+    }
+    public void requestNewTvShowsByGenre(String genre, int page, String firstAirDate, int requiredVoteCount){
+        tvShowService.getTvShowByGenre(genre,page,firstAirDate,requiredVoteCount).enqueue(new Callback<TVShowResult>() {
+            @Override
+            public void onResponse(Call<TVShowResult> call, Response<TVShowResult> response) {
+                if(response.isSuccessful() && response.body() != null){
+                    requestNewTvShows.postValue(response.body().getTvShows());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<TVShowResult> call, Throwable t) {
+
+
+            }
+        });
+    }
+
     public LiveData<List<TVShow>> getPopularTvShowsLiveData() {
         return popularTvShowsLiveData;
     }
@@ -201,5 +253,8 @@ public class TVShowRepository {
     }
     public LiveData<List<Trailer>> getTvShowTrailerLiveData() {
         return trailerTvShowLiveData;
+    }
+    public LiveData<List<TVShow>> getNewTVShowsLiveData(){
+        return requestNewTvShows;
     }
 }
