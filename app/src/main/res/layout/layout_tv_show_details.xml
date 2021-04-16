@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
+
+    <com.example.pinayflix.ui.custom.FadingImageView
+        android:id="@+id/backDropIV"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:adjustViewBounds="true"
+
+        android:fadingEdgeLength="160dp"
+        app:layout_constraintDimensionRatio="16:9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/tvShowPoster"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="16dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintBottom_toBottomOf="@id/backDropIV"
+        app:layout_constraintDimensionRatio="3:4"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_percent=".25" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:fontFamily="@font/main_font"
+        android:text="Average Vote:"
+        android:textColor="@color/netflix_white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@id/ratingBar"
+        app:layout_constraintStart_toStartOf="@id/ratingBar" />
+
+    <RatingBar
+        android:id="@+id/ratingBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:isIndicator="true"
+        android:numStars="5"
+        android:progressTint="@color/netflix_red"
+        android:secondaryProgressTint="@android:color/transparent"
+        app:layout_constraintBottom_toBottomOf="@id/tvShowPoster"
+        app:layout_constraintEnd_toEndOf="@id/overViewTv"
+        app:layout_constraintStart_toEndOf="@id/tvShowPoster" />
+
+    <com.example.pinayflix.ui.custom.ExpandableTextView
+        android:id="@+id/overViewTv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|end"
+        android:fontFamily="@font/main_font"
+        android:justificationMode="inter_word"
+        android:text="Overview"
+        android:textColor="@color/netflix_white"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/backDropIV"
+        app:layout_constraintWidth_percent=".9" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/netflix_gray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/overViewTv" />
+
+
+    <com.google.android.material.tabs.TabLayout
+        app:tabTextColor="@color/netflix_white"
+        app:tabIndicatorColor="@color/netflix_red"
+        android:id="@+id/tabLayout"
+        android:layout_width="wrap_content"
+        android:clipToPadding="true"
+
+        app:tabGravity="fill"
+        app:tabMode="auto"
+        app:tabIndicatorHeight="4dp"
+        app:tabTextAppearance="@style/MyTabLayoutTextAppearance"
+        android:layout_height="wrap_content"
+        app:tabIndicatorGravity="top"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider"
+        app:tabBackground="@color/netflix_black" />
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_margin="8dp"
+        android:background="@drawable/bg_button_disabled"
+        android:drawablePadding="8dp"
+        android:fontFamily="@font/main_font"
+        android:minHeight="0dp"
+        android:padding="8dp"
+        android:text="Season 1"
+        android:textColor="@color/netflix_white"
+        app:drawableEndCompat="@drawable/ic_arrow_down"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tabLayout"
+       />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".4" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

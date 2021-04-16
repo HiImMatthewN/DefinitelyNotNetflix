@@ -48,6 +48,7 @@ public class MainFragmentViewModel extends ViewModel {
 
 
     private MutableLiveData<Event<Integer>> requestMovieDetailsLiveData = new MutableLiveData<>();
+    private MutableLiveData<Event<Integer>> requestTvShowDetailsLiveData = new MutableLiveData<>();
     private MutableLiveData<DataClassification> onDataClassificationChange = new MutableLiveData<>();
     private DataClassification currentSelectClassification;
 
@@ -290,7 +291,7 @@ public class MainFragmentViewModel extends ViewModel {
         return movieRepository.getLatestMovieLiveData();
     }
 
-    public LiveData<Event<Integer>> onMovieDetailsSelected() {
+    public LiveData<Event<Integer>> getMovieDetails() {
         return requestMovieDetailsLiveData;
     }
 
@@ -331,7 +332,9 @@ public class MainFragmentViewModel extends ViewModel {
     public LiveData<List<TVShow>> getDocumentaryTvShows() {
         return tvShowRepository.getDocumentaryTvShowsLiveData();
     }
-
+    public void requestTvShowDetails(int tvShowId) {
+        requestTvShowDetailsLiveData.setValue(new Event<>(tvShowId));
+    }
     public LiveData<List<TVShow>> getNewRequestedTvShow() {
         return tvShowRepository.getNewTVShowsLiveData();
 
@@ -339,6 +342,9 @@ public class MainFragmentViewModel extends ViewModel {
 
     public LiveData<List<Trailer>> getTvShowTrailer() {
         return tvShowRepository.getTvShowTrailerLiveData();
+    }
+    public LiveData<Event<Integer>> getTvShowDetails(){
+        return requestTvShowDetailsLiveData;
     }
 
     public LiveData<DataClassification> getOnDataClassification() {

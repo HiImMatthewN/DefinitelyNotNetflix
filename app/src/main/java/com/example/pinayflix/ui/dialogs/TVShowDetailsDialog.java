@@ -16,6 +16,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
@@ -49,7 +51,6 @@ public class TVShowDetailsDialog extends BottomSheetDialogFragment {
     private TVShow tvShow;
     private static final String TAG = "TVShowDetailsDialog";
     private final String IMAGE_PATH = "https://image.tmdb.org/t/p/w1280";
-
 
     public TVShowDetailsDialog(TVShow selectedTvShow) {
         this.tvShow = selectedTvShow;
@@ -98,7 +99,7 @@ public class TVShowDetailsDialog extends BottomSheetDialogFragment {
         });
 
         detailsBtn.setOnClickListener(btn -> {
-            mainFragmentViewModel.requestTvShowTrailer(tvShow.getId());
+            mainFragmentViewModel.requestTvShowDetails(tvShow.getId());
             dismiss();
         });
 

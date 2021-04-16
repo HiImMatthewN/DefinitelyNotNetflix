@@ -229,6 +229,15 @@ public class MainFragment extends Fragment {
             tvShowParentAdapter.insertData(new TVShowCategoryModel(DataGenre.Documentary, documentaryTvShows));
 
         });
+        mainFragmentViewModel.getTvShowDetails().observe(getViewLifecycleOwner(),event ->{
+            if(event.isHandled()) return;
+            int tvShowId = event.getContentIfNotHandled();
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(TVShowDetailsFragment.DETAILS_KEY, tvShowId);
+            navController.navigate(R.id.action_mainFragment_to_TVShowDetailsFragment,bundle);
+
+        });
+
     }
 
     private void initMovieDataLiveData() {
@@ -271,7 +280,7 @@ public class MainFragment extends Fragment {
 
         });
 
-        mainFragmentViewModel.onMovieDetailsSelected().observe(getViewLifecycleOwner(), integerEvent -> {
+        mainFragmentViewModel.getMovieDetails().observe(getViewLifecycleOwner(), integerEvent -> {
 
             if (!integerEvent.isHandled()) {
                 int movieId = integerEvent.getContentIfNotHandled();

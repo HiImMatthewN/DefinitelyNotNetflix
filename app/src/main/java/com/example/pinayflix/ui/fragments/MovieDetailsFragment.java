@@ -60,6 +60,10 @@ public class MovieDetailsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        movieDetailsFragmentViewModel = new ViewModelProvider(this)
+                .get(MovieDetailsFragmentViewModel.class);
+
         moviePoster = binder.moviePoster;
         backDrop = binder.backDropIV;
         backDrop.setFadeBottom(true);
@@ -76,30 +80,21 @@ public class MovieDetailsFragment extends Fragment {
         reviewsVP.setOffscreenPageLimit(1);
 
 
+        movieDetailsFragmentViewModel.getMovieDetails().observe(getViewLifecycleOwner(), movieDetails -> {
+            if (movieDetails != null)
+                setMovieDetailsToUi(movieDetails);
 
-        Bundle bundle = getArguments();
-        if (bundle == null) return;
-            movieDetailsFragmentViewModel = new ViewModelProvider(this)
-                    .get(MovieDetailsFragmentViewModel.class);
-
-
-
-            movieDetailsFragmentViewModel.getMovieDetails().observe(getViewLifecycleOwner(), movieDetails -> {
-                if(movieDetails != null)
-            setMovieDetailsToUi(movieDetails);
-
-            });
-        movieDetailsFragmentViewModel.getReviewsCount().observe(getViewLifecycleOwner(),reviewCount ->{
+        });
+        movieDetailsFragmentViewModel.getReviewsCount().observe(getViewLifecycleOwner(), reviewCount -> {
             Log.d(TAG, " Review Count" + reviewCount);
 
-            if(reviewCount ==0){
+            if (reviewCount == 0) {
                 noReviewsMsg.setVisibility(View.VISIBLE);
                 Log.d(TAG, "Showing no review message ");
-            }else{
-                reviewVPAdapter = new ReviewVPAdapter(getChildFragmentManager(),1,reviewCount);
+            } else {
+                reviewVPAdapter = new ReviewVPAdapter(getChildFragmentManager(), 1, reviewCount);
                 reviewsVP.setAdapter(reviewVPAdapter);
             }
-
 
 
         });
@@ -107,19 +102,19 @@ public class MovieDetailsFragment extends Fragment {
         reviewsVP.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                    if(event.getAction() == MotionEvent.ACTION_UP)
-                        reviewsVP.startAutoScroll();
-                    else
-                        reviewsVP.stopAutoScroll();
+                if (event.getAction() == MotionEvent.ACTION_UP)
+                    reviewsVP.startAutoScroll();
+                else
+                    reviewsVP.stopAutoScroll();
 
                 return true;
             }
         });
 
 
-
     }
-    private void setMovieDetailsToUi(MovieDetails movieDetails){
+
+    private void setMovieDetailsToUi(MovieDetails movieDetails) {
         DrawableCrossFadeFactory factory =
                 new DrawableCrossFadeFactory.Builder().setCrossFadeEnabled(true).build();
         Glide.with(requireContext()).
@@ -135,7 +130,7 @@ public class MovieDetailsFragment extends Fragment {
                 .apply(requestOptions)
                 .into(moviePoster);
 
-        ratingBar.setRating((float) movieDetails.getVoteAverage()/2);
+        ratingBar.setRating((float) movieDetails.getVoteAverage() / 2);
         overViewTv.setText(movieDetails.getOverview());
 
     }

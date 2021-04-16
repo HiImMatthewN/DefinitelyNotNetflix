@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.pinayflix.model.datamodel.trailer.Trailer;
 import com.example.pinayflix.model.datamodel.trailer.TrailerResult;
 import com.example.pinayflix.model.datamodel.tvshow.TVShow;
+import com.example.pinayflix.model.datamodel.tvshow.TVShowDetails;
 import com.example.pinayflix.model.datamodel.tvshow.TVShowResult;
 import com.example.pinayflix.network.TVShowService;
 
@@ -33,6 +34,10 @@ public class TVShowRepository {
 
     private MutableLiveData<List<TVShow>> requestNewTvShows;
 
+    //LiveData for MovieDetails
+    private MutableLiveData<TVShowDetails> tvShowDetailsLiveData;
+
+
     private String TAG = "TVShowRepository";
 
 
@@ -48,10 +53,9 @@ public class TVShowRepository {
         documentaryTvShowsLiveData = new MutableLiveData<>();
         trailerTvShowLiveData = new MutableLiveData<>();
         requestNewTvShows = new MutableLiveData<>();
-
+        tvShowDetailsLiveData = new MutableLiveData<>();
 
     }
-
 
 
     public void requestPopularTvShows(int page) {
@@ -66,12 +70,13 @@ public class TVShowRepository {
 
             @Override
             public void onFailure(Call<TVShowResult> call, Throwable t) {
-                Log.d(TAG, "onResponse: GET Popular TV Show Failed" +t.getMessage());
+                Log.d(TAG, "onResponse: GET Popular TV Show Failed" + t.getMessage());
 
             }
         });
 
     }
+
     public void requestUpcomingTvShows(int page) {
 
         tvShowService.getAiringToday(page).enqueue(new Callback<TVShowResult>() {
@@ -84,12 +89,13 @@ public class TVShowRepository {
 
             @Override
             public void onFailure(Call<TVShowResult> call, Throwable t) {
-                Log.d(TAG, "onResponse: GET Popular TV Show Failed" +t.getMessage());
+                Log.d(TAG, "onResponse: GET Popular TV Show Failed" + t.getMessage());
 
             }
         });
 
     }
+
     public void requestNowPlayingTvShows(int page) {
 
         tvShowService.getOnTheAirTVShow(page).enqueue(new Callback<TVShowResult>() {
@@ -102,16 +108,17 @@ public class TVShowRepository {
 
             @Override
             public void onFailure(Call<TVShowResult> call, Throwable t) {
-                Log.d(TAG, "onResponse: GET Popular TV Show Failed" +t.getMessage());
+                Log.d(TAG, "onResponse: GET Popular TV Show Failed" + t.getMessage());
 
             }
         });
     }
-    public void requestMysteryTvShows(String genre, int page, String firstAirDate, int requiredVoteCount){
-        tvShowService.getTvShowByGenre(genre,page,firstAirDate,requiredVoteCount).enqueue(new Callback<TVShowResult>() {
+
+    public void requestMysteryTvShows(String genre, int page, String firstAirDate, int requiredVoteCount) {
+        tvShowService.getTvShowByGenre(genre, page, firstAirDate, requiredVoteCount).enqueue(new Callback<TVShowResult>() {
             @Override
             public void onResponse(Call<TVShowResult> call, Response<TVShowResult> response) {
-                if(response.isSuccessful() && response.body() != null){
+                if (response.isSuccessful() && response.body() != null) {
                     mysteryTvShowsLiveData.postValue(response.body().getTvShows());
                     Log.d(TAG, "onResponse: Mystery size " + response.body().getTvShows().size());
                     Log.d(TAG, "onResponse: GET Mystery TV Show Success");
@@ -122,16 +129,17 @@ public class TVShowRepository {
 
             @Override
             public void onFailure(Call<TVShowResult> call, Throwable t) {
-                Log.d(TAG, "onResponse: GET Horror TV Show Failed" +t.getMessage());
+                Log.d(TAG, "onResponse: GET Horror TV Show Failed" + t.getMessage());
 
             }
         });
     }
-    public void requestRomanceTvShows(String genre, int page, String firstAirDate, int requiredVoteCount){
-        tvShowService.getTvShowByGenre(genre,page,firstAirDate,requiredVoteCount).enqueue(new Callback<TVShowResult>() {
+
+    public void requestRomanceTvShows(String genre, int page, String firstAirDate, int requiredVoteCount) {
+        tvShowService.getTvShowByGenre(genre, page, firstAirDate, requiredVoteCount).enqueue(new Callback<TVShowResult>() {
             @Override
             public void onResponse(Call<TVShowResult> call, Response<TVShowResult> response) {
-                if(response.isSuccessful() && response.body() != null){
+                if (response.isSuccessful() && response.body() != null) {
                     romanceTvShowsLiveData.postValue(response.body().getTvShows());
                     Log.d(TAG, "onResponse: GET Romance TV Show Success");
 
@@ -141,16 +149,17 @@ public class TVShowRepository {
 
             @Override
             public void onFailure(Call<TVShowResult> call, Throwable t) {
-                Log.d(TAG, "onResponse: GET Romance TV Show Failed" +t.getMessage());
+                Log.d(TAG, "onResponse: GET Romance TV Show Failed" + t.getMessage());
 
             }
         });
     }
-    public void requestDocumentaryTvShows(String genre, int page, String firstAirDate, int requiredVoteCount){
-        tvShowService.getTvShowByGenre(genre,page,firstAirDate,requiredVoteCount).enqueue(new Callback<TVShowResult>() {
+
+    public void requestDocumentaryTvShows(String genre, int page, String firstAirDate, int requiredVoteCount) {
+        tvShowService.getTvShowByGenre(genre, page, firstAirDate, requiredVoteCount).enqueue(new Callback<TVShowResult>() {
             @Override
             public void onResponse(Call<TVShowResult> call, Response<TVShowResult> response) {
-                if(response.isSuccessful() && response.body() != null){
+                if (response.isSuccessful() && response.body() != null) {
                     documentaryTvShowsLiveData.postValue(response.body().getTvShows());
                     Log.d(TAG, "onResponse: GET Documentary TV Show Success");
                 }
@@ -158,17 +167,17 @@ public class TVShowRepository {
 
             @Override
             public void onFailure(Call<TVShowResult> call, Throwable t) {
-                Log.d(TAG, "onResponse: GET Documentary TV Show Failed" +t.getMessage());
+                Log.d(TAG, "onResponse: GET Documentary TV Show Failed" + t.getMessage());
 
             }
         });
     }
 
-    public void requestTvShowTrailer(int tvShowId){
+    public void requestTvShowTrailer(int tvShowId) {
         tvShowService.getTrailer(tvShowId).enqueue(new Callback<TrailerResult>() {
             @Override
             public void onResponse(Call<TrailerResult> call, Response<TrailerResult> response) {
-                if(response.isSuccessful() && response.body() != null){
+                if (response.isSuccessful() && response.body() != null) {
                     trailerTvShowLiveData.postValue(response.body().getTrailers());
                     Log.d(TAG, "onResponse: GET TV Show Trailer Success");
                 }
@@ -176,7 +185,7 @@ public class TVShowRepository {
 
             @Override
             public void onFailure(Call<TrailerResult> call, Throwable t) {
-                Log.d(TAG, "onResponse: GET TV Show Trailer Failed" +t.getMessage());
+                Log.d(TAG, "onResponse: GET TV Show Trailer Failed" + t.getMessage());
 
             }
         });
@@ -200,6 +209,7 @@ public class TVShowRepository {
         });
 
     }
+
     public void requestNewUpcomingTvShows(int page) {
 
         tvShowService.getAiringToday(page).enqueue(new Callback<TVShowResult>() {
@@ -216,11 +226,12 @@ public class TVShowRepository {
         });
 
     }
-    public void requestNewTvShowsByGenre(String genre, int page, String firstAirDate, int requiredVoteCount){
-        tvShowService.getTvShowByGenre(genre,page,firstAirDate,requiredVoteCount).enqueue(new Callback<TVShowResult>() {
+
+    public void requestNewTvShowsByGenre(String genre, int page, String firstAirDate, int requiredVoteCount) {
+        tvShowService.getTvShowByGenre(genre, page, firstAirDate, requiredVoteCount).enqueue(new Callback<TVShowResult>() {
             @Override
             public void onResponse(Call<TVShowResult> call, Response<TVShowResult> response) {
-                if(response.isSuccessful() && response.body() != null){
+                if (response.isSuccessful() && response.body() != null) {
                     requestNewTvShows.postValue(response.body().getTvShows());
                 }
             }
@@ -233,28 +244,58 @@ public class TVShowRepository {
         });
     }
 
+    public void requestTvShowDetails(int tvShowId) {
+        tvShowService.getTvShowDetails(tvShowId).enqueue(new Callback<TVShowDetails>() {
+            @Override
+            public void onResponse(Call<TVShowDetails> call, Response<TVShowDetails> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    tvShowDetailsLiveData.postValue(response.body());
+                    Log.d(TAG, "onResponse: GET TVShowDetails success");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<TVShowDetails> call, Throwable t) {
+                Log.d(TAG, "onFailure: GET TVShowDetails failed " + t.getMessage());
+            }
+        });
+
+
+    }
+
     public LiveData<List<TVShow>> getPopularTvShowsLiveData() {
         return popularTvShowsLiveData;
     }
+
     public LiveData<List<TVShow>> getUpComingTvShowsLiveData() {
         return upcomingTvShowsLiveData;
     }
+
     public LiveData<List<TVShow>> getNowPlayingTvShowsLiveData() {
         return nowPlayingTvShowsLiveData;
     }
+
     public LiveData<List<TVShow>> getMysteryTvShowsLiveData() {
         return mysteryTvShowsLiveData;
     }
+
     public LiveData<List<TVShow>> getRomanceTvShowsLiveData() {
         return romanceTvShowsLiveData;
     }
+
     public LiveData<List<TVShow>> getDocumentaryTvShowsLiveData() {
         return documentaryTvShowsLiveData;
     }
+
     public LiveData<List<Trailer>> getTvShowTrailerLiveData() {
         return trailerTvShowLiveData;
     }
-    public LiveData<List<TVShow>> getNewTVShowsLiveData(){
+
+    public LiveData<List<TVShow>> getNewTVShowsLiveData() {
         return requestNewTvShows;
+    }
+
+    public LiveData<TVShowDetails> getTVShowDetails() {
+        return tvShowDetailsLiveData;
     }
 }
