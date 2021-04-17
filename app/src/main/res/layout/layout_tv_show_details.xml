@@ -78,27 +78,25 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/overViewTv" />
-
-
     <com.google.android.material.tabs.TabLayout
-        app:tabTextColor="@color/netflix_white"
-        app:tabIndicatorColor="@color/netflix_red"
         android:id="@+id/tabLayout"
         android:layout_width="wrap_content"
-        android:clipToPadding="true"
-
-        app:tabGravity="fill"
-        app:tabMode="auto"
-        app:tabIndicatorHeight="4dp"
-        app:tabTextAppearance="@style/MyTabLayoutTextAppearance"
         android:layout_height="wrap_content"
-        app:tabIndicatorGravity="top"
+        android:clipToPadding="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/divider"
-        app:tabBackground="@color/netflix_black" />
+        app:tabBackground="@color/netflix_black"
+        app:tabGravity="start"
+        app:tabIndicatorColor="@color/netflix_red"
+        app:tabIndicatorGravity="top"
+        app:tabIndicatorHeight="4dp"
+        app:tabMode="auto"
+        app:tabTextAppearance="@style/MyTabLayoutTextAppearance"
+        app:tabTextColor="@color/netflix_white" />
 
 
     <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/seasonBtn"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_margin="8dp"
@@ -111,8 +109,20 @@
         android:textColor="@color/netflix_white"
         app:drawableEndCompat="@drawable/ic_arrow_down"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tabLayout"
-       />
+        app:layout_constraintTop_toBottomOf="@id/tabLayout" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/episodesRv"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/seasonBtn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+
+        />
+
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"

@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.pinayflix.model.datamodel.trailer.Trailer;
 import com.example.pinayflix.model.datamodel.trailer.TrailerResult;
+import com.example.pinayflix.model.datamodel.tvshow.Season;
 import com.example.pinayflix.model.datamodel.tvshow.TVShow;
 import com.example.pinayflix.model.datamodel.tvshow.TVShowDetails;
 import com.example.pinayflix.model.datamodel.tvshow.TVShowResult;
@@ -34,8 +35,10 @@ public class TVShowRepository {
 
     private MutableLiveData<List<TVShow>> requestNewTvShows;
 
-    //LiveData for MovieDetails
+    //LiveData for TvShowDetails
     private MutableLiveData<TVShowDetails> tvShowDetailsLiveData;
+
+    private MutableLiveData<Season> tvShowSeasonLiveData;
 
 
     private String TAG = "TVShowRepository";
@@ -54,6 +57,7 @@ public class TVShowRepository {
         trailerTvShowLiveData = new MutableLiveData<>();
         requestNewTvShows = new MutableLiveData<>();
         tvShowDetailsLiveData = new MutableLiveData<>();
+        tvShowSeasonLiveData = new MutableLiveData<>();
 
     }
 
@@ -259,9 +263,30 @@ public class TVShowRepository {
                 Log.d(TAG, "onFailure: GET TVShowDetails failed " + t.getMessage());
             }
         });
+    }
 
+    public void requestTvShowSeason(int tvShowId, int seasonNum){
+        tvShowService.getSeason(tvShowId,seasonNum).enqueue(new Callback<Season>() {
+            @Override
+            public void onResponse(Call<Season> call, Response<Season> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    tvShowSeasonLiveData.postValue(response.body());
+                    Log.d(TAG, "onResponse: GET TV Season success");
+
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<Season> call, Throwable t) {
+                Log.d(TAG, "onResponse: GET TV Season failed " + t.getMessage());
+
+            }
+        });
 
     }
+
+
 
     public LiveData<List<TVShow>> getPopularTvShowsLiveData() {
         return popularTvShowsLiveData;
@@ -297,5 +322,9 @@ public class TVShowRepository {
 
     public LiveData<TVShowDetails> getTVShowDetails() {
         return tvShowDetailsLiveData;
+    }
+
+    public LiveData<Season> getTVShowSeasonLiveData(){
+        return tvShowSeasonLiveData;
     }
 }

@@ -1,4 +1,4 @@
-package com.example.pinayflix.adapter.tvshow;
+package com.example.pinayflix.adapter.recyclerview.tvshow;
 
 import android.content.res.Resources;
 import android.util.Log;

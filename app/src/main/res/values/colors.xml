@@ -19,5 +19,5 @@
     <color name="netflix_semi_transparent_2">#40484848</color>
     <color name="netflix_category_not_selected">#80FFFFFF</color>
     <color name="netflix_category_selected">#FFFFFF</color>
-
+    <color name="netflix_season_list_color">#E6000000</color>
 </resources>

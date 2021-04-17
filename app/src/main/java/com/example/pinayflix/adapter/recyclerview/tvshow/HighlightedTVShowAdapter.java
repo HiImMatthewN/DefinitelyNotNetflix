@@ -1,6 +1,5 @@
-package com.example.pinayflix.adapter.tvshow;
+package com.example.pinayflix.adapter.recyclerview.tvshow;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

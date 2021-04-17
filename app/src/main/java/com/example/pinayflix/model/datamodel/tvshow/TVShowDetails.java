@@ -2,6 +2,8 @@ package com.example.pinayflix.model.datamodel.tvshow;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+
 public class TVShowDetails {
 
 
@@ -19,6 +21,14 @@ public class TVShowDetails {
     private int numOfSeasons;
     @SerializedName("vote_average")
     private double voteAverage;
+    @SerializedName("seasons")
+    private ArrayList<Season> seasons;
+    @SerializedName("episode_run_time")
+    private ArrayList<Integer> episodeRuntime;
+
+    public ArrayList<Season> getSeasons() {
+        return seasons;
+    }
 
     public String getBackDropPath() {
         return backDropPath;
@@ -46,5 +56,9 @@ public class TVShowDetails {
 
     public double getVoteAverage() {
         return voteAverage;
+    }
+
+    public ArrayList<Integer> getEpisodeRuntime() {
+        return episodeRuntime;
     }
 }

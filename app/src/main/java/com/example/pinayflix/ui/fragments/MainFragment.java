@@ -25,9 +25,9 @@ import com.example.pinayflix.R;
 import com.example.pinayflix.adapter.recyclerview.movie.ChildMovieAdapter;
 import com.example.pinayflix.adapter.recyclerview.movie.HighlightedMovieAdapter;
 import com.example.pinayflix.adapter.recyclerview.movie.ParentMovieAdapter;
-import com.example.pinayflix.adapter.tvshow.ChildTVShowAdapter;
-import com.example.pinayflix.adapter.tvshow.HighlightedTVShowAdapter;
-import com.example.pinayflix.adapter.tvshow.ParentTVShowAdapter;
+import com.example.pinayflix.adapter.recyclerview.tvshow.ChildTVShowAdapter;
+import com.example.pinayflix.adapter.recyclerview.tvshow.HighlightedTVShowAdapter;
+import com.example.pinayflix.adapter.recyclerview.tvshow.ParentTVShowAdapter;
 import com.example.pinayflix.databinding.FragmentMainBinding;
 import com.example.pinayflix.databinding.LayoutContentBinding;
 import com.example.pinayflix.model.uimodel.MovieCategoryModel;
@@ -82,8 +82,9 @@ public class MainFragment extends Fragment {
 
         movieCategoryTV = binder.movieCategoryTV;
         tvListCategoryTV = binder.tvShowCategoryTV;
-        myListTV = binder.myListTV;
         contentBinding = binder.content;
+
+        myListTV = binder.myListTV;
         parentRv = contentBinding.parentRv;
         parentRv.setLayoutManager(new SpeedyLinearLayoutManager(requireContext()));
         toolbar = binder.toolbar;
@@ -116,10 +117,16 @@ public class MainFragment extends Fragment {
 
         });
         mainFragmentViewModel.getOnDataClassification().observe(getViewLifecycleOwner(), dataClassification -> {
-            if (dataClassification == DataClassification.MOVIE)
+            if (dataClassification == DataClassification.MOVIE){
                 createMovieRVAdapter();
-            else if (dataClassification == DataClassification.TV_SHOW)
+                handleCategoryOnClick(R.id.movieCategoryTV);
+            }
+
+
+            else if (dataClassification == DataClassification.TV_SHOW){
                 createTVShowAdapter();
+                handleCategoryOnClick(R.id.tvShowCategoryTV);
+            }
         });
 
 
