@@ -1,6 +1,5 @@
 package com.example.pinayflix.adapter.recyclerview.movie;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,8 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
 import com.example.pinayflix.R;
@@ -24,8 +22,10 @@ public class HighlightedMovieAdapter extends RecyclerView.Adapter<HighlightedMov
     private Movie highlightedMovie;
     private final String IMAGE_PATH = "https://image.tmdb.org/t/p/w500";
     private String TAG = "HighlightedMovieAdapter";
-    public HighlightedMovieAdapter() {
+    private RequestManager requestManager;
 
+    public HighlightedMovieAdapter(RequestManager requestManager) {
+        this.requestManager = requestManager;
     }
 
     public void insertData(Movie movie) {
@@ -44,10 +44,7 @@ public class HighlightedMovieAdapter extends RecyclerView.Adapter<HighlightedMov
         return new HighlightedMovieViewHolder(binder);
 
     }
-    public void clear(){
-        highlightedMovie = null;
-        notifyDataSetChanged();
-    }
+
     @Override
     public void onBindViewHolder(@NonNull HighlightedMovieViewHolder holder, int position) {
         if (highlightedMovie != null) {
@@ -57,12 +54,11 @@ public class HighlightedMovieAdapter extends RecyclerView.Adapter<HighlightedMov
 
             DrawableCrossFadeFactory factory =
                     new DrawableCrossFadeFactory.Builder().setCrossFadeEnabled(true).build();
-            Glide.with(holder.itemView.getContext()).load(IMAGE_PATH + highlightedMovie.getPosterPath().trim())
+            requestManager.load(IMAGE_PATH + highlightedMovie.getPosterPath().trim())
                     .transition(DrawableTransitionOptions.with(factory))
-                    .transform(new CenterCrop()).into(target);
+                    .into(target);
 
             StringBuilder stringBuilder = new StringBuilder();
-            Log.d(TAG, "onBindViewHolder: Image path" + IMAGE_PATH + highlightedMovie.getPosterPath());
             for (Integer id : highlightedMovie.getGenreIds()) {
                 stringBuilder.append(Utils.getGenreNameFromId(id)).append("  ");
             }
@@ -80,6 +76,7 @@ public class HighlightedMovieAdapter extends RecyclerView.Adapter<HighlightedMov
         private TextView genreTv;
         private AppCompatButton addToListBtn;
         private AppCompatButton detailsBtn;
+
         public HighlightedMovieViewHolder(@NonNull ItemHighlightedBinding binder) {
             super(binder.getRoot());
             posterIv = binder.postIv;

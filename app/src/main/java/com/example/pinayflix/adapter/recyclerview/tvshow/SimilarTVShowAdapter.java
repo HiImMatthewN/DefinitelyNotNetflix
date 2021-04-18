@@ -9,8 +9,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.RequestManager;
 import com.example.pinayflix.R;
 import com.example.pinayflix.databinding.ItemSimilarTvShowsBinding;
 import com.example.pinayflix.model.datamodel.tvshow.TVShow;
@@ -21,15 +20,18 @@ public class SimilarTVShowAdapter extends RecyclerView.Adapter<SimilarTVShowAdap
     private List<TVShow> data;
     private String TAG = "SimilarTVShowAdapter";
     private final String IMAGE_PATH = "https://image.tmdb.org/t/p/w342";
-    public SimilarTVShowAdapter(List<TVShow> tvShows) {
+    private RequestManager requestManager;
+
+    public SimilarTVShowAdapter(List<TVShow> tvShows, RequestManager requestManager) {
         this.data = tvShows;
+        this.requestManager = requestManager;
 
     }
 
     @NonNull
     @Override
     public SimilarTVShowViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_similar_tv_shows,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_similar_tv_shows, parent, false);
         ItemSimilarTvShowsBinding binder = ItemSimilarTvShowsBinding.bind(view);
         return new SimilarTVShowViewHolder(binder);
     }
@@ -40,8 +42,8 @@ public class SimilarTVShowAdapter extends RecyclerView.Adapter<SimilarTVShowAdap
         TVShow tvShow = data.get(position);
         ImageView target = holder.posterImageView;
 
-        Glide.with(holder.itemView.getContext())
-                .load(Uri.parse(IMAGE_PATH+tvShow.getPosterPath())).transform(new CenterCrop())
+        requestManager
+                .load(Uri.parse(IMAGE_PATH + tvShow.getPosterPath()))
                 .into(target);
 
     }
@@ -51,7 +53,7 @@ public class SimilarTVShowAdapter extends RecyclerView.Adapter<SimilarTVShowAdap
         return data.size();
     }
 
-    class SimilarTVShowViewHolder extends RecyclerView.ViewHolder{
+    class SimilarTVShowViewHolder extends RecyclerView.ViewHolder {
         private ImageView posterImageView;
 
         public SimilarTVShowViewHolder(@NonNull ItemSimilarTvShowsBinding binder) {

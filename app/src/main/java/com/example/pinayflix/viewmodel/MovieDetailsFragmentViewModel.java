@@ -8,7 +8,6 @@ import androidx.lifecycle.SavedStateHandle;
 import androidx.lifecycle.ViewModel;
 
 import com.example.pinayflix.model.datamodel.movie.Movie;
-import com.example.pinayflix.model.datamodel.movie.MovieDetails;
 import com.example.pinayflix.model.datamodel.review.Review;
 import com.example.pinayflix.repository.MovieRepository;
 import com.example.pinayflix.ui.fragments.MovieDetailsFragment;
@@ -55,7 +54,7 @@ public class MovieDetailsFragmentViewModel extends ViewModel {
 
 
 
-    public LiveData<MovieDetails> getMovieDetails(){
+    public LiveData<Movie> getMovieDetails(){
         return movieRepository.getMovieDetailsLiveData();
     }
 

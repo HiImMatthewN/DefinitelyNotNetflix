@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.bumptech.glide.RequestManager;
 import com.example.pinayflix.DataClassification;
 import com.example.pinayflix.DataGenre;
 import com.example.pinayflix.R;
@@ -37,6 +38,8 @@ import com.example.pinayflix.ui.dialogs.MovieDetailsDialog;
 import com.example.pinayflix.ui.dialogs.TVShowDetailsDialog;
 import com.example.pinayflix.viewmodel.MainFragmentViewModel;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -66,6 +69,10 @@ public class MainFragment extends Fragment {
     private String TAG = "MainFragment";
 
     private NavController navController;
+
+    @Inject
+    RequestManager requestManager;
+
 
     @Nullable
     @Override
@@ -138,8 +145,8 @@ public class MainFragment extends Fragment {
     }
 
     private void createMovieRVAdapter() {
-        highlightedMovieAdapter = new HighlightedMovieAdapter();
-        movieParentAdapter = new ParentMovieAdapter();
+        highlightedMovieAdapter = new HighlightedMovieAdapter(requestManager);
+        movieParentAdapter = new ParentMovieAdapter(requestManager);
         concatAdapter = new ConcatAdapter(highlightedMovieAdapter, movieParentAdapter);
         parentRv.setAdapter(concatAdapter);
 
@@ -173,8 +180,8 @@ public class MainFragment extends Fragment {
     }
 
     private void createTVShowAdapter() {
-        highlightedTVShowAdapter = new HighlightedTVShowAdapter();
-        tvShowParentAdapter = new ParentTVShowAdapter();
+        highlightedTVShowAdapter = new HighlightedTVShowAdapter(requestManager);
+        tvShowParentAdapter = new ParentTVShowAdapter(requestManager);
         concatAdapter = new ConcatAdapter(highlightedTVShowAdapter, tvShowParentAdapter);
         parentRv.setAdapter(concatAdapter);
 

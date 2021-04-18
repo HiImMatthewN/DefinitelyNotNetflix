@@ -2,7 +2,7 @@ package com.example.pinayflix.network;
 
 import com.example.pinayflix.model.datamodel.trailer.TrailerResult;
 import com.example.pinayflix.model.datamodel.tvshow.Season;
-import com.example.pinayflix.model.datamodel.tvshow.TVShowDetails;
+import com.example.pinayflix.model.datamodel.tvshow.TVShow;
 import com.example.pinayflix.model.datamodel.tvshow.TVShowResult;
 
 import retrofit2.Call;
@@ -27,7 +27,7 @@ public interface TVShowService {
                                        @Query("vote_count.gte") int voteCount);
 
     @GET("tv/{id}")
-    Call<TVShowDetails> getTvShowDetails(@Path("id") int id);
+    Call<TVShow> getTvShowDetails(@Path("id") int id);
     @GET("tv/{id}/videos")
     Call<TrailerResult> getTrailer(@Path("id")int tvShowId);
 

@@ -9,7 +9,6 @@ import com.example.pinayflix.model.datamodel.trailer.Trailer;
 import com.example.pinayflix.model.datamodel.trailer.TrailerResult;
 import com.example.pinayflix.model.datamodel.tvshow.Season;
 import com.example.pinayflix.model.datamodel.tvshow.TVShow;
-import com.example.pinayflix.model.datamodel.tvshow.TVShowDetails;
 import com.example.pinayflix.model.datamodel.tvshow.TVShowResult;
 import com.example.pinayflix.network.TVShowService;
 
@@ -36,7 +35,7 @@ public class TVShowRepository {
     private MutableLiveData<List<TVShow>> requestNewTvShows;
 
     //LiveData for TvShowDetails
-    private MutableLiveData<TVShowDetails> tvShowDetailsLiveData;
+    private MutableLiveData<TVShow> tvShowDetailsLiveData;
 
     private MutableLiveData<Season> tvShowSeasonLiveData;
     private MutableLiveData<List<TVShow>> recoTvShowLiveData;
@@ -250,9 +249,9 @@ public class TVShowRepository {
     }
 
     public void requestTvShowDetails(int tvShowId) {
-        tvShowService.getTvShowDetails(tvShowId).enqueue(new Callback<TVShowDetails>() {
+        tvShowService.getTvShowDetails(tvShowId).enqueue(new Callback<TVShow>() {
             @Override
-            public void onResponse(Call<TVShowDetails> call, Response<TVShowDetails> response) {
+            public void onResponse(Call<TVShow> call, Response<TVShow> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     tvShowDetailsLiveData.postValue(response.body());
                     Log.d(TAG, "onResponse: GET TVShowDetails success");
@@ -261,7 +260,7 @@ public class TVShowRepository {
             }
 
             @Override
-            public void onFailure(Call<TVShowDetails> call, Throwable t) {
+            public void onFailure(Call<TVShow> call, Throwable t) {
                 Log.d(TAG, "onFailure: GET TVShowDetails failed " + t.getMessage());
             }
         });
@@ -342,7 +341,7 @@ public class TVShowRepository {
         return requestNewTvShows;
     }
 
-    public LiveData<TVShowDetails> getTVShowDetails() {
+    public LiveData<TVShow> getTVShowDetails() {
         return tvShowDetailsLiveData;
     }
 

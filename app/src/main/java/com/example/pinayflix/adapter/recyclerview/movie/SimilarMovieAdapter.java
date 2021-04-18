@@ -1,4 +1,4 @@
-package com.example.pinayflix.adapter.recyclerview.tvshow;
+package com.example.pinayflix.adapter.recyclerview.movie;
 
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.example.pinayflix.R;
 import com.example.pinayflix.databinding.ItemSimilarTvShowsBinding;
@@ -21,15 +21,18 @@ public class SimilarMovieAdapter extends RecyclerView.Adapter<SimilarMovieAdapte
     private List<Movie> data;
     private String TAG = "SimilarTVShowAdapter";
     private final String IMAGE_PATH = "https://image.tmdb.org/t/p/w342";
-    public SimilarMovieAdapter(List<Movie> tvShows) {
+    private RequestManager requestManager;
+
+    public SimilarMovieAdapter(List<Movie> tvShows, RequestManager requestManager) {
         this.data = tvShows;
+        this.requestManager = requestManager;
 
     }
 
     @NonNull
     @Override
     public SimilarMovieViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_similar_tv_shows,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_similar_tv_shows, parent, false);
         ItemSimilarTvShowsBinding binder = ItemSimilarTvShowsBinding.bind(view);
         return new SimilarMovieViewHolder(binder);
     }
@@ -40,8 +43,8 @@ public class SimilarMovieAdapter extends RecyclerView.Adapter<SimilarMovieAdapte
         Movie tvShow = data.get(position);
         ImageView target = holder.posterImageView;
 
-        Glide.with(holder.itemView.getContext())
-                .load(Uri.parse(IMAGE_PATH+tvShow.getPosterPath())).transform(new CenterCrop())
+        requestManager
+                .load(Uri.parse(IMAGE_PATH + tvShow.getPosterPath())).transform(new CenterCrop())
                 .into(target);
 
     }
@@ -51,7 +54,7 @@ public class SimilarMovieAdapter extends RecyclerView.Adapter<SimilarMovieAdapte
         return data.size();
     }
 
-    class SimilarMovieViewHolder extends RecyclerView.ViewHolder{
+    class SimilarMovieViewHolder extends RecyclerView.ViewHolder {
         private ImageView posterImageView;
 
         public SimilarMovieViewHolder(@NonNull ItemSimilarTvShowsBinding binder) {

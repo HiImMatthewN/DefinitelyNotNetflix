@@ -10,8 +10,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.RequestManager;
 import com.example.pinayflix.R;
 import com.example.pinayflix.callback.OnTVShowRequest;
 import com.example.pinayflix.databinding.ItemChildBinding;
@@ -25,22 +24,28 @@ public class ChildTVShowAdapter extends RecyclerView.Adapter<ChildTVShowAdapter.
     private String TAG = "ChildTVShowAdapter";
     private final String IMAGE_PATH = "https://image.tmdb.org/t/p/w342";
     private OnTVShowRequest callback;
-    public ChildTVShowAdapter(TVShowCategoryModel categoryModel, OnTVShowRequest callback) {
+    private RequestManager requestManager;
+
+    public ChildTVShowAdapter(TVShowCategoryModel categoryModel, OnTVShowRequest callback, RequestManager requestManager) {
         this.callback = callback;
         this.data = categoryModel.getTVShows();
+        this.requestManager = requestManager;
+
         notifyDataSetChanged();
 
     }
-    public void insertData(List<TVShow> tvShows){
+
+    public void insertData(List<TVShow> tvShows) {
         Log.d(TAG, "insertData: new TV Shows added ");
         data.addAll(tvShows);
         notifyDataSetChanged();
 
     }
+
     @NonNull
     @Override
     public ChildTVShowViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_child,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_child, parent, false);
         ItemChildBinding binder = ItemChildBinding.bind(view);
         return new ChildTVShowViewHolder(binder);
     }
@@ -51,8 +56,8 @@ public class ChildTVShowAdapter extends RecyclerView.Adapter<ChildTVShowAdapter.
         TVShow tvShow = data.get(position);
         ImageView target = holder.posterImageView;
 
-        Glide.with(holder.itemView.getContext())
-                .load(Uri.parse(IMAGE_PATH+tvShow.getPosterPath())).transform(new CenterCrop())
+        requestManager
+                .load(Uri.parse(IMAGE_PATH + tvShow.getPosterPath()))
                 .into(target);
         holder.setOnClick(tvShow);
 
@@ -63,15 +68,16 @@ public class ChildTVShowAdapter extends RecyclerView.Adapter<ChildTVShowAdapter.
         return data.size();
     }
 
-    class ChildTVShowViewHolder extends RecyclerView.ViewHolder{
+    class ChildTVShowViewHolder extends RecyclerView.ViewHolder {
         private ImageView posterImageView;
 
         public ChildTVShowViewHolder(@NonNull ItemChildBinding binder) {
             super(binder.getRoot());
             posterImageView = binder.moviePosterIv;
         }
-        public void setOnClick(TVShow tvShow){
-            posterImageView.setOnClickListener(btn->{
+
+        public void setOnClick(TVShow tvShow) {
+            posterImageView.setOnClickListener(btn -> {
                 callback.onTVShowSelect(tvShow);
             });
         }

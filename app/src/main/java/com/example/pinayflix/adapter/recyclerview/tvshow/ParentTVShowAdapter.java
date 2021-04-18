@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.bumptech.glide.RequestManager;
 import com.example.pinayflix.DataGenre;
 import com.example.pinayflix.R;
 import com.example.pinayflix.callback.OnTVShowRequest;
@@ -29,9 +30,12 @@ public class ParentTVShowAdapter extends RecyclerView.Adapter<ParentTVShowAdapte
     private MutableLiveData<DataGenre> dataGenreMutableLiveData;
     private MutableLiveData<TVShow> tvShowSelectedLiveData;
     private DataGenre requestingDataGenre;
-    public ParentTVShowAdapter() {
+    private RequestManager requestManager;
+    public ParentTVShowAdapter(RequestManager requestManager) {
         dataGenreMutableLiveData = new MutableLiveData<>();
         tvShowSelectedLiveData = new MutableLiveData<>();
+        this.requestManager = requestManager;
+
         data = new ArrayList<>();
         notifyDataSetChanged();
 
@@ -74,7 +78,7 @@ public class ParentTVShowAdapter extends RecyclerView.Adapter<ParentTVShowAdapte
     @Override
     public void onBindViewHolder(@NonNull ParentTVViewHolder holder, int position) {
         TVShowCategoryModel categoryModel = data.get(position);
-        ChildTVShowAdapter adapter = new ChildTVShowAdapter(categoryModel, this);
+        ChildTVShowAdapter adapter = new ChildTVShowAdapter(categoryModel, this,requestManager);
 
         RecyclerView tvShowsRV = holder.tvShows;
         TextView category = holder.category;

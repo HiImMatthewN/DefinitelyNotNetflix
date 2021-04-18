@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModel;
 import com.example.pinayflix.model.datamodel.tvshow.Episode;
 import com.example.pinayflix.model.datamodel.tvshow.Season;
 import com.example.pinayflix.model.datamodel.tvshow.TVShow;
-import com.example.pinayflix.model.datamodel.tvshow.TVShowDetails;
 import com.example.pinayflix.repository.TVShowRepository;
 import com.example.pinayflix.ui.fragments.TVShowDetailsFragment;
 
@@ -32,6 +31,7 @@ public class TVShowDetailsFragmentViewModel extends ViewModel {
     private MutableLiveData<List<Integer>> episodeRunTimeLiveData = new MutableLiveData<>();
     private MutableLiveData<Integer> currentSelectedSeason = new MutableLiveData<>();
     private static final String TAG = "TVShowDetailsFragmentVi";
+
     @Inject
     public TVShowDetailsFragmentViewModel(SavedStateHandle savedStateHandle, TVShowRepository tvShowRepository) {
         this.tvShowRepository = tvShowRepository;
@@ -45,21 +45,23 @@ public class TVShowDetailsFragmentViewModel extends ViewModel {
         tvShowRepository.requestTvShowDetails(tvId);
 
     }
-    public void requestSimilarTvShows(){
+
+    public void requestSimilarTvShows() {
         tvShowRepository.requestRecos(tvId);
     }
+
     public void requestSeason(int seasonNum) {
         tvShowRepository.requestTvShowSeason(tvId, seasonNum);
         currentSelectedSeason.postValue(seasonNum);
 
     }
 
-    public LiveData<TVShowDetails> getTvShowDetails() {
+    public LiveData<TVShow> getTvShowDetails() {
         return tvShowRepository.getTVShowDetails();
     }
 
     public LiveData<List<Season>> getSeasons() {
-        LiveData<TVShowDetails> tvShowDetails = tvShowRepository.getTVShowDetails();
+        LiveData<TVShow> tvShowDetails = tvShowRepository.getTVShowDetails();
         tvShowDetails.observeForever(tvShow -> {
             Collections.sort(tvShow.getSeasons(), new Comparator<Season>() {
                 public int compare(Season obj1, Season obj2) {
@@ -74,7 +76,7 @@ public class TVShowDetailsFragmentViewModel extends ViewModel {
         return getSeasonsLiveData;
     }
 
-    public LiveData<List<Episode>> getEpisodes(){
+    public LiveData<List<Episode>> getEpisodes() {
         LiveData<Season> seasonLiveData = tvShowRepository.getTVShowSeasonLiveData();
         seasonLiveData.observeForever(season -> {
 
@@ -82,18 +84,21 @@ public class TVShowDetailsFragmentViewModel extends ViewModel {
         });
         return episodesLiveData;
     }
-    public LiveData<Integer> getSelectedSeason(){
+
+    public LiveData<Integer> getSelectedSeason() {
         return currentSelectedSeason;
     }
-    public LiveData<List<Integer>> getEpisodeRunTime(){
-        LiveData<TVShowDetails> tvShowDetails = tvShowRepository.getTVShowDetails();
-        tvShowDetails.observeForever(tvShow ->{
+
+    public LiveData<List<Integer>> getEpisodeRunTime() {
+        LiveData<TVShow> tvShowDetails = tvShowRepository.getTVShowDetails();
+        tvShowDetails.observeForever(tvShow -> {
             episodeRunTimeLiveData.postValue(tvShow.getEpisodeRuntime());
         });
 
         return episodeRunTimeLiveData;
     }
-    public LiveData<List<TVShow>> getSimilarTVShows(){
-       return tvShowRepository.getRecommendationsLiveData();
+
+    public LiveData<List<TVShow>> getSimilarTVShows() {
+        return tvShowRepository.getRecommendationsLiveData();
     }
 }

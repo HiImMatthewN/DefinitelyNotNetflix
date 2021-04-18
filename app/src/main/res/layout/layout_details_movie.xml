@@ -117,7 +117,7 @@
             android:drawableTop="@drawable/ic_share"
             android:fontFamily="@font/main_font"
 
-            android:text="Rate"
+            android:text="Share"
             android:textColor="@color/netflix_white"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="@id/myListBtn"

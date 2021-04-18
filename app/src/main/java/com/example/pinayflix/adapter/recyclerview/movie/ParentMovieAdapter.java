@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.bumptech.glide.RequestManager;
 import com.example.pinayflix.DataGenre;
 import com.example.pinayflix.R;
 import com.example.pinayflix.callback.OnMovieRequest;
@@ -23,32 +24,35 @@ import com.example.pinayflix.model.uimodel.MovieCategoryModel;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 public class ParentMovieAdapter extends RecyclerView.Adapter<ParentMovieAdapter.ParentMovieViewHolder> implements OnMovieRequest {
     private ArrayList<MovieCategoryModel> data;
     private String TAG = "ParentMovieAdapter";
     private MutableLiveData<DataGenre> movieClassificationMutableLiveData;
     private MutableLiveData<Movie> movieSelectedLiveData;
     private DataGenre requestingDataGenre;
-    public ParentMovieAdapter() {
+    private RequestManager requestManager;
+
+    @Inject
+    public ParentMovieAdapter(RequestManager requestManager) {
         movieClassificationMutableLiveData = new MutableLiveData<>();
         movieSelectedLiveData = new MutableLiveData<>();
         data = new ArrayList<>();
         notifyDataSetChanged();
+        this.requestManager = requestManager;
 
     }
 
     public void insertData(MovieCategoryModel categoryModel) {
-            data.add(categoryModel);
-            notifyItemInserted(data.indexOf(categoryModel));
+        data.add(categoryModel);
+        notifyItemInserted(data.indexOf(categoryModel));
     }
-    public void clear(){
-        data.clear();
-        notifyDataSetChanged();
-    }
-    public int getAdapterPosition(){
 
-        for (int i = 0;i<data.size();i++){
-            if(data.get(i).getCategoryName().equals(requestingDataGenre)){
+    public int getAdapterPosition() {
+
+        for (int i = 0; i < data.size(); i++) {
+            if (data.get(i).getCategoryName().equals(requestingDataGenre)) {
                 Log.d(TAG, "getAdapterPosition: Requesing Classification " + requestingDataGenre);
                 return i;
 
@@ -56,6 +60,7 @@ public class ParentMovieAdapter extends RecyclerView.Adapter<ParentMovieAdapter.
         }
         return 0;
     }
+
     @Override
     public void onMovieSelected(Movie movie) {
         movieSelectedLiveData.postValue(movie);
@@ -65,7 +70,7 @@ public class ParentMovieAdapter extends RecyclerView.Adapter<ParentMovieAdapter.
     @Override
     public ParentMovieViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_category, parent, false);
-       ItemCategoryBinding binder =  ItemCategoryBinding.bind(view);
+        ItemCategoryBinding binder = ItemCategoryBinding.bind(view);
 
         //Settingn item to 30 percent height
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
@@ -77,7 +82,7 @@ public class ParentMovieAdapter extends RecyclerView.Adapter<ParentMovieAdapter.
     @Override
     public void onBindViewHolder(@NonNull ParentMovieViewHolder holder, int position) {
         MovieCategoryModel categoryModel = data.get(position);
-        ChildMovieAdapter adapter = new ChildMovieAdapter(categoryModel, this);
+        ChildMovieAdapter adapter = new ChildMovieAdapter(categoryModel, this,requestManager);
 
         RecyclerView moviesRV = holder.movies;
         TextView category = holder.category;
@@ -85,7 +90,6 @@ public class ParentMovieAdapter extends RecyclerView.Adapter<ParentMovieAdapter.
         Resources res = holder.itemView.getResources();
         swipeRefreshLayout.setProgressBackgroundColorSchemeColor(res.getColor(R.color.netflix_white));
         swipeRefreshLayout.setColorSchemeColors(res.getColor(R.color.netflix_red));
-
 
 
         category.setText(categoryModel.getCategoryName().toString());
@@ -101,7 +105,8 @@ public class ParentMovieAdapter extends RecyclerView.Adapter<ParentMovieAdapter.
     public LiveData<DataGenre> onRequestOfNewData() {
         return movieClassificationMutableLiveData;
     }
-    public LiveData<Movie> getSelectedMovie(){
+
+    public LiveData<Movie> getSelectedMovie() {
         return movieSelectedLiveData;
     }
 
@@ -123,11 +128,11 @@ public class ParentMovieAdapter extends RecyclerView.Adapter<ParentMovieAdapter.
                 @Override
                 public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                     super.onScrollStateChanged(recyclerView, newState);
-                    LinearLayoutManager layoutManager = ((LinearLayoutManager)movies.getLayoutManager());
-                    if(layoutManager == null ) return;
+                    LinearLayoutManager layoutManager = ((LinearLayoutManager) movies.getLayoutManager());
+                    if (layoutManager == null) return;
                     int pos = layoutManager.findLastCompletelyVisibleItemPosition();
                     int numItems = movies.getAdapter().getItemCount();
-                    if (pos +1 >= numItems){
+                    if (pos + 1 >= numItems) {
                         requestingDataGenre = categoryModel.getCategoryName();
                         movieClassificationMutableLiveData.postValue(categoryModel.getCategoryName());
                         swipeRefreshLayout.setRefreshing(true);

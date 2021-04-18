@@ -117,7 +117,7 @@
             android:fontFamily="@font/main_font"
             app:layout_constraintBottom_toBottomOf="@id/myListBtn"
 
-            android:text="Rate"
+            android:text="Share"
             android:textColor="@color/netflix_white"
             android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"

@@ -22,6 +22,34 @@ public class TVShow {
     private ArrayList<Integer> genreIds;
     @SerializedName("name")
     private String name;
+    @SerializedName("episode_run_time")
+    private ArrayList<Integer> episodeRuntime;
+    @SerializedName("seasons")
+    private ArrayList<Season> seasons;
+    @SerializedName("vote_average")
+    private double voteAverage;
+    @SerializedName("number_of_seasons")
+    private int numOfSeasons;
+
+    public String getOverview() {
+        return overview;
+    }
+
+    public ArrayList<Integer> getEpisodeRuntime() {
+        return episodeRuntime;
+    }
+
+    public ArrayList<Season> getSeasons() {
+        return seasons;
+    }
+
+    public double getVoteAverage() {
+        return voteAverage;
+    }
+
+    public int getNumOfSeasons() {
+        return numOfSeasons;
+    }
 
     public String getPosterPath() {
         return posterPath;
