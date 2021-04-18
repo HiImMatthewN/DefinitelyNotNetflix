@@ -10,11 +10,14 @@ via REST.
   Features
 * View Movies Details from TMDB
 * View Movie Trailer (if available)
-* View Movie Reviews from Users
+* View TV Shows Deatils from TMDB
+* View TV Shows Trailer 
+* View Similar TV Shows and Movies
+* View Movie Reviews from Users (Coming Soon)
 * Search Movie via keywords (Coming Soon)
 * Create your own list (Coming Soon)
-* View TV Shows Deatils from TMDB (Coming Soon)
-* View TV Shows Trailer (Coming Soon)
+
+
 
 
  
@@ -26,9 +29,9 @@ Tools Used
 * Navigation Component
 * Glide
 * CircleImageView
-  
- Tools to be used
 * Dagger2/Hilt
+
+Tools to be used
 * RxJava
  
           
