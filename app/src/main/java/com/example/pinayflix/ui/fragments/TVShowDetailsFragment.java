@@ -1,6 +1,7 @@
 package com.example.pinayflix.ui.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -20,8 +23,11 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
+import com.example.pinayflix.adapter.recyclerview.tvshow.EpisodeTVShowAdapter;
+import com.example.pinayflix.adapter.recyclerview.tvshow.SimilarTVShowAdapter;
 import com.example.pinayflix.databinding.LayoutTvShowDetailsBinding;
 import com.example.pinayflix.model.datamodel.tvshow.Episode;
+import com.example.pinayflix.model.datamodel.tvshow.TVShow;
 import com.example.pinayflix.model.datamodel.tvshow.TVShowDetails;
 import com.example.pinayflix.ui.custom.ExpandableTextView;
 import com.example.pinayflix.ui.custom.FadingImageView;
@@ -29,6 +35,8 @@ import com.example.pinayflix.ui.dialogs.ProgressBarDialog;
 import com.example.pinayflix.ui.dialogs.SeasonListDialog;
 import com.example.pinayflix.viewmodel.TVShowDetailsFragmentViewModel;
 import com.google.android.material.tabs.TabLayout;
+
+import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import jp.wasabeef.glide.transformations.BlurTransformation;
@@ -46,7 +54,9 @@ public class TVShowDetailsFragment extends Fragment {
     private TVShowDetailsFragmentViewModel viewModel;
     private TabLayout tabLayout;
     private AppCompatButton seasonBtn;
-    private RecyclerView episodeRv;
+    private RecyclerView rv;
+    private EpisodeTVShowAdapter episodesAdapter;
+    private SimilarTVShowAdapter similarAdapter;
     private static final String TAG = "TVShowDetailsFragment";
 
     @Nullable
@@ -69,16 +79,30 @@ public class TVShowDetailsFragment extends Fragment {
         backDrop.setFadeBottom(true);
         seasonBtn = binder.seasonBtn;
 
-        episodeRv = binder.episodesRv;
+        rv = binder.episodesRv;
 
 
         tabLayout.addTab(tabLayout.newTab().setText("Episode"));
+        tabLayout.addTab(tabLayout.newTab().setText("Reviews"));
         tabLayout.addTab(tabLayout.newTab().setText("More like this"));
+
 
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+                if(tab.getPosition() == 2){
+                    if(viewModel.getSimilarTVShows().getValue() == null)
+                    viewModel.requestSimilarTvShows();
+                    else
+                        setSimilarTVShowViewModel();
+                }
+                else if(tab.getPosition() ==0)
+                    if(viewModel.getSimilarTVShows().getValue() == null)
+                        viewModel.requestSeason(1);
+                    else
+                        setEpisodeViewModel();
+
             }
 
             @Override
@@ -101,21 +125,17 @@ public class TVShowDetailsFragment extends Fragment {
             if (tvShowDetails.getNumOfSeasons() <= 1)
                 seasonBtn.setVisibility(View.GONE);
 
-            if (tvShowDetails == null) return;
             setTvShowDetailsToUi(tvShowDetails);
-
-        });
-        viewModel.getEpisodes().observe(getViewLifecycleOwner(),episodes -> {
-            for (Episode episode : episodes){
-//                Log.d(TAG, "Episode Name " + episode.getName() + " Episode no " + episode.getEpisodeNumber());
-            }
             showHideProgressBar(false);
 
-        });
-        viewModel.getEpisodeRunTime().observe(getViewLifecycleOwner(), runTimes ->{
-            for(Integer integer : runTimes){
 
-            }
+        });
+        setEpisodeViewModel();
+        setSimilarTVShowViewModel();
+
+        viewModel.getSelectedSeason().observe(getViewLifecycleOwner(),value ->{
+            seasonBtn.setText("Season " + value);
+
         });
         showHideProgressBar(true);
     }
@@ -139,7 +159,26 @@ public class TVShowDetailsFragment extends Fragment {
         ratingBar.setRating((float) tvShowDetails.getVoteAverage() / 2);
         overViewTv.setText(tvShowDetails.getOverview());
     }
+    private void setSimilarTVShowViewModel(){
+        viewModel.getSimilarTVShows().observe(getViewLifecycleOwner(),tvShows -> {
+            if (tvShows == null) return;
+            for (TVShow tvShow: tvShows){
+                Log.d(TAG, "Similar TV Show name " + tvShow.getName());
 
+            }
+
+            setSimilarTvShows(tvShows);
+        });
+    }
+    private void setEpisodeViewModel(){
+        viewModel.getEpisodes().observe(getViewLifecycleOwner(),episodes -> {
+            if (episodes == null) return;
+
+            setEpisodesRV(episodes);
+
+        });
+
+    }
     private void showSeasonList() {
         SeasonListDialog dialog = new SeasonListDialog();
         dialog.show(getChildFragmentManager(), "Show Season List Dialog");
@@ -159,8 +198,20 @@ public class TVShowDetailsFragment extends Fragment {
 
             }
 
-
         }
+    }
+    private void setEpisodesRV(List<Episode> episodes){
+        seasonBtn.setVisibility(View.VISIBLE);
+        episodesAdapter = new EpisodeTVShowAdapter(episodes);
+        rv.setLayoutManager(new LinearLayoutManager(requireContext()));
+        rv.setAdapter(episodesAdapter);
+    }
+    private void setSimilarTvShows(List<TVShow> tvShows){
+        seasonBtn.setVisibility(View.GONE);
+
+        similarAdapter = new SimilarTVShowAdapter(tvShows);
+        rv.setLayoutManager(new GridLayoutManager(requireContext(),3));
+        rv.setAdapter(similarAdapter);
 
 
     }

@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pinayflix.R;
-import com.example.pinayflix.adapter.recyclerview.tvshow.SeasonsTVShowAdapter;
+import com.example.pinayflix.adapter.recyclerview.tvshow.SeasonsListAdapter;
 import com.example.pinayflix.callback.OnSeasonSelect;
 import com.example.pinayflix.databinding.LayoutSeasonListBinding;
 import com.example.pinayflix.viewmodel.TVShowDetailsFragmentViewModel;
@@ -24,7 +24,7 @@ public class SeasonListDialog extends DialogFragment implements OnSeasonSelect {
     private LayoutSeasonListBinding binder;
     private ImageButton closeBtn;
     private RecyclerView seasonsRv;
-    private SeasonsTVShowAdapter adapter;
+    private SeasonsListAdapter adapter;
     private TVShowDetailsFragmentViewModel viewModel;
 
     @Override
@@ -52,7 +52,7 @@ public class SeasonListDialog extends DialogFragment implements OnSeasonSelect {
         snapHelper.attachToRecyclerView(seasonsRv);
 
         viewModel.getSeasons().observe(getViewLifecycleOwner(),seasons -> {
-            adapter = new SeasonsTVShowAdapter(seasons,this);
+            adapter = new SeasonsListAdapter(seasons,this);
             seasonsRv.setAdapter(adapter);
             viewModel.getSelectedSeason().observe(getViewLifecycleOwner(),selectedSeason ->{
                 adapter.setSelected(selectedSeason);

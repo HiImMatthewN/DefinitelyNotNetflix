@@ -5,13 +5,13 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.pinayflix.model.datamodel.trailer.Trailer;
-import com.example.pinayflix.model.datamodel.trailer.TrailerResult;
 import com.example.pinayflix.model.datamodel.movie.Movie;
 import com.example.pinayflix.model.datamodel.movie.MovieDetails;
 import com.example.pinayflix.model.datamodel.movie.MovieResult;
 import com.example.pinayflix.model.datamodel.review.Review;
 import com.example.pinayflix.model.datamodel.review.ReviewResult;
+import com.example.pinayflix.model.datamodel.trailer.Trailer;
+import com.example.pinayflix.model.datamodel.trailer.TrailerResult;
 import com.example.pinayflix.network.MovieService;
 
 import java.util.List;
@@ -48,6 +48,7 @@ public class MovieRepository {
 
     //Reviews
     private MutableLiveData<List<Review>> reviewsLiveData;
+    private MutableLiveData<List<Movie>> recoMovieLiveData;
 
 
     private String TAG = "MovieRepository";
@@ -65,7 +66,7 @@ public class MovieRepository {
         latestMovieLiveData = new MutableLiveData<>();
         movieDetailsLiveData = new MutableLiveData<>();
         reviewsLiveData = new MutableLiveData<>();
-
+        recoMovieLiveData = new MutableLiveData<>();
         this.movieService = movieService;
 
 
@@ -309,8 +310,23 @@ public class MovieRepository {
                 Log.d(TAG, "onFailure: Requesting Reviews failed" + t.getMessage());
             }
         });
+    }
+    public void requestRecos(int tvId){
+        Log.d(TAG, "requestRecos: Requesting TV Show ");
+        movieService.getRecommendations(tvId).enqueue(new Callback<MovieResult>() {
+            @Override
+            public void onResponse(Call<MovieResult> call, Response<MovieResult> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    recoMovieLiveData.postValue(response.body().getMovies());
+                    Log.d(TAG, "onResponse: GET Movie Recommendations success");
+                }
+            }
 
-
+            @Override
+            public void onFailure(Call<MovieResult> call, Throwable t) {
+                Log.d(TAG, "Getting TV Show Recommendations failed: " + t.getMessage());
+            }
+        });
 
     }
 
@@ -355,5 +371,8 @@ public class MovieRepository {
     }
     public LiveData<List<Review>> getReviewsLiveData(){
         return reviewsLiveData;
+    }
+    public LiveData<List<Movie>> getMovieRecommendations(){
+        return recoMovieLiveData;
     }
 }

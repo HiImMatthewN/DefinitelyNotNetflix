@@ -13,6 +13,12 @@ public class Episode {
     private String name;
     @SerializedName("overview")
     private String overview;
+    @SerializedName("still_path")
+    private String stillPath;
+
+    public String getStillPath() {
+        return stillPath;
+    }
 
     public String getAirDate() {
         return airDate;

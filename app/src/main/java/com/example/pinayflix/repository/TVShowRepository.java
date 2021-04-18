@@ -39,7 +39,7 @@ public class TVShowRepository {
     private MutableLiveData<TVShowDetails> tvShowDetailsLiveData;
 
     private MutableLiveData<Season> tvShowSeasonLiveData;
-
+    private MutableLiveData<List<TVShow>> recoTvShowLiveData;
 
     private String TAG = "TVShowRepository";
 
@@ -58,6 +58,7 @@ public class TVShowRepository {
         requestNewTvShows = new MutableLiveData<>();
         tvShowDetailsLiveData = new MutableLiveData<>();
         tvShowSeasonLiveData = new MutableLiveData<>();
+        recoTvShowLiveData = new MutableLiveData<>();
 
     }
 
@@ -256,6 +257,7 @@ public class TVShowRepository {
                     tvShowDetailsLiveData.postValue(response.body());
                     Log.d(TAG, "onResponse: GET TVShowDetails success");
                 }
+
             }
 
             @Override
@@ -286,7 +288,27 @@ public class TVShowRepository {
 
     }
 
+    public void requestRecos(int tvId){
+        Log.d(TAG, "requestRecos: Requesting TV Show ");
+        tvShowService.getRecommendations(tvId).enqueue(new Callback<TVShowResult>() {
+            @Override
+            public void onResponse(Call<TVShowResult> call, Response<TVShowResult> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    recoTvShowLiveData.postValue(response.body().getTvShows());
+                    Log.d(TAG, "onResponse: GET TV Recommendations success");
+                }else{
+                    Log.d(TAG, "onResponse: GET TV Recommendations failed" + (response.body() == null));
 
+                }
+            }
+
+            @Override
+            public void onFailure(Call<TVShowResult> call, Throwable t) {
+                Log.d(TAG, "Getting TV Show Recommendations failed: " + t.getMessage());
+            }
+        });
+
+    }
 
     public LiveData<List<TVShow>> getPopularTvShowsLiveData() {
         return popularTvShowsLiveData;
@@ -326,5 +348,8 @@ public class TVShowRepository {
 
     public LiveData<Season> getTVShowSeasonLiveData(){
         return tvShowSeasonLiveData;
+    }
+    public LiveData<List<TVShow>> getRecommendationsLiveData(){
+        return  recoTvShowLiveData;
     }
 }

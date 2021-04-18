@@ -1,5 +1,6 @@
 package com.example.pinayflix.adapter.recyclerview.tvshow;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +17,12 @@ import com.example.pinayflix.model.datamodel.tvshow.Season;
 
 import java.util.List;
 
-public class SeasonsTVShowAdapter extends RecyclerView.Adapter<SeasonsTVShowAdapter.SeasonsTVShowViewHolder> {
+public class SeasonsListAdapter extends RecyclerView.Adapter<SeasonsListAdapter.SeasonsTVShowViewHolder> {
     private List<Season> data;
     private OnSeasonSelect callback;
     private int selectedSeason;
-    public SeasonsTVShowAdapter(List<Season> data, OnSeasonSelect cb) {
+    private static final String TAG = "SeasonsListAdapter";
+    public SeasonsListAdapter(List<Season> data, OnSeasonSelect cb) {
         this.data = data;
         this.callback = cb;
     }
@@ -40,8 +42,12 @@ public class SeasonsTVShowAdapter extends RecyclerView.Adapter<SeasonsTVShowAdap
     public void onBindViewHolder(@NonNull SeasonsTVShowViewHolder holder, int position) {
         holder.seasonTv.setText(data.get(position).getName());
         holder.bind(Integer.parseInt(data.get(position).getSeasonNumber()));
-        if(Integer.parseInt(data.get(position).getSeasonNumber()) == selectedSeason)
+        if(Integer.parseInt(data.get(position).getSeasonNumber()) == selectedSeason){
+            Log.d(TAG, "Season " + data.get(position).getSeasonNumber() + " At position " + position);
             holder.seasonTv.setTextColor(ContextCompat.getColor(holder.itemView.getContext(),R.color.netflix_white));
+        }else
+            holder.seasonTv.setTextColor(ContextCompat.getColor(holder.itemView.getContext(),R.color.netflix_category_not_selected));
+
     }
 
     @Override

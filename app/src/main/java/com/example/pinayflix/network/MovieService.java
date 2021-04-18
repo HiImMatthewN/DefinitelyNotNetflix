@@ -38,4 +38,7 @@ public interface MovieService {
     @GET("movie/{movie_id}/reviews")
     Call<ReviewResult> getMovieReviews(@Path("movie_id") int movieId);
 
+    @GET("movie/{movie_id}/recommendations")
+    Call<MovieResult> getRecommendations(@Path("movie_id")int movieId);
+
 }

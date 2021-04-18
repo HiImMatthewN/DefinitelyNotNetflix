@@ -34,6 +34,7 @@
         android:text="My List"
         android:textColor="@color/netflix_white"
         android:fontFamily="@font/main_font"
+        android:textSize="12sp"
 
         app:layout_constraintBottom_toBottomOf="@+id/playTrailerBtn"
         app:layout_constraintEnd_toStartOf="@+id/playTrailerBtn"
@@ -49,7 +50,7 @@
         android:drawableTop="@drawable/ic_details"
         android:text="Info"
         android:fontFamily="@font/main_font"
-
+        android:textSize="12sp"
         android:textColor="@color/netflix_white"
         app:layout_constraintBottom_toBottomOf="@+id/playTrailerBtn"
         app:layout_constraintEnd_toEndOf="parent"
@@ -59,13 +60,13 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/playTrailerBtn"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:background="@drawable/bg_button_enable"
         android:fontFamily="@font/main_font"
         android:minWidth="0dp"
+        android:drawablePadding="8dp"
         android:paddingStart="16dp"
-
         android:paddingEnd="16dp"
         android:text="Play"
         app:layout_constraintVertical_bias=".95"

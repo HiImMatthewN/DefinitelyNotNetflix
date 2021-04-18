@@ -9,6 +9,9 @@
     android:orientation="vertical">
 
     <androidx.recyclerview.widget.RecyclerView
+        android:background="@android:color/transparent"
+        android:requiresFadingEdge="vertical"
+        android:fadingEdgeLength="96dp"
         android:id="@+id/seasonList"
         android:layout_width="match_parent"
         android:layout_height="0dp"

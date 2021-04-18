@@ -34,4 +34,7 @@ public interface TVShowService {
     @GET("tv/{tv_id}/season/{season_number}")
     Call<Season> getSeason(@Path("tv_id") int tvId,@Path("season_number") int seasonNum);
 
+    @GET("tv/{tv_id}/recommendations")
+    Call<TVShowResult> getRecommendations(@Path("tv_id")int tvId);
+
 }

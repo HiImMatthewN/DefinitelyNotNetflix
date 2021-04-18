@@ -1,112 +1,217 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    android:background="@android:color/transparent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/black">
+    android:layout_height="match_parent">
 
-    <com.example.pinayflix.ui.custom.FadingImageView
-        android:id="@+id/backDropIV"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:adjustViewBounds="true"
-
-        android:fadingEdgeLength="160dp"
-        app:layout_constraintDimensionRatio="16:9"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/moviePoster"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="16dp"
-        android:background="@android:color/transparent"
-        app:layout_constraintBottom_toBottomOf="@id/backDropIV"
-        app:layout_constraintDimensionRatio="3:4"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintWidth_percent=".25" />
-
-    <TextView
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:fontFamily="@font/main_font"
-        android:text="Average Vote:"
-        android:textColor="@color/netflix_white"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@id/ratingBar"
-        app:layout_constraintStart_toStartOf="@id/ratingBar" />
+        android:background="@android:color/black">
 
-    <RatingBar
-        android:layout_marginStart="8dp"
-        android:id="@+id/ratingBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:isIndicator="true"
-        android:numStars="5"
-        android:progressTint="@color/netflix_red"
-        android:secondaryProgressTint="@android:color/transparent"
-        app:layout_constraintBottom_toBottomOf="@id/moviePoster"
-        app:layout_constraintEnd_toEndOf="@id/overViewTv"
-        app:layout_constraintStart_toEndOf="@id/moviePoster" />
+        <com.example.pinayflix.ui.custom.FadingImageView
+            android:id="@+id/backDropIV"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:adjustViewBounds="true"
 
-    <com.example.pinayflix.ui.custom.ExpandableTextView
-        android:id="@+id/overViewTv"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|end"
-        android:fontFamily="@font/main_font"
-        android:justificationMode="inter_word"
-        android:text="Overview"
-        android:textColor="@color/netflix_white"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/backDropIV"
-        app:layout_constraintWidth_percent=".9" />
+            android:fadingEdgeLength="160dp"
+            app:layout_constraintDimensionRatio="16:9"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <com.example.pinayflix.ui.custom.AutoScrollViewPager
-        android:id="@+id/reviewsVP"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:overScrollMode="never"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="4:4"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/overViewTv"
-        app:layout_constraintWidth_percent=".75"
+        <ImageView
+            android:id="@+id/moviePoster"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="16dp"
+            android:background="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="@id/backDropIV"
+            app:layout_constraintDimensionRatio="3:4"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintWidth_percent=".25" />
 
-        />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:fontFamily="@font/main_font"
+            android:text="Average Vote:"
+            android:textColor="@color/netflix_white"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@id/ratingBar"
+            app:layout_constraintStart_toStartOf="@id/ratingBar" />
 
-    <TextView
-        android:id="@+id/noReviewsMsg"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/main_font"
-        android:gravity="center"
-        android:text="No Reviews"
-        android:textColor="@color/netflix_btn_disable"
-        android:textSize="16sp"
-        android:textStyle="italic"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/reviewsVP"
-        app:layout_constraintEnd_toEndOf="@id/reviewsVP"
-        app:layout_constraintStart_toStartOf="@id/reviewsVP"
-        app:layout_constraintTop_toTopOf="@id/reviewsVP"
+        <RatingBar
+            android:id="@+id/ratingBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:isIndicator="true"
+            android:numStars="5"
+            android:progressTint="@color/netflix_red"
+            android:secondaryProgressTint="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="@id/moviePoster"
+            app:layout_constraintEnd_toEndOf="@id/overViewTv"
+            app:layout_constraintStart_toEndOf="@id/moviePoster" />
 
-        />
+        <com.example.pinayflix.ui.custom.ExpandableTextView
+            android:id="@+id/overViewTv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:fontFamily="@font/main_font"
+            android:justificationMode="inter_word"
+            android:text="Overview"
+            android:textColor="@color/netflix_white"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/backDropIV"
+            app:layout_constraintWidth_percent=".9" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent=".4" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/myListBtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/transparent"
+            android:drawableTop="@drawable/ic_add"
+            android:fontFamily="@font/main_font"
+            android:text="My list"
+            android:textColor="@color/netflix_white"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toStartOf="@+id/rateBtn"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@id/overViewTv"
+            app:layout_constraintTop_toBottomOf="@id/overViewTv" />
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/rateBtn"
+            android:layout_width="0dp"
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:drawableTop="@drawable/ic_rate"
+            android:fontFamily="@font/main_font"
+            android:text="Rate"
+            android:textColor="@color/netflix_white"
+
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@id/myListBtn"
+            app:layout_constraintEnd_toStartOf="@+id/shareBtn"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/myListBtn"
+            app:layout_constraintTop_toTopOf="@id/myListBtn" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/shareBtn"
+            android:layout_width="0dp"
+
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:drawableTop="@drawable/ic_share"
+            android:fontFamily="@font/main_font"
+
+            android:text="Rate"
+            android:textColor="@color/netflix_white"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@id/myListBtn"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/guideline3"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/rateBtn"
+            app:layout_constraintTop_toTopOf="@id/myListBtn" />
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/netflix_gray"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/myListBtn" />
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clipToPadding="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/divider"
+            app:tabBackground="@color/netflix_black"
+            app:tabGravity="start"
+            app:tabIndicatorColor="@color/netflix_red"
+            app:tabIndicatorGravity="top"
+            app:tabIndicatorHeight="4dp"
+
+            app:tabMode="auto"
+            app:tabSelectedTextColor="@color/netflix_category_selected"
+            app:tabTextAppearance="@style/MyTabLayoutTextAppearance"
+            app:tabTextColor="@color/netflix_category_not_selected" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/movieDetailsRV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tabLayout"
+            app:spanCount="3" />
+
+        <com.example.pinayflix.ui.custom.AutoScrollViewPager
+            android:id="@+id/reviewsVP"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:overScrollMode="never"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="4:4"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/overViewTv"
+            app:layout_constraintWidth_percent=".75"
+
+            />
+
+        <TextView
+            android:id="@+id/noReviewsMsg"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/main_font"
+            android:gravity="center"
+            android:text="No Reviews"
+            android:textColor="@color/netflix_btn_disable"
+            android:textSize="16sp"
+            android:textStyle="italic"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/reviewsVP"
+            app:layout_constraintEnd_toEndOf="@id/reviewsVP"
+            app:layout_constraintStart_toStartOf="@id/reviewsVP"
+            app:layout_constraintTop_toTopOf="@id/reviewsVP"
+
+            />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".4" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".65" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

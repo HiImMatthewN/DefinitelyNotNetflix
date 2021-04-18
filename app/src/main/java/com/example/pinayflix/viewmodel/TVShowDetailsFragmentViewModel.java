@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.pinayflix.model.datamodel.tvshow.Episode;
 import com.example.pinayflix.model.datamodel.tvshow.Season;
+import com.example.pinayflix.model.datamodel.tvshow.TVShow;
 import com.example.pinayflix.model.datamodel.tvshow.TVShowDetails;
 import com.example.pinayflix.repository.TVShowRepository;
 import com.example.pinayflix.ui.fragments.TVShowDetailsFragment;
@@ -44,7 +45,9 @@ public class TVShowDetailsFragmentViewModel extends ViewModel {
         tvShowRepository.requestTvShowDetails(tvId);
 
     }
-
+    public void requestSimilarTvShows(){
+        tvShowRepository.requestRecos(tvId);
+    }
     public void requestSeason(int seasonNum) {
         tvShowRepository.requestTvShowSeason(tvId, seasonNum);
         currentSelectedSeason.postValue(seasonNum);
@@ -74,6 +77,7 @@ public class TVShowDetailsFragmentViewModel extends ViewModel {
     public LiveData<List<Episode>> getEpisodes(){
         LiveData<Season> seasonLiveData = tvShowRepository.getTVShowSeasonLiveData();
         seasonLiveData.observeForever(season -> {
+
             episodesLiveData.postValue(season.getEpisodes());
         });
         return episodesLiveData;
@@ -88,5 +92,8 @@ public class TVShowDetailsFragmentViewModel extends ViewModel {
         });
 
         return episodeRunTimeLiveData;
+    }
+    public LiveData<List<TVShow>> getSimilarTVShows(){
+       return tvShowRepository.getRecommendationsLiveData();
     }
 }

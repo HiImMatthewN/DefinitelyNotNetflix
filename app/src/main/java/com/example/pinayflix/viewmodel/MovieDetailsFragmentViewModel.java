@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateHandle;
 import androidx.lifecycle.ViewModel;
 
+import com.example.pinayflix.model.datamodel.movie.Movie;
 import com.example.pinayflix.model.datamodel.movie.MovieDetails;
 import com.example.pinayflix.model.datamodel.review.Review;
 import com.example.pinayflix.repository.MovieRepository;
@@ -38,6 +39,7 @@ public class MovieDetailsFragmentViewModel extends ViewModel {
 
         requestMovieDetails(movieId);
         requestReviews(movieId);
+        requestSimilarMovies(movieId);
     }
     private void requestReviews(int movieId){
         movieRepository.requestReviews(movieId);
@@ -45,7 +47,11 @@ public class MovieDetailsFragmentViewModel extends ViewModel {
     private void requestMovieDetails(int movieId){
         movieRepository.requestMovieDetails(movieId);
     }
+    private void requestSimilarMovies(int movieId){
+        movieRepository.requestRecos(movieId);
 
+
+    }
 
 
 
@@ -73,5 +79,8 @@ public class MovieDetailsFragmentViewModel extends ViewModel {
 
     public Review getReviewFromPos(int pos){
         return reviews.get(pos);
+    }
+    public LiveData<List<Movie>> getSimilarMovies(){
+       return movieRepository.getMovieRecommendations();
     }
 }
