@@ -1,13 +1,10 @@
 package com.example.pinayflix.utitlies;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
-
 import com.example.pinayflix.model.datamodel.Genre;
 
 import java.util.ArrayList;
 
-public class MovieUtils {
+public class Utils {
     public static String getGenreNameFromId(int id) {
         for (Genre genre : getList()) {
             if (id == genre.getId())
@@ -44,13 +41,5 @@ public class MovieUtils {
 
     }
 
-    public static <T> void observeOnce(final LiveData<T> liveData, final Observer<T> observer) {
-        liveData.observeForever(new Observer<T>() {
-            @Override
-            public void onChanged(T t) {
-                liveData.removeObserver(this);
-                observer.onChanged(t);
-            }
-        });
-    }
+
 }

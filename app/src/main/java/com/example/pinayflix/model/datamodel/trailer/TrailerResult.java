@@ -1,20 +1,20 @@
-package com.example.pinayflix.model.datamodel;
+package com.example.pinayflix.model.datamodel.trailer;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 
-public class VideoResult {
+public class TrailerResult {
     @SerializedName("id")
     private int id;
     @SerializedName("results")
-    private ArrayList<Video> videos;
+    private ArrayList<Trailer> trailers;
 
     public int getId() {
         return id;
     }
 
-    public ArrayList<Video> getVideos() {
-        return videos;
+    public ArrayList<Trailer> getTrailers() {
+        return trailers;
     }
 }

@@ -10,27 +10,20 @@ import com.example.pinayflix.model.datamodel.movie.MovieDetails;
 import com.example.pinayflix.model.datamodel.movie.MovieResult;
 import com.example.pinayflix.model.datamodel.review.Review;
 import com.example.pinayflix.model.datamodel.review.ReviewResult;
-import com.example.pinayflix.model.datamodel.Video;
-import com.example.pinayflix.model.datamodel.VideoResult;
+import com.example.pinayflix.model.datamodel.trailer.Trailer;
+import com.example.pinayflix.model.datamodel.trailer.TrailerResult;
 import com.example.pinayflix.network.MovieService;
 
-import java.io.IOException;
 import java.util.List;
 
-import okhttp3.HttpUrl;
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
+import javax.inject.Inject;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MovieRepository {
-    private final String API_KEY = "1a9be3fd53844f172e7fb74a75a6c5fd";
-    private final String BASE_URL = "https://api.themoviedb.org/3/";
-    private Retrofit retrofit;
+
     private MovieService movieService;
 
 
@@ -45,7 +38,7 @@ public class MovieRepository {
     private MutableLiveData<Movie> latestMovieLiveData;
 
     //Video
-    private MutableLiveData<List<Video>> movieVideosLiveData;
+    private MutableLiveData<List<Trailer>> movieVideosLiveData;
 
     //LiveData for Updating
     private MutableLiveData<List<Movie>> requestNewMoviesLiveData;
@@ -55,11 +48,13 @@ public class MovieRepository {
 
     //Reviews
     private MutableLiveData<List<Review>> reviewsLiveData;
+    private MutableLiveData<List<Movie>> recoMovieLiveData;
 
 
     private String TAG = "MovieRepository";
 
-    public MovieRepository() {
+    @Inject
+    public MovieRepository(MovieService movieService) {
         popularMoviesLiveData = new MutableLiveData<>();
         upcomingMoviesLiveData = new MutableLiveData<>();
         nowPlayingLiveData = new MutableLiveData<>();
@@ -71,30 +66,12 @@ public class MovieRepository {
         latestMovieLiveData = new MutableLiveData<>();
         movieDetailsLiveData = new MutableLiveData<>();
         reviewsLiveData = new MutableLiveData<>();
+        recoMovieLiveData = new MutableLiveData<>();
+        this.movieService = movieService;
 
-        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(this::addApiKeyToRequests)
-                .build();
-        retrofit = new Retrofit.Builder()
-                .client(client)
-
-                .baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create())
-                .build();
-        movieService = retrofit.create(MovieService.class);
 
     }
 
-    private okhttp3.Response addApiKeyToRequests(Interceptor.Chain chain) {
-        Request.Builder request = chain.request().newBuilder();
-        HttpUrl originalHttp = chain.request().url();
-        HttpUrl newUrl = originalHttp.newBuilder().addQueryParameter("api_key", API_KEY).build();
-        request.url(newUrl);
-        try {
-            return chain.proceed(request.build());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     public void requestPopularMovies(int page) {
         movieService.getPopularMovies(String.valueOf(page))
@@ -282,18 +259,18 @@ public class MovieRepository {
     }
 
     public void requestVideos(int movieId) {
-        movieService.getVideos(movieId).enqueue(new Callback<VideoResult>() {
+        movieService.getTrailer(movieId).enqueue(new Callback<TrailerResult>() {
             @Override
-            public void onResponse(Call<VideoResult> call, Response<VideoResult> response) {
+            public void onResponse(Call<TrailerResult> call, Response<TrailerResult> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    movieVideosLiveData.postValue(response.body().getVideos());
+                    movieVideosLiveData.postValue(response.body().getTrailers());
                     Log.d(TAG, "onResponse: Video Retrieve Success");
 
                 }
             }
 
             @Override
-            public void onFailure(Call<VideoResult> call, Throwable t) {
+            public void onFailure(Call<TrailerResult> call, Throwable t) {
                 Log.d(TAG, "onFailure: Request Failed" + t.getMessage());
 
             }
@@ -333,8 +310,23 @@ public class MovieRepository {
                 Log.d(TAG, "onFailure: Requesting Reviews failed" + t.getMessage());
             }
         });
+    }
+    public void requestRecos(int tvId){
+        Log.d(TAG, "requestRecos: Requesting TV Show ");
+        movieService.getRecommendations(tvId).enqueue(new Callback<MovieResult>() {
+            @Override
+            public void onResponse(Call<MovieResult> call, Response<MovieResult> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    recoMovieLiveData.postValue(response.body().getMovies());
+                    Log.d(TAG, "onResponse: GET Movie Recommendations success");
+                }
+            }
 
-
+            @Override
+            public void onFailure(Call<MovieResult> call, Throwable t) {
+                Log.d(TAG, "Getting TV Show Recommendations failed: " + t.getMessage());
+            }
+        });
 
     }
 
@@ -366,11 +358,11 @@ public class MovieRepository {
         return romanceMoviesLiveData;
     }
 
-    public LiveData<List<Video>> getMovieVideos() {
+    public LiveData<List<Trailer>> getMovieTrailerLiveData() {
         return movieVideosLiveData;
     }
 
-    public LiveData<List<Movie>> getRequestedMovies() {
+    public LiveData<List<Movie>> getRequestedNewMoviesLiveData() {
         return requestNewMoviesLiveData;
     }
 
@@ -379,5 +371,8 @@ public class MovieRepository {
     }
     public LiveData<List<Review>> getReviewsLiveData(){
         return reviewsLiveData;
+    }
+    public LiveData<List<Movie>> getMovieRecommendations(){
+        return recoMovieLiveData;
     }
 }

@@ -1,6 +1,7 @@
-package com.example.pinayflix.adapter.recyclerview;
+package com.example.pinayflix.adapter.recyclerview.tvshow;
 
 import android.content.res.Resources;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,34 +14,39 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.pinayflix.MovieClassification;
+import com.example.pinayflix.DataGenre;
 import com.example.pinayflix.R;
-import com.example.pinayflix.callback.OnMovieRequest;
+import com.example.pinayflix.callback.OnTVShowRequest;
 import com.example.pinayflix.databinding.ItemCategoryBinding;
-import com.example.pinayflix.model.datamodel.movie.Movie;
-import com.example.pinayflix.model.uimodel.MovieCategoryModel;
+import com.example.pinayflix.model.datamodel.tvshow.TVShow;
+import com.example.pinayflix.model.uimodel.TVShowCategoryModel;
 
 import java.util.ArrayList;
 
-public class ParentMovieAdapter extends RecyclerView.Adapter<ParentMovieAdapter.ParentMovieViewHolder> implements OnMovieRequest {
-    private ArrayList<MovieCategoryModel> data;
-    private String TAG = "ParentMovieAdapter";
-    private MutableLiveData<MovieClassification> movieClassificationMutableLiveData;
-    private MutableLiveData<Movie> movieSelectedLiveData;
-    private MovieClassification requestingMovieClassification;
-    public ParentMovieAdapter() {
-        movieClassificationMutableLiveData = new MutableLiveData<>();
-        movieSelectedLiveData = new MutableLiveData<>();
+public class ParentTVShowAdapter extends RecyclerView.Adapter<ParentTVShowAdapter.ParentTVViewHolder> implements OnTVShowRequest {
+    private ArrayList<TVShowCategoryModel> data;
+    private String TAG = "ParentTVShowdapter";
+    private MutableLiveData<DataGenre> dataGenreMutableLiveData;
+    private MutableLiveData<TVShow> tvShowSelectedLiveData;
+    private DataGenre requestingDataGenre;
+    public ParentTVShowAdapter() {
+        dataGenreMutableLiveData = new MutableLiveData<>();
+        tvShowSelectedLiveData = new MutableLiveData<>();
         data = new ArrayList<>();
+        notifyDataSetChanged();
+
     }
 
-    public void insertData(MovieCategoryModel categoryModel) {
+    public void insertData(TVShowCategoryModel categoryModel) {
             data.add(categoryModel);
             notifyItemInserted(data.indexOf(categoryModel));
     }
+
     public int getAdapterPosition(){
+
         for (int i = 0;i<data.size();i++){
-            if(data.get(i).getCategoryName().equals(requestingMovieClassification)){
+            if(data.get(i).getCategoryName().equals(requestingDataGenre)){
+                Log.d(TAG, "getAdapterPosition: Requesing Classification " + requestingDataGenre);
                 return i;
 
             }
@@ -48,13 +54,13 @@ public class ParentMovieAdapter extends RecyclerView.Adapter<ParentMovieAdapter.
         return 0;
     }
     @Override
-    public void onMovieSelected(Movie movie) {
-        movieSelectedLiveData.postValue(movie);
+    public void onTVShowSelect(TVShow tvShow) {
+        tvShowSelectedLiveData.postValue(tvShow);
     }
 
     @NonNull
     @Override
-    public ParentMovieViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ParentTVViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_category, parent, false);
        ItemCategoryBinding binder =  ItemCategoryBinding.bind(view);
 
@@ -62,15 +68,15 @@ public class ParentMovieAdapter extends RecyclerView.Adapter<ParentMovieAdapter.
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
         layoutParams.height = (int) (parent.getHeight() * 0.250);
         view.setLayoutParams(layoutParams);
-        return new ParentMovieViewHolder(binder);
+        return new ParentTVViewHolder(binder);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ParentMovieViewHolder holder, int position) {
-        MovieCategoryModel categoryModel = data.get(position);
-        ChildMovieAdapter adapter = new ChildMovieAdapter(categoryModel, this);
+    public void onBindViewHolder(@NonNull ParentTVViewHolder holder, int position) {
+        TVShowCategoryModel categoryModel = data.get(position);
+        ChildTVShowAdapter adapter = new ChildTVShowAdapter(categoryModel, this);
 
-        RecyclerView moviesRV = holder.movies;
+        RecyclerView tvShowsRV = holder.tvShows;
         TextView category = holder.category;
         SwipeRefreshLayout swipeRefreshLayout = holder.swipeRefreshLayout;
         Resources res = holder.itemView.getResources();
@@ -80,7 +86,7 @@ public class ParentMovieAdapter extends RecyclerView.Adapter<ParentMovieAdapter.
 
 
         category.setText(categoryModel.getCategoryName().toString());
-        moviesRV.setAdapter(adapter);
+        tvShowsRV.setAdapter(adapter);
         holder.setRVScrollListener(categoryModel);
     }
 
@@ -89,38 +95,38 @@ public class ParentMovieAdapter extends RecyclerView.Adapter<ParentMovieAdapter.
         return data.size();
     }
 
-    public LiveData<MovieClassification> onRequestLiveData() {
-        return movieClassificationMutableLiveData;
+    public LiveData<DataGenre> onRequestLiveData() {
+        return dataGenreMutableLiveData;
     }
-    public LiveData<Movie> getSelectedMovie(){
-        return movieSelectedLiveData;
+    public LiveData<TVShow> getSelectedTvShow(){
+        return tvShowSelectedLiveData;
     }
 
-    class ParentMovieViewHolder extends RecyclerView.ViewHolder {
+    class ParentTVViewHolder extends RecyclerView.ViewHolder {
         private TextView category;
-        private RecyclerView movies;
+        private RecyclerView tvShows;
         private SwipeRefreshLayout swipeRefreshLayout;
 
-        public ParentMovieViewHolder(@NonNull ItemCategoryBinding binder) {
+        public ParentTVViewHolder(@NonNull ItemCategoryBinding binder) {
             super(binder.getRoot());
             category = binder.category;
-            movies = binder.movieList;
+            tvShows = binder.dataList;
             swipeRefreshLayout = binder.swipeRefreshLayout;
         }
 
 
-        public void setRVScrollListener(MovieCategoryModel categoryModel) {
-            movies.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        public void setRVScrollListener(TVShowCategoryModel categoryModel) {
+            tvShows.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                     super.onScrollStateChanged(recyclerView, newState);
-                    LinearLayoutManager layoutManager = ((LinearLayoutManager)movies.getLayoutManager());
+                    LinearLayoutManager layoutManager = ((LinearLayoutManager)tvShows.getLayoutManager());
                     if(layoutManager == null ) return;
                     int pos = layoutManager.findLastCompletelyVisibleItemPosition();
-                    int numItems = movies.getAdapter().getItemCount();
+                    int numItems = tvShows.getAdapter().getItemCount();
                     if (pos +1 >= numItems){
-                        requestingMovieClassification = categoryModel.getCategoryName();
-                        movieClassificationMutableLiveData.postValue(categoryModel.getCategoryName());
+                        requestingDataGenre = categoryModel.getCategoryName();
+                        dataGenreMutableLiveData.postValue(categoryModel.getCategoryName());
                         swipeRefreshLayout.setRefreshing(true);
                     }
 

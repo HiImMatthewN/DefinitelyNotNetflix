@@ -1,6 +1,5 @@
-package com.example.pinayflix.adapter.recyclerview;
+package com.example.pinayflix.adapter.recyclerview.tvshow;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,53 +14,52 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
 import com.example.pinayflix.R;
-import com.example.pinayflix.databinding.ItemHighlightedMovieBinding;
-import com.example.pinayflix.model.datamodel.movie.Movie;
+import com.example.pinayflix.databinding.ItemHighlightedBinding;
+import com.example.pinayflix.model.datamodel.tvshow.TVShow;
 import com.example.pinayflix.ui.custom.FadingImageView;
-import com.example.pinayflix.utitlies.MovieUtils;
+import com.example.pinayflix.utitlies.Utils;
 
-public class HighlightedMovieAdapter extends RecyclerView.Adapter<HighlightedMovieAdapter.HighlightedMovieViewHolder> {
-    private Movie highlightedMovie;
+public class HighlightedTVShowAdapter extends RecyclerView.Adapter<HighlightedTVShowAdapter.HighlightedTVShowViewHolder> {
+    private TVShow highlightedTvShow;
     private final String IMAGE_PATH = "https://image.tmdb.org/t/p/w500";
-    private String TAG = "HighlightedMovieAdapter";
-    public HighlightedMovieAdapter() {
+    private String TAG = "HighlightedTVShowAdapter";
+    public HighlightedTVShowAdapter() {
 
     }
 
-    public void insertData(Movie movie) {
-        this.highlightedMovie = movie;
+    public void insertData(TVShow tvShow) {
+        this.highlightedTvShow = tvShow;
         notifyDataSetChanged();
     }
 
     @NonNull
     @Override
-    public HighlightedMovieViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_highlighted_movie, parent, false);
-        ItemHighlightedMovieBinding binder = ItemHighlightedMovieBinding.bind(view);
+    public HighlightedTVShowViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_highlighted, parent, false);
+        ItemHighlightedBinding binder = ItemHighlightedBinding.bind(view);
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
         layoutParams.height = (int) (parent.getHeight() * .65);
         view.setLayoutParams(layoutParams);
-        return new HighlightedMovieViewHolder(binder);
+        return new HighlightedTVShowViewHolder(binder);
 
     }
 
     @Override
-    public void onBindViewHolder(@NonNull HighlightedMovieViewHolder holder, int position) {
-        if (highlightedMovie != null) {
+    public void onBindViewHolder(@NonNull HighlightedTVShowViewHolder holder, int position) {
+        if (highlightedTvShow != null) {
             FadingImageView target = holder.posterIv;
             target.setFadingEdgeLength(360);
             target.setFadeBottom(true);
 
             DrawableCrossFadeFactory factory =
                     new DrawableCrossFadeFactory.Builder().setCrossFadeEnabled(true).build();
-            Glide.with(holder.itemView.getContext()).load(IMAGE_PATH + highlightedMovie.getPosterPath().trim())
+            Glide.with(holder.itemView.getContext()).load(IMAGE_PATH + highlightedTvShow.getPosterPath().trim())
                     .transition(DrawableTransitionOptions.with(factory))
                     .transform(new CenterCrop()).into(target);
 
             StringBuilder stringBuilder = new StringBuilder();
-            Log.d(TAG, "onBindViewHolder: Image path" + IMAGE_PATH + highlightedMovie.getPosterPath());
-            for (Integer id : highlightedMovie.getGenreIds()) {
-                stringBuilder.append(MovieUtils.getGenreNameFromId(id)).append("  ");
+            for (Integer id : highlightedTvShow.getGenreIds()) {
+                stringBuilder.append(Utils.getGenreNameFromId(id)).append("  ");
             }
             holder.genreTv.setText(stringBuilder.toString());
         }
@@ -72,12 +70,12 @@ public class HighlightedMovieAdapter extends RecyclerView.Adapter<HighlightedMov
         return 1;
     }
 
-    class HighlightedMovieViewHolder extends RecyclerView.ViewHolder {
+    class HighlightedTVShowViewHolder extends RecyclerView.ViewHolder {
         private FadingImageView posterIv;
         private TextView genreTv;
         private AppCompatButton addToListBtn;
         private AppCompatButton detailsBtn;
-        public HighlightedMovieViewHolder(@NonNull ItemHighlightedMovieBinding binder) {
+        public HighlightedTVShowViewHolder(@NonNull ItemHighlightedBinding binder) {
             super(binder.getRoot());
             posterIv = binder.postIv;
             genreTv = binder.genreTv;

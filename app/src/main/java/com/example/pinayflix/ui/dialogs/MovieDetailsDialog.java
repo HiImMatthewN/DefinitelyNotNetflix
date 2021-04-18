@@ -24,7 +24,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.pinayflix.R;
 import com.example.pinayflix.databinding.DialogDetailsBinding;
 import com.example.pinayflix.model.datamodel.movie.Movie;
-import com.example.pinayflix.model.datamodel.Video;
+import com.example.pinayflix.model.datamodel.trailer.Trailer;
 import com.example.pinayflix.viewmodel.MainFragmentViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
@@ -77,20 +77,26 @@ public class MovieDetailsDialog extends BottomSheetDialogFragment {
 
         youTubePlayerView = binder.youtubePlayerView;
 
-        enableButton(false);
+        mainFragmentViewModel.enableBtn(false);
 
         getLifecycle().addObserver(youTubePlayerView);
         youTubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
             @Override
             public void onReady(@NonNull YouTubePlayer youTubePlayer) {
                 player = youTubePlayer;
-                enableButton(true);
-
-                playBtn.setOnClickListener( btn->{
-                    playTrailer();
-                });
+            mainFragmentViewModel.enableBtn(true);
             }
         });
+        mainFragmentViewModel.getEnablePlayBtn().observe(getViewLifecycleOwner(),value ->{
+            enableButton(value);
+            if(value)
+            playBtn.setOnClickListener( btn->{
+                playTrailer();
+            });
+
+        });
+
+
         detailsBtn.setOnClickListener(btn ->{
             mainFragmentViewModel.requestMovieDetails(movie.getMovieId());
             dismiss();
@@ -131,20 +137,20 @@ public class MovieDetailsDialog extends BottomSheetDialogFragment {
         youTubePlayerView.setVisibility(View.VISIBLE);
 
 
-        mainFragmentViewModel.requestVideo(movie.getMovieId());
-        mainFragmentViewModel.getMovieVideos().observe(getViewLifecycleOwner(), videos -> {
+        mainFragmentViewModel.requestMovieTrailer(movie.getMovieId());
+        mainFragmentViewModel.getMovieTrailer().observe(getViewLifecycleOwner(), videos -> {
             String videoId = getTrailerYoutubeKey(videos);
             player.loadVideo(videoId, 0);
 
         });
     }
-    private String getTrailerYoutubeKey(List<Video> videos) {
-        for (Video video : videos) {
-            if (video.getType().equals("Trailer"))
-                return video.getKey();
+    private String getTrailerYoutubeKey(List<Trailer> trailers) {
+        for (Trailer trailer : trailers) {
+            if (trailer.getType().equals("Trailer"))
+                return trailer.getKey();
 
         }
-        return videos.get(0).getKey();
+        return trailers.get(0).getKey();
     }
 
     @Override
