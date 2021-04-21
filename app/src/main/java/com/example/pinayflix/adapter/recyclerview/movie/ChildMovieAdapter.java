@@ -16,13 +16,13 @@ import com.example.pinayflix.callback.OnMovieRequest;
 import com.example.pinayflix.databinding.ItemChildBinding;
 import com.example.pinayflix.model.datamodel.movie.Movie;
 import com.example.pinayflix.model.uimodel.MovieCategoryModel;
+import com.example.pinayflix.utitlies.Utils;
 
 import java.util.List;
 
 public class ChildMovieAdapter extends RecyclerView.Adapter<ChildMovieAdapter.ChildMovieViewHolder> {
     private List<Movie> data;
     private String TAG = "ChildMovieAdapter";
-    private final String IMAGE_PATH = "https://image.tmdb.org/t/p/w342";
     private OnMovieRequest callback;
     private RequestManager requestManager;
 
@@ -53,7 +53,7 @@ public class ChildMovieAdapter extends RecyclerView.Adapter<ChildMovieAdapter.Ch
 
         Movie movie = data.get(position);
         ImageView target = holder.posterImageView;
-        requestManager.load(Uri.parse(IMAGE_PATH + movie.getPosterPath()))
+        requestManager.load(Uri.parse(Utils.POSTER_PATH + movie.getPosterPath()))
                 .into(target);
         holder.setOnClick(movie);
 

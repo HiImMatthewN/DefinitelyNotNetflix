@@ -14,13 +14,13 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.example.pinayflix.R;
 import com.example.pinayflix.databinding.ItemSimilarTvShowsBinding;
 import com.example.pinayflix.model.datamodel.movie.Movie;
+import com.example.pinayflix.utitlies.Utils;
 
 import java.util.List;
 
 public class SimilarMovieAdapter extends RecyclerView.Adapter<SimilarMovieAdapter.SimilarMovieViewHolder> {
     private List<Movie> data;
     private String TAG = "SimilarTVShowAdapter";
-    private final String IMAGE_PATH = "https://image.tmdb.org/t/p/w342";
     private RequestManager requestManager;
 
     public SimilarMovieAdapter(List<Movie> tvShows, RequestManager requestManager) {
@@ -44,7 +44,7 @@ public class SimilarMovieAdapter extends RecyclerView.Adapter<SimilarMovieAdapte
         ImageView target = holder.posterImageView;
 
         requestManager
-                .load(Uri.parse(IMAGE_PATH + tvShow.getPosterPath())).transform(new CenterCrop())
+                .load(Uri.parse(Utils.POSTER_PATH + tvShow.getPosterPath())).transform(new CenterCrop())
                 .into(target);
 
     }

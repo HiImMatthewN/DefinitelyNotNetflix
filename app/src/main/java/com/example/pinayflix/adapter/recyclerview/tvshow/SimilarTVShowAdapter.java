@@ -13,13 +13,13 @@ import com.bumptech.glide.RequestManager;
 import com.example.pinayflix.R;
 import com.example.pinayflix.databinding.ItemSimilarTvShowsBinding;
 import com.example.pinayflix.model.datamodel.tvshow.TVShow;
+import com.example.pinayflix.utitlies.Utils;
 
 import java.util.List;
 
 public class SimilarTVShowAdapter extends RecyclerView.Adapter<SimilarTVShowAdapter.SimilarTVShowViewHolder> {
     private List<TVShow> data;
     private String TAG = "SimilarTVShowAdapter";
-    private final String IMAGE_PATH = "https://image.tmdb.org/t/p/w342";
     private RequestManager requestManager;
 
     public SimilarTVShowAdapter(List<TVShow> tvShows, RequestManager requestManager) {
@@ -43,7 +43,7 @@ public class SimilarTVShowAdapter extends RecyclerView.Adapter<SimilarTVShowAdap
         ImageView target = holder.posterImageView;
 
         requestManager
-                .load(Uri.parse(IMAGE_PATH + tvShow.getPosterPath()))
+                .load(Uri.parse(Utils.POSTER_PATH + tvShow.getPosterPath()))
                 .into(target);
 
     }

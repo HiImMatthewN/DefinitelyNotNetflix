@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateHandle;
 import androidx.lifecycle.ViewModel;
 
+import com.example.pinayflix.model.datamodel.review.Review;
 import com.example.pinayflix.model.datamodel.tvshow.Episode;
 import com.example.pinayflix.model.datamodel.tvshow.Season;
 import com.example.pinayflix.model.datamodel.tvshow.TVShow;
@@ -55,11 +56,14 @@ public class TVShowDetailsFragmentViewModel extends ViewModel {
         currentSelectedSeason.postValue(seasonNum);
 
     }
+    public void requestTvShowReviews(){
+        tvShowRepository.requestTvShowReviews(tvId);
+
+    }
 
     public LiveData<TVShow> getTvShowDetails() {
         return tvShowRepository.getTVShowDetails();
     }
-
     public LiveData<List<Season>> getSeasons() {
         LiveData<TVShow> tvShowDetails = tvShowRepository.getTVShowDetails();
         tvShowDetails.observeForever(tvShow -> {
@@ -100,5 +104,8 @@ public class TVShowDetailsFragmentViewModel extends ViewModel {
 
     public LiveData<List<TVShow>> getSimilarTVShows() {
         return tvShowRepository.getRecommendationsLiveData();
+    }
+    public LiveData<List<Review>> getTvShowReviews(){
+        return tvShowRepository.getTvShowReview();
     }
 }

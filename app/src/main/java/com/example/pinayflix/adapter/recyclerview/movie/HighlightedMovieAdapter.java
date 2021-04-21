@@ -20,7 +20,6 @@ import com.example.pinayflix.utitlies.Utils;
 
 public class HighlightedMovieAdapter extends RecyclerView.Adapter<HighlightedMovieAdapter.HighlightedMovieViewHolder> {
     private Movie highlightedMovie;
-    private final String IMAGE_PATH = "https://image.tmdb.org/t/p/w500";
     private String TAG = "HighlightedMovieAdapter";
     private RequestManager requestManager;
 
@@ -54,7 +53,7 @@ public class HighlightedMovieAdapter extends RecyclerView.Adapter<HighlightedMov
 
             DrawableCrossFadeFactory factory =
                     new DrawableCrossFadeFactory.Builder().setCrossFadeEnabled(true).build();
-            requestManager.load(IMAGE_PATH + highlightedMovie.getPosterPath().trim())
+            requestManager.load(Utils.HIGHLIGHTED_IMAGE_PATH + highlightedMovie.getPosterPath().trim())
                     .transition(DrawableTransitionOptions.with(factory))
                     .into(target);
 

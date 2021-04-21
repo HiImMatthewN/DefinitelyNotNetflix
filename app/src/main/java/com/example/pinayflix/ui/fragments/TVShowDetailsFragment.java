@@ -24,13 +24,16 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
 import com.example.pinayflix.adapter.recyclerview.tvshow.EpisodeTVShowAdapter;
 import com.example.pinayflix.adapter.recyclerview.tvshow.SimilarTVShowAdapter;
+import com.example.pinayflix.adapter.recyclerview.tvshow.TVShowReviewsAdapter;
 import com.example.pinayflix.databinding.LayoutDetailsTvshowBinding;
+import com.example.pinayflix.model.datamodel.review.Review;
 import com.example.pinayflix.model.datamodel.tvshow.Episode;
 import com.example.pinayflix.model.datamodel.tvshow.TVShow;
 import com.example.pinayflix.ui.custom.ExpandableTextView;
 import com.example.pinayflix.ui.custom.FadingImageView;
 import com.example.pinayflix.ui.dialogs.ProgressBarDialog;
 import com.example.pinayflix.ui.dialogs.SeasonListDialog;
+import com.example.pinayflix.utitlies.Utils;
 import com.example.pinayflix.viewmodel.TVShowDetailsFragmentViewModel;
 import com.google.android.material.tabs.TabLayout;
 
@@ -44,14 +47,13 @@ import jp.wasabeef.glide.transformations.BlurTransformation;
 @AndroidEntryPoint
 public class TVShowDetailsFragment extends Fragment {
     public static final String DETAILS_KEY = "Details";
-    private final String BACKDROP_IMAGE_PATH = "https://image.tmdb.org/t/p/w500";
-    private final String POSTER_IMAGE_PATH = "https://image.tmdb.org/t/p/w342";
     private LayoutDetailsTvshowBinding binder;
     private ImageView tvShowPoster;
     private FadingImageView backDrop;
     private RatingBar ratingBar;
     private ExpandableTextView overViewTv;
     private TVShowDetailsFragmentViewModel viewModel;
+    private TVShowReviewsAdapter reviewsAdapter;
     private TabLayout tabLayout;
     private AppCompatButton seasonBtn;
     private RecyclerView rv;
@@ -98,6 +100,11 @@ public class TVShowDetailsFragment extends Fragment {
                         viewModel.requestSimilarTvShows();
                     else
                         setSimilarTVShowViewModel();
+                } else if (tab.getPosition() == 1) {
+                    if (viewModel.getTvShowReviews().getValue() == null)
+                        viewModel.requestTvShowReviews();
+                    else
+                        setReviewsViewModel();
                 } else if (tab.getPosition() == 0)
                     if (viewModel.getSimilarTVShows().getValue() == null)
                         viewModel.requestSeason(1);
@@ -131,13 +138,14 @@ public class TVShowDetailsFragment extends Fragment {
 
 
         });
-        setEpisodeViewModel();
-        setSimilarTVShowViewModel();
-
         viewModel.getSelectedSeason().observe(getViewLifecycleOwner(), value -> {
             seasonBtn.setText("Season " + value);
 
         });
+        setEpisodeViewModel();
+        setSimilarTVShowViewModel();
+        setReviewsViewModel();
+
         showHideProgressBar(true);
     }
 
@@ -145,13 +153,13 @@ public class TVShowDetailsFragment extends Fragment {
         DrawableCrossFadeFactory factory =
                 new DrawableCrossFadeFactory.Builder().setCrossFadeEnabled(true).build();
         requestManager.
-                load(BACKDROP_IMAGE_PATH + tvShow.getBackDropPath())
+                load(Utils.HIGHLIGHTED_IMAGE_PATH + tvShow.getBackDropPath())
                 .transition(DrawableTransitionOptions.with(factory))
                 .apply(new RequestOptions().transform(
                         new BlurTransformation(20, 2)))
                 .into(backDrop);
 
-        requestManager.load(POSTER_IMAGE_PATH + tvShow.getPosterPath())
+        requestManager.load(Utils.POSTER_PATH + tvShow.getPosterPath())
                 .apply(new RequestOptions().transform(new RoundedCorners(16)))
                 .into(tvShowPoster);
 
@@ -178,6 +186,15 @@ public class TVShowDetailsFragment extends Fragment {
             setEpisodesRV(episodes);
 
         });
+
+    }
+
+    private void setReviewsViewModel() {
+        viewModel.getTvShowReviews().observe(getViewLifecycleOwner(), reviews -> {
+            if (reviews == null ||reviews.size() == 0)return;
+            setReviewsRV(reviews);
+        });
+
 
     }
 
@@ -208,6 +225,15 @@ public class TVShowDetailsFragment extends Fragment {
         episodesAdapter = new EpisodeTVShowAdapter(episodes, requestManager);
         rv.setLayoutManager(new LinearLayoutManager(requireContext()));
         rv.setAdapter(episodesAdapter);
+    }
+
+    private void setReviewsRV(List<Review> reviews) {
+        seasonBtn.setVisibility(View.GONE);
+        reviewsAdapter = new TVShowReviewsAdapter(reviews);
+        rv.setLayoutManager(new LinearLayoutManager(requireContext()));
+        rv.setAdapter(reviewsAdapter);
+
+
     }
 
     private void setSimilarTvShows(List<TVShow> tvShows) {

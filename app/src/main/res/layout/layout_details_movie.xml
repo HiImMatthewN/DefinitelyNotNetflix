@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView
+    android:overScrollMode="never"
     android:background="@android:color/transparent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -164,22 +165,10 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tabLayout"
+            android:overScrollMode="never"
             app:spanCount="3" />
 
-        <com.example.pinayflix.ui.custom.AutoScrollViewPager
-            android:id="@+id/reviewsVP"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:overScrollMode="never"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="4:4"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/overViewTv"
-            app:layout_constraintWidth_percent=".75"
 
-            />
 
         <TextView
             android:id="@+id/noReviewsMsg"
@@ -192,10 +181,10 @@
             android:textSize="16sp"
             android:textStyle="italic"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@id/reviewsVP"
-            app:layout_constraintEnd_toEndOf="@id/reviewsVP"
-            app:layout_constraintStart_toStartOf="@id/reviewsVP"
-            app:layout_constraintTop_toTopOf="@id/reviewsVP"
+            app:layout_constraintBottom_toBottomOf="@id/movieDetailsRV"
+            app:layout_constraintEnd_toEndOf="@id/movieDetailsRV"
+            app:layout_constraintStart_toStartOf="@id/movieDetailsRV"
+            app:layout_constraintTop_toTopOf="@id/movieDetailsRV"
 
             />
 

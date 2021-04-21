@@ -16,13 +16,13 @@ import com.example.pinayflix.callback.OnTVShowRequest;
 import com.example.pinayflix.databinding.ItemChildBinding;
 import com.example.pinayflix.model.datamodel.tvshow.TVShow;
 import com.example.pinayflix.model.uimodel.TVShowCategoryModel;
+import com.example.pinayflix.utitlies.Utils;
 
 import java.util.List;
 
 public class ChildTVShowAdapter extends RecyclerView.Adapter<ChildTVShowAdapter.ChildTVShowViewHolder> {
     private List<TVShow> data;
     private String TAG = "ChildTVShowAdapter";
-    private final String IMAGE_PATH = "https://image.tmdb.org/t/p/w342";
     private OnTVShowRequest callback;
     private RequestManager requestManager;
 
@@ -57,7 +57,7 @@ public class ChildTVShowAdapter extends RecyclerView.Adapter<ChildTVShowAdapter.
         ImageView target = holder.posterImageView;
 
         requestManager
-                .load(Uri.parse(IMAGE_PATH + tvShow.getPosterPath()))
+                .load(Uri.parse(Utils.POSTER_PATH + tvShow.getPosterPath()))
                 .into(target);
         holder.setOnClick(tvShow);
 

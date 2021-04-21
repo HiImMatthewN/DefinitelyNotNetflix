@@ -16,8 +16,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
@@ -27,6 +25,7 @@ import com.example.pinayflix.R;
 import com.example.pinayflix.databinding.DialogDetailsBinding;
 import com.example.pinayflix.model.datamodel.trailer.Trailer;
 import com.example.pinayflix.model.datamodel.tvshow.TVShow;
+import com.example.pinayflix.utitlies.Utils;
 import com.example.pinayflix.viewmodel.MainFragmentViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
@@ -50,7 +49,6 @@ public class TVShowDetailsDialog extends BottomSheetDialogFragment {
     private MainFragmentViewModel mainFragmentViewModel;
     private TVShow tvShow;
     private static final String TAG = "TVShowDetailsDialog";
-    private final String IMAGE_PATH = "https://image.tmdb.org/t/p/w1280";
 
     public TVShowDetailsDialog(TVShow selectedTvShow) {
         this.tvShow = selectedTvShow;
@@ -112,7 +110,7 @@ public class TVShowDetailsDialog extends BottomSheetDialogFragment {
         RequestOptions requestOptions = new RequestOptions();
         GranularRoundedCorners roundedCorners = new GranularRoundedCorners(48, 48, 0, 0);
         requestOptions = requestOptions.transforms(new CenterCrop(), roundedCorners);
-        Glide.with(requireContext()).load(IMAGE_PATH + tvShow.getBackDropPath()).apply(requestOptions)
+        Glide.with(requireContext()).load(Utils.BACKDROP_PATH + tvShow.getBackDropPath()).apply(requestOptions)
                 .into(backDropIV);
 
     }

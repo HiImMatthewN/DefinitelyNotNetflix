@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.RequestManager;
@@ -19,13 +21,13 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
+import com.example.pinayflix.adapter.recyclerview.movie.MovieReviewAdapter;
 import com.example.pinayflix.adapter.recyclerview.movie.SimilarMovieAdapter;
-import com.example.pinayflix.adapter.viewpager.ReviewVPAdapter;
 import com.example.pinayflix.databinding.LayoutDetailsMovieBinding;
 import com.example.pinayflix.model.datamodel.movie.Movie;
-import com.example.pinayflix.ui.custom.AutoScrollViewPager;
 import com.example.pinayflix.ui.custom.ExpandableTextView;
 import com.example.pinayflix.ui.custom.FadingImageView;
+import com.example.pinayflix.utitlies.Utils;
 import com.example.pinayflix.viewmodel.MovieDetailsFragmentViewModel;
 import com.google.android.material.tabs.TabLayout;
 
@@ -41,17 +43,15 @@ public class MovieDetailsFragment extends Fragment {
     private FadingImageView backDrop;
     private RatingBar ratingBar;
     private ExpandableTextView overViewTv;
-    private AutoScrollViewPager reviewsVP;
-    private ReviewVPAdapter reviewVPAdapter;
+
+
     private TabLayout tabLayout;
     private TextView noReviewsMsg;
     private RecyclerView movieDetailsRV;
     private SimilarMovieAdapter similarMovieAdapter;
     public static final String DETAILS_KEY = "Details";
-    private final String BACKDROP_IMAGE_PATH = "https://image.tmdb.org/t/p/w500";
-    private final String POSTER_IMAGE_PATH = "https://image.tmdb.org/t/p/w342";
-    private MovieDetailsFragmentViewModel movieDetailsFragmentViewModel;
-
+    private MovieDetailsFragmentViewModel viewModel;
+    private MovieReviewAdapter reviewAdapter;
     @Inject
     RequestManager requestManager;
     private String TAG = "MovieDetailsFragment";
@@ -67,7 +67,7 @@ public class MovieDetailsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        movieDetailsFragmentViewModel = new ViewModelProvider(this)
+        viewModel = new ViewModelProvider(this)
                 .get(MovieDetailsFragmentViewModel.class);
 
         moviePoster = binder.moviePoster;
@@ -83,52 +83,47 @@ public class MovieDetailsFragment extends Fragment {
         tabLayout.addTab(tabLayout.newTab().setText("More like this"));
         tabLayout.addTab(tabLayout.newTab().setText("Reviews"));
 
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (tab.getPosition() == 0)
+                    viewModel.requestSimilarMovies();
+                else if (tab.getPosition() == 1)
+                    viewModel.requestReviews();
 
-        //AutoScrollViewPager
-//        reviewsVP = binder.reviewsVP;
-//        reviewsVP.setCycle(true);
-//        reviewsVP.setPagingEnabled(false);
-//        reviewsVP.setInterval(10000);
-//        reviewsVP.startAutoScroll();
-//        reviewsVP.setOffscreenPageLimit(1);
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
 
 
-        movieDetailsFragmentViewModel.getMovieDetails().observe(getViewLifecycleOwner(), movieDetails -> {
+        viewModel.getMovieDetails().observe(getViewLifecycleOwner(), movieDetails -> {
             if (movieDetails != null)
                 setMovieDetailsToUi(movieDetails);
 
         });
-        movieDetailsFragmentViewModel.getReviewsCount().observe(getViewLifecycleOwner(), reviewCount -> {
-//            Log.d(TAG, " Review Count" + reviewCount);
-//
-//            if (reviewCount == 0) {
-//                noReviewsMsg.setVisibility(View.VISIBLE);
-//                Log.d(TAG, "Showing no review message ");
-//            } else {
-//                reviewVPAdapter = new ReviewVPAdapter(getChildFragmentManager(), 1, reviewCount);
-//                reviewsVP.setAdapter(reviewVPAdapter);
-//            }
+        viewModel.getReviews().observe(getViewLifecycleOwner(), reviews -> {
+            if (reviews == null || reviews.size() == 0) return;
+            reviewAdapter = new MovieReviewAdapter(reviews);
+            movieDetailsRV.setLayoutManager(new LinearLayoutManager(requireContext()));
+            movieDetailsRV.setAdapter(reviewAdapter);
 
 
         });
 
-        movieDetailsFragmentViewModel.getSimilarMovies().observe(getViewLifecycleOwner(), similarMovies -> {
-            similarMovieAdapter = new SimilarMovieAdapter(similarMovies,requestManager);
+        viewModel.getSimilarMovies().observe(getViewLifecycleOwner(), similarMovies -> {
+            similarMovieAdapter = new SimilarMovieAdapter(similarMovies, requestManager);
+            movieDetailsRV.setLayoutManager(new GridLayoutManager(requireContext(), 3));
             movieDetailsRV.setAdapter(similarMovieAdapter);
         });
-
-//        reviewsVP.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                if (event.getAction() == MotionEvent.ACTION_UP)
-//                    reviewsVP.startAutoScroll();
-//                else
-//                    reviewsVP.stopAutoScroll();
-//
-//                return true;
-//            }
-//        });
-
 
     }
 
@@ -136,13 +131,13 @@ public class MovieDetailsFragment extends Fragment {
         DrawableCrossFadeFactory factory =
                 new DrawableCrossFadeFactory.Builder().setCrossFadeEnabled(true).build();
 
-        requestManager.load(BACKDROP_IMAGE_PATH + movie.getBackdropPath())
+        requestManager.load(Utils.BACKDROP_PATH + movie.getBackdropPath())
                 .transition(DrawableTransitionOptions.with(factory))
                 .apply(new RequestOptions().transform(
                         new BlurTransformation(20, 2)))
                 .into(backDrop);
 
-        requestManager.load(POSTER_IMAGE_PATH + movie.getPosterPath())
+        requestManager.load(Utils.POSTER_PATH + movie.getPosterPath())
                 .apply(new RequestOptions().transform(new RoundedCorners(16)))
                 .into(moviePoster);
 

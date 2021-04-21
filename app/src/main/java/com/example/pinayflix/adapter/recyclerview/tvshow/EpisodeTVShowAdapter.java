@@ -14,12 +14,12 @@ import com.bumptech.glide.RequestManager;
 import com.example.pinayflix.R;
 import com.example.pinayflix.databinding.ItemEpisodeBinding;
 import com.example.pinayflix.model.datamodel.tvshow.Episode;
+import com.example.pinayflix.utitlies.Utils;
 
 import java.util.List;
 
 public class EpisodeTVShowAdapter extends RecyclerView.Adapter<EpisodeTVShowAdapter.EpisodeTVShowViewHolder> {
     private List<Episode> data;
-    private final String IMAGE_PATH = "https://image.tmdb.org/t/p/w342";
     private RequestManager requestManager;
 
     public EpisodeTVShowAdapter(List<Episode> data, RequestManager requestManager) {
@@ -42,7 +42,7 @@ public class EpisodeTVShowAdapter extends RecyclerView.Adapter<EpisodeTVShowAdap
         holder.episodeName.setText((position + 1) + "." + episode.getName());
         holder.episodeOverView.setText(episode.getOverview());
         requestManager
-                .load(Uri.parse(IMAGE_PATH + episode.getStillPath()))
+                .load(Uri.parse(Utils.POSTER_PATH + episode.getStillPath()))
                 .into(holder.episodePoster);
 
     }

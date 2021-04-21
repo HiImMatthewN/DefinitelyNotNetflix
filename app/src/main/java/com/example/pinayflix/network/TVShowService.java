@@ -1,5 +1,6 @@
 package com.example.pinayflix.network;
 
+import com.example.pinayflix.model.datamodel.review.ReviewResult;
 import com.example.pinayflix.model.datamodel.trailer.TrailerResult;
 import com.example.pinayflix.model.datamodel.tvshow.Season;
 import com.example.pinayflix.model.datamodel.tvshow.TVShow;
@@ -33,6 +34,9 @@ public interface TVShowService {
 
     @GET("tv/{tv_id}/season/{season_number}")
     Call<Season> getSeason(@Path("tv_id") int tvId,@Path("season_number") int seasonNum);
+
+    @GET("tv/{tv_id}/reviews")
+    Call<ReviewResult> getTvShowReviews(@Path("tv_id") int tvShowId);
 
     @GET("tv/{tv_id}/recommendations")
     Call<TVShowResult> getRecommendations(@Path("tv_id")int tvId);
