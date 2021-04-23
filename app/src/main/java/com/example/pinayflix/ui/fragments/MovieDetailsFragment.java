@@ -1,6 +1,7 @@
 package com.example.pinayflix.ui.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -44,6 +46,9 @@ public class MovieDetailsFragment extends Fragment {
     private RatingBar ratingBar;
     private ExpandableTextView overViewTv;
 
+    private AppCompatButton addToListBtn;
+    private AppCompatButton rateBtn;
+    private AppCompatButton shareBtn;
 
     private TabLayout tabLayout;
     private TextView noReviewsMsg;
@@ -78,6 +83,9 @@ public class MovieDetailsFragment extends Fragment {
         noReviewsMsg = binder.noReviewsMsg;
         movieDetailsRV = binder.movieDetailsRV;
         tabLayout = binder.tabLayout;
+        addToListBtn = binder.myListBtn;
+        rateBtn = binder.rateBtn;
+        shareBtn = binder.shareBtn;
 
 
         tabLayout.addTab(tabLayout.newTab().setText("More like this"));
@@ -124,6 +132,16 @@ public class MovieDetailsFragment extends Fragment {
             movieDetailsRV.setLayoutManager(new GridLayoutManager(requireContext(), 3));
             movieDetailsRV.setAdapter(similarMovieAdapter);
         });
+        viewModel.getIfMovieExistsFromList().observe(getViewLifecycleOwner(),doesExists ->{
+            Log.d(TAG, "Does this movie exists? " + doesExists);
+        });
+        addToListBtn.setOnClickListener(btn ->{
+            Movie movie = viewModel.getMovieDetails().getValue();
+            if(movie == null) return;
+            viewModel.addMovieToList(movie);
+
+        });
+
 
     }
 

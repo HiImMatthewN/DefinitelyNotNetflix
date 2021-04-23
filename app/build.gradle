@@ -4,7 +4,6 @@ plugins {
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin'
-
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
@@ -18,7 +17,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-    buildFeatures{
+    buildFeatures {
         viewBinding = true
 
     }
@@ -49,6 +48,16 @@ dependencies {
     //retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    //Room
+    def room_version = "2.3.0"
+
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-rxjava3:2.3.0"
+
+
+    kapt "androidx.room:room-compiler:$room_version"
+
     //Gson
     implementation 'com.google.code.gson:gson:2.8.6'
     //ViewModel
@@ -66,8 +75,9 @@ dependencies {
     // Hilt ViewModel
     implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03"
     kapt "androidx.hilt:hilt-compiler:1.0.0-beta01"
-
-
+    //RxJava
+    implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
+    implementation 'io.reactivex.rxjava3:rxjava:3.0.0'
     //ui dependencies
 
     //Navigation Component
@@ -88,9 +98,6 @@ dependencies {
     implementation 'jp.wasabeef:glide-transformations:4.3.0'
     //CircleImageView
     implementation 'de.hdodenhof:circleimageview:3.1.0'
-
-
-
 
 
 }
