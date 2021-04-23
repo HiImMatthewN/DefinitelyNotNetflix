@@ -25,6 +25,7 @@ import com.example.pinayflix.R;
 import com.example.pinayflix.databinding.DialogDetailsBinding;
 import com.example.pinayflix.model.datamodel.movie.Movie;
 import com.example.pinayflix.model.datamodel.trailer.Trailer;
+import com.example.pinayflix.utitlies.Utils;
 import com.example.pinayflix.viewmodel.MainFragmentViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
@@ -48,7 +49,6 @@ public class MovieDetailsDialog extends BottomSheetDialogFragment {
     private MainFragmentViewModel mainFragmentViewModel;
     private Movie movie;
     private String TAG = "MovieDetailsDialog";
-    private final String IMAGE_PATH = "https://image.tmdb.org/t/p/w1280";
 
 
     public MovieDetailsDialog(Movie selectedMovie) {
@@ -111,7 +111,7 @@ public class MovieDetailsDialog extends BottomSheetDialogFragment {
         RequestOptions requestOptions = new RequestOptions();
         GranularRoundedCorners roundedCorners = new GranularRoundedCorners(48, 48, 0, 0);
         requestOptions = requestOptions.transforms(new CenterCrop(), roundedCorners);
-        Glide.with(requireContext()).load(IMAGE_PATH + movie.getBackdropPath()).apply(requestOptions)
+        Glide.with(requireContext()).load(Utils.BACKDROP_PATH + movie.getBackdropPath()).apply(requestOptions)
                 .into(backDropIV);
 
     }

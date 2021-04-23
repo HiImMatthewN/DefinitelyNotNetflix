@@ -19,11 +19,27 @@ public class Movie {
     @SerializedName("release_date")
     private String releaseDate;
 
+    @SerializedName("overview")
+    private String overview;
+    @SerializedName("runtime")
+    private int runTime;
     @SerializedName("genre_ids")
     private ArrayList<Integer> genreIds;
 
+    public double getVoteAverage() {
+        return voteAverage;
+    }
 
+    @SerializedName("vote_average")
+    private double voteAverage;
 
+    public String getOverview() {
+        return overview;
+    }
+
+    public int getRunTime() {
+        return runTime;
+    }
 
     public ArrayList<Integer> getGenreIds() {
         return genreIds;

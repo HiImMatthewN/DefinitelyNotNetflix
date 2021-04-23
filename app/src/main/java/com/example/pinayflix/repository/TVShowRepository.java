@@ -5,11 +5,12 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.pinayflix.model.datamodel.review.Review;
+import com.example.pinayflix.model.datamodel.review.ReviewResult;
 import com.example.pinayflix.model.datamodel.trailer.Trailer;
 import com.example.pinayflix.model.datamodel.trailer.TrailerResult;
 import com.example.pinayflix.model.datamodel.tvshow.Season;
 import com.example.pinayflix.model.datamodel.tvshow.TVShow;
-import com.example.pinayflix.model.datamodel.tvshow.TVShowDetails;
 import com.example.pinayflix.model.datamodel.tvshow.TVShowResult;
 import com.example.pinayflix.network.TVShowService;
 
@@ -36,10 +37,12 @@ public class TVShowRepository {
     private MutableLiveData<List<TVShow>> requestNewTvShows;
 
     //LiveData for TvShowDetails
-    private MutableLiveData<TVShowDetails> tvShowDetailsLiveData;
+    private MutableLiveData<TVShow> tvShowDetailsLiveData;
 
     private MutableLiveData<Season> tvShowSeasonLiveData;
     private MutableLiveData<List<TVShow>> recoTvShowLiveData;
+
+    private MutableLiveData<List<Review>> tvShowReviewsLiveData;
 
     private String TAG = "TVShowRepository";
 
@@ -59,7 +62,7 @@ public class TVShowRepository {
         tvShowDetailsLiveData = new MutableLiveData<>();
         tvShowSeasonLiveData = new MutableLiveData<>();
         recoTvShowLiveData = new MutableLiveData<>();
-
+        tvShowReviewsLiveData = new MutableLiveData<>();
     }
 
 
@@ -250,9 +253,9 @@ public class TVShowRepository {
     }
 
     public void requestTvShowDetails(int tvShowId) {
-        tvShowService.getTvShowDetails(tvShowId).enqueue(new Callback<TVShowDetails>() {
+        tvShowService.getTvShowDetails(tvShowId).enqueue(new Callback<TVShow>() {
             @Override
-            public void onResponse(Call<TVShowDetails> call, Response<TVShowDetails> response) {
+            public void onResponse(Call<TVShow> call, Response<TVShow> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     tvShowDetailsLiveData.postValue(response.body());
                     Log.d(TAG, "onResponse: GET TVShowDetails success");
@@ -261,14 +264,14 @@ public class TVShowRepository {
             }
 
             @Override
-            public void onFailure(Call<TVShowDetails> call, Throwable t) {
+            public void onFailure(Call<TVShow> call, Throwable t) {
                 Log.d(TAG, "onFailure: GET TVShowDetails failed " + t.getMessage());
             }
         });
     }
 
-    public void requestTvShowSeason(int tvShowId, int seasonNum){
-        tvShowService.getSeason(tvShowId,seasonNum).enqueue(new Callback<Season>() {
+    public void requestTvShowSeason(int tvShowId, int seasonNum) {
+        tvShowService.getSeason(tvShowId, seasonNum).enqueue(new Callback<Season>() {
             @Override
             public void onResponse(Call<Season> call, Response<Season> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -288,7 +291,7 @@ public class TVShowRepository {
 
     }
 
-    public void requestRecos(int tvId){
+    public void requestRecos(int tvId) {
         Log.d(TAG, "requestRecos: Requesting TV Show ");
         tvShowService.getRecommendations(tvId).enqueue(new Callback<TVShowResult>() {
             @Override
@@ -296,7 +299,7 @@ public class TVShowRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     recoTvShowLiveData.postValue(response.body().getTvShows());
                     Log.d(TAG, "onResponse: GET TV Recommendations success");
-                }else{
+                } else {
                     Log.d(TAG, "onResponse: GET TV Recommendations failed" + (response.body() == null));
 
                 }
@@ -305,6 +308,28 @@ public class TVShowRepository {
             @Override
             public void onFailure(Call<TVShowResult> call, Throwable t) {
                 Log.d(TAG, "Getting TV Show Recommendations failed: " + t.getMessage());
+            }
+        });
+
+    }
+
+    public void requestTvShowReviews(int tvShowId) {
+        tvShowService.getTvShowReviews(tvShowId).enqueue(new Callback<ReviewResult>() {
+            @Override
+            public void onResponse(Call<ReviewResult> call, Response<ReviewResult> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    tvShowReviewsLiveData.postValue(response.body().getReviews());
+                    Log.d(TAG, "onResponse: GET TV Show Reviews success");
+                    Log.d(TAG, "Review Size" + response.body().getReviews().size());
+                } else {
+                    Log.d(TAG, "onResponse: GET TV Show Reviews failed" + (response.body() == null));
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ReviewResult> call, Throwable t) {
+
             }
         });
 
@@ -342,14 +367,18 @@ public class TVShowRepository {
         return requestNewTvShows;
     }
 
-    public LiveData<TVShowDetails> getTVShowDetails() {
+    public LiveData<TVShow> getTVShowDetails() {
         return tvShowDetailsLiveData;
     }
 
-    public LiveData<Season> getTVShowSeasonLiveData(){
+    public LiveData<Season> getTVShowSeasonLiveData() {
         return tvShowSeasonLiveData;
     }
-    public LiveData<List<TVShow>> getRecommendationsLiveData(){
-        return  recoTvShowLiveData;
+
+    public LiveData<List<TVShow>> getRecommendationsLiveData() {
+        return recoTvShowLiveData;
+    }
+    public LiveData<List<Review>> getTvShowReview(){
+        return tvShowReviewsLiveData;
     }
 }

@@ -9,8 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
 import com.example.pinayflix.R;
@@ -21,10 +20,11 @@ import com.example.pinayflix.utitlies.Utils;
 
 public class HighlightedTVShowAdapter extends RecyclerView.Adapter<HighlightedTVShowAdapter.HighlightedTVShowViewHolder> {
     private TVShow highlightedTvShow;
-    private final String IMAGE_PATH = "https://image.tmdb.org/t/p/w500";
     private String TAG = "HighlightedTVShowAdapter";
-    public HighlightedTVShowAdapter() {
+    private RequestManager requestManager;
 
+    public HighlightedTVShowAdapter(RequestManager requestManager) {
+        this.requestManager = requestManager;
     }
 
     public void insertData(TVShow tvShow) {
@@ -53,9 +53,9 @@ public class HighlightedTVShowAdapter extends RecyclerView.Adapter<HighlightedTV
 
             DrawableCrossFadeFactory factory =
                     new DrawableCrossFadeFactory.Builder().setCrossFadeEnabled(true).build();
-            Glide.with(holder.itemView.getContext()).load(IMAGE_PATH + highlightedTvShow.getPosterPath().trim())
+            requestManager.load(Utils.POSTER_PATH + highlightedTvShow.getPosterPath().trim())
                     .transition(DrawableTransitionOptions.with(factory))
-                    .transform(new CenterCrop()).into(target);
+                    .into(target);
 
             StringBuilder stringBuilder = new StringBuilder();
             for (Integer id : highlightedTvShow.getGenreIds()) {
@@ -75,6 +75,7 @@ public class HighlightedTVShowAdapter extends RecyclerView.Adapter<HighlightedTV
         private TextView genreTv;
         private AppCompatButton addToListBtn;
         private AppCompatButton detailsBtn;
+
         public HighlightedTVShowViewHolder(@NonNull ItemHighlightedBinding binder) {
             super(binder.getRoot());
             posterIv = binder.postIv;

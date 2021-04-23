@@ -1,7 +1,6 @@
 package com.example.pinayflix.network;
 
 import com.example.pinayflix.model.datamodel.movie.Movie;
-import com.example.pinayflix.model.datamodel.movie.MovieDetails;
 import com.example.pinayflix.model.datamodel.movie.MovieResult;
 import com.example.pinayflix.model.datamodel.review.ReviewResult;
 import com.example.pinayflix.model.datamodel.trailer.TrailerResult;
@@ -23,7 +22,7 @@ public interface MovieService {
     Call<MovieResult> getNowPlayingMovies(@Query("page") String page);
 
     @GET("movie/{id}")
-    Call<MovieDetails> getMovieDetails(@Path("id") int id);
+    Call<Movie> getMovieDetails(@Path("id") int id);
 
     @GET("movie/latest")
     Call<Movie> getLatestMovie();

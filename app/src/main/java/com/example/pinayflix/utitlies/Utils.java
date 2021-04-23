@@ -5,6 +5,10 @@ import com.example.pinayflix.model.datamodel.Genre;
 import java.util.ArrayList;
 
 public class Utils {
+    public static final String POSTER_PATH ="https://image.tmdb.org/t/p/w342";
+    public static final String BACKDROP_PATH = "https://image.tmdb.org/t/p/w1280";
+    public static final String HIGHLIGHTED_IMAGE_PATH = "https://image.tmdb.org/t/p/w500";
+
     public static String getGenreNameFromId(int id) {
         for (Genre genre : getList()) {
             if (id == genre.getId())

@@ -6,7 +6,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.pinayflix.model.datamodel.movie.Movie;
-import com.example.pinayflix.model.datamodel.movie.MovieDetails;
 import com.example.pinayflix.model.datamodel.movie.MovieResult;
 import com.example.pinayflix.model.datamodel.review.Review;
 import com.example.pinayflix.model.datamodel.review.ReviewResult;
@@ -44,7 +43,7 @@ public class MovieRepository {
     private MutableLiveData<List<Movie>> requestNewMoviesLiveData;
 
     //LiveData for MovieDetails
-    private MutableLiveData<MovieDetails> movieDetailsLiveData;
+    private MutableLiveData<Movie> movieDetailsLiveData;
 
     //Reviews
     private MutableLiveData<List<Review>> reviewsLiveData;
@@ -279,9 +278,9 @@ public class MovieRepository {
     }
 
     public void requestMovieDetails(int movieId) {
-        movieService.getMovieDetails(movieId).enqueue(new Callback<MovieDetails>() {
+        movieService.getMovieDetails(movieId).enqueue(new Callback<Movie>() {
             @Override
-            public void onResponse(Call<MovieDetails> call, Response<MovieDetails> response) {
+            public void onResponse(Call<Movie> call, Response<Movie> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Log.d(TAG, "onResponse: Movie Details Success");
                     movieDetailsLiveData.postValue(response.body());
@@ -290,7 +289,7 @@ public class MovieRepository {
             }
 
             @Override
-            public void onFailure(Call<MovieDetails> call, Throwable t) {
+            public void onFailure(Call<Movie> call, Throwable t) {
 
             }
         });
@@ -366,7 +365,7 @@ public class MovieRepository {
         return requestNewMoviesLiveData;
     }
 
-    public LiveData<MovieDetails> getMovieDetailsLiveData() {
+    public LiveData<Movie> getMovieDetailsLiveData() {
         return movieDetailsLiveData;
     }
     public LiveData<List<Review>> getReviewsLiveData(){
