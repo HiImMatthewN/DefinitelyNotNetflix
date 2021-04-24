@@ -58,7 +58,7 @@ public class SimilarTVShowAdapter extends RecyclerView.Adapter<SimilarTVShowAdap
 
         public SimilarTVShowViewHolder(@NonNull ItemSimilarTvShowsBinding binder) {
             super(binder.getRoot());
-            posterImageView = binder.moviePosterIv;
+            posterImageView = binder.posterIv;
         }
 
     }

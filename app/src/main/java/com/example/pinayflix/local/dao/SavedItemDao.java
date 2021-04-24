@@ -14,7 +14,7 @@ import io.reactivex.rxjava3.core.Single;
 @Dao
 public interface SavedItemDao {
     @Query("SELECT * FROM savedItems")
-    List<SavedItem> getAll();
+    Single<List<SavedItem>> getAll();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(SavedItem savedItem);

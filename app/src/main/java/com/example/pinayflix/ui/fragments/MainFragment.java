@@ -16,6 +16,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.ConcatAdapter;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -26,6 +28,7 @@ import com.example.pinayflix.R;
 import com.example.pinayflix.adapter.recyclerview.movie.ChildMovieAdapter;
 import com.example.pinayflix.adapter.recyclerview.movie.HighlightedMovieAdapter;
 import com.example.pinayflix.adapter.recyclerview.movie.ParentMovieAdapter;
+import com.example.pinayflix.adapter.recyclerview.mylist.SavedItemAdapter;
 import com.example.pinayflix.adapter.recyclerview.tvshow.ChildTVShowAdapter;
 import com.example.pinayflix.adapter.recyclerview.tvshow.HighlightedTVShowAdapter;
 import com.example.pinayflix.adapter.recyclerview.tvshow.ParentTVShowAdapter;
@@ -52,14 +55,14 @@ public class MainFragment extends Fragment {
     private ConcatAdapter concatAdapter;
     private LayoutContentBinding contentBinding;
     private CollapsingToolbarLayout toolbar;
-
+    private View statusBarView;
 
     //Adapters
     private ParentMovieAdapter movieParentAdapter;
     private HighlightedMovieAdapter highlightedMovieAdapter;
     private ParentTVShowAdapter tvShowParentAdapter;
     private HighlightedTVShowAdapter highlightedTVShowAdapter;
-
+    private SavedItemAdapter savedItemAdapter;
 
     //Movie Category
     private TextView movieCategoryTV;
@@ -90,8 +93,9 @@ public class MainFragment extends Fragment {
         movieCategoryTV = binder.movieCategoryTV;
         tvListCategoryTV = binder.tvShowCategoryTV;
         contentBinding = binder.content;
+        statusBarView = contentBinding.statusBarView;
 
-        myListTV = binder.myListTV;
+                myListTV = binder.myListTV;
         parentRv = contentBinding.parentRv;
         parentRv.setLayoutManager(new SpeedyLinearLayoutManager(requireContext()));
         toolbar = binder.toolbar;
@@ -121,18 +125,25 @@ public class MainFragment extends Fragment {
 
         myListTV.setOnClickListener(btn -> {
             handleCategoryOnClick(btn.getId());
+            mainFragmentViewModel.requestData(DataClassification.MY_LIST);
 
         });
         mainFragmentViewModel.getOnDataClassification().observe(getViewLifecycleOwner(), dataClassification -> {
             if (dataClassification == DataClassification.MOVIE){
                 createMovieRVAdapter();
                 handleCategoryOnClick(R.id.movieCategoryTV);
+                statusBarView.setVisibility(View.GONE);
             }
-
-
             else if (dataClassification == DataClassification.TV_SHOW){
                 createTVShowAdapter();
                 handleCategoryOnClick(R.id.tvShowCategoryTV);
+                statusBarView.setVisibility(View.GONE);
+
+            }else if(dataClassification == DataClassification.MY_LIST){
+                createMyListAdapter();
+                handleCategoryOnClick(R.id.myListTV);
+                statusBarView.setVisibility(View.VISIBLE);
+
             }
         });
 
@@ -141,13 +152,14 @@ public class MainFragment extends Fragment {
         // is received from repository
         initMovieDataLiveData();
         initTVShowLiveData();
-
+        initSavedItemsLiveData();
     }
 
     private void createMovieRVAdapter() {
         highlightedMovieAdapter = new HighlightedMovieAdapter(requestManager);
         movieParentAdapter = new ParentMovieAdapter(requestManager);
         concatAdapter = new ConcatAdapter(highlightedMovieAdapter, movieParentAdapter);
+        parentRv.setLayoutManager(new LinearLayoutManager(requireContext()));
         parentRv.setAdapter(concatAdapter);
 
         movieParentAdapter.getSelectedMovie().observe(getViewLifecycleOwner(), selectedMovie -> {
@@ -183,6 +195,8 @@ public class MainFragment extends Fragment {
         highlightedTVShowAdapter = new HighlightedTVShowAdapter(requestManager);
         tvShowParentAdapter = new ParentTVShowAdapter(requestManager);
         concatAdapter = new ConcatAdapter(highlightedTVShowAdapter, tvShowParentAdapter);
+        parentRv.setLayoutManager(new LinearLayoutManager(requireContext()));
+
         parentRv.setAdapter(concatAdapter);
 
         tvShowParentAdapter.getSelectedTvShow().observe(getViewLifecycleOwner(),
@@ -214,7 +228,12 @@ public class MainFragment extends Fragment {
 
         });
     }
+    private void createMyListAdapter(){
+        savedItemAdapter = new SavedItemAdapter(requestManager);
+        parentRv.setLayoutManager(new GridLayoutManager(requireContext(),3));
+        parentRv.setAdapter(savedItemAdapter);
 
+    }
     private void initTVShowLiveData() {
         mainFragmentViewModel.getNowPlayingTvShows().observe(getViewLifecycleOwner(), nowPlayingTVShows -> {
 //            highlightedTVShowAdapter.insertData(nowPlayingTVShows.get(randomNum));
@@ -305,7 +324,15 @@ public class MainFragment extends Fragment {
 
         });
     }
+    private void initSavedItemsLiveData(){
+        mainFragmentViewModel.getSavedItems().observe(getViewLifecycleOwner(),savedItems -> {
+            if (savedItems == null  || savedItems.size() == 0) return;
+                savedItemAdapter.insertData(savedItems);
 
+        });
+
+
+    }
     private void handleCategoryOnClick(int id) {
         switch (id) {
             case R.id.movieCategoryTV:

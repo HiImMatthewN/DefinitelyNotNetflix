@@ -63,10 +63,12 @@ public class SavedItemRepository {
     }
 
     public void getAllSavedItem() {
-        saveItemsLiveData.postValue(savedItemDao.getAll());
         Log.d(TAG, "getAllSavedItem: Getting All Saved Item");
-
-
+        Disposable disposable = savedItemDao.getAll().subscribeOn(Schedulers.io())
+                .subscribe(savedItems->{
+                    saveItemsLiveData.postValue(savedItems);
+                });
+        compositeDisposable.add(disposable);
     }
 
     public LiveData<List<SavedItem>> getSaveItemsLiveData() {

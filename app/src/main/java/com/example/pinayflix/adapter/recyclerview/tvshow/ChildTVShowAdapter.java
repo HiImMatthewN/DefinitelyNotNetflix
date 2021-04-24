@@ -74,7 +74,7 @@ public class ChildTVShowAdapter extends RecyclerView.Adapter<ChildTVShowAdapter.
 
         public ChildTVShowViewHolder(@NonNull ItemChildBinding binder) {
             super(binder.getRoot());
-            posterImageView = binder.moviePosterIv;
+            posterImageView = binder.posterIv;
         }
 
         public void setOnClick(TVShow tvShow) {

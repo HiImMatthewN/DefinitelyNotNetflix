@@ -8,11 +8,13 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.pinayflix.DataClassification;
 import com.example.pinayflix.DataGenre;
+import com.example.pinayflix.model.datamodel.SavedItem;
 import com.example.pinayflix.model.datamodel.movie.Movie;
 import com.example.pinayflix.model.datamodel.trailer.Trailer;
 import com.example.pinayflix.model.datamodel.tvshow.TVShow;
 import com.example.pinayflix.model.datamodel.utilities.Event;
 import com.example.pinayflix.repository.MovieRepository;
+import com.example.pinayflix.repository.SavedItemRepository;
 import com.example.pinayflix.repository.TVShowRepository;
 
 import java.util.List;
@@ -23,8 +25,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 
 @HiltViewModel
 public class MainFragmentViewModel extends ViewModel {
-    MovieRepository movieRepository;
-    TVShowRepository tvShowRepository;
+    private MovieRepository movieRepository;
+    private TVShowRepository tvShowRepository;
+    private SavedItemRepository savedItemRepository;
     private String TAG = "MainFragmentViewModel";
     //Initialize Page count to 1;
     private int upcomingMoviesPageCount = 1;
@@ -58,9 +61,10 @@ public class MainFragmentViewModel extends ViewModel {
 
 
     @Inject
-    public MainFragmentViewModel(MovieRepository movieRepository, TVShowRepository tvShowRepository) {
+    public MainFragmentViewModel(MovieRepository movieRepository, TVShowRepository tvShowRepository,SavedItemRepository savedItemRepository) {
         this.movieRepository = movieRepository;
         this.tvShowRepository = tvShowRepository;
+        this.savedItemRepository= savedItemRepository;
         requestMovieData();
     }
 
@@ -74,6 +78,9 @@ public class MainFragmentViewModel extends ViewModel {
         } else if (dataClassification == DataClassification.TV_SHOW) {
             requestTvShowData();
             onDataClassificationChange.setValue(DataClassification.TV_SHOW);
+        }else if(dataClassification == DataClassification.MY_LIST){
+            requestMyListData();
+            onDataClassificationChange.setValue(DataClassification.MY_LIST);
         }
 
     }
@@ -106,7 +113,14 @@ public class MainFragmentViewModel extends ViewModel {
         currentSelectClassification = DataClassification.TV_SHOW;
 
     }
+    private void requestMyListData(){
+        if(currentSelectClassification == DataClassification.MY_LIST) return;
+            savedItemRepository.getAllSavedItem();
 
+            currentSelectClassification = DataClassification.MY_LIST;
+
+
+    }
     //Request Movies
     private void requestLatestMovie() {
         movieRepository.requestLatestMovie();
@@ -355,7 +369,9 @@ public class MainFragmentViewModel extends ViewModel {
         return enablePlayBtnLiveData;
 
     }
-
+    public LiveData<List<SavedItem>> getSavedItems(){
+        return savedItemRepository.getSaveItemsLiveData();
+    }
     @Override
     protected void onCleared() {
         Log.d(TAG, "onCleared: Called ");

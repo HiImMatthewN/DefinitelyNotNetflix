@@ -70,7 +70,7 @@ public class ChildMovieAdapter extends RecyclerView.Adapter<ChildMovieAdapter.Ch
 
         public ChildMovieViewHolder(@NonNull ItemChildBinding binder) {
             super(binder.getRoot());
-            posterImageView = binder.moviePosterIv;
+            posterImageView = binder.posterIv;
         }
 
         public void setOnClick(Movie movie) {
