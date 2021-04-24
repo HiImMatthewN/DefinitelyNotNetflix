@@ -7,10 +7,12 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateHandle;
 import androidx.lifecycle.ViewModel;
 
+import com.example.pinayflix.model.datamodel.SavedItem;
 import com.example.pinayflix.model.datamodel.review.Review;
 import com.example.pinayflix.model.datamodel.tvshow.Episode;
 import com.example.pinayflix.model.datamodel.tvshow.Season;
 import com.example.pinayflix.model.datamodel.tvshow.TVShow;
+import com.example.pinayflix.repository.SavedItemRepository;
 import com.example.pinayflix.repository.TVShowRepository;
 import com.example.pinayflix.ui.fragments.TVShowDetailsFragment;
 
@@ -26,6 +28,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 @HiltViewModel
 public class TVShowDetailsFragmentViewModel extends ViewModel {
     private TVShowRepository tvShowRepository;
+    private SavedItemRepository savedItemRepository;
     private int tvId;
     private MutableLiveData<List<Season>> getSeasonsLiveData = new MutableLiveData<>();
     private MutableLiveData<List<Episode>> episodesLiveData = new MutableLiveData<>();
@@ -34,9 +37,11 @@ public class TVShowDetailsFragmentViewModel extends ViewModel {
     private static final String TAG = "TVShowDetailsFragmentVi";
 
     @Inject
-    public TVShowDetailsFragmentViewModel(SavedStateHandle savedStateHandle, TVShowRepository tvShowRepository) {
+    public TVShowDetailsFragmentViewModel(SavedStateHandle savedStateHandle, TVShowRepository tvShowRepository,SavedItemRepository savedItemRepository) {
         this.tvShowRepository = tvShowRepository;
+        this.savedItemRepository = savedItemRepository;
         tvId = savedStateHandle.get(TVShowDetailsFragment.DETAILS_KEY);
+        savedItemRepository.checkIfSavedItemExists(tvId);
         requestTvShowDetails(tvId);
         requestSeason(1);
         Log.d(TAG, "TVShowDetailsFragmentViewModel: created");
@@ -59,6 +64,16 @@ public class TVShowDetailsFragmentViewModel extends ViewModel {
     public void requestTvShowReviews(){
         tvShowRepository.requestTvShowReviews(tvId);
 
+    }
+
+    public void addTvShowToList(TVShow show){
+        Log.d(TAG, "saveTvShowToList: Adding TV Show " + show.getName());
+        savedItemRepository.insertSavedItem(new SavedItem(tvId,show.getName(),show.getPosterPath()));
+
+    }
+    public void removeTvShowFromList(TVShow show){
+        Log.d(TAG, "removeTvShowFromList: Removing TV Show " + show.getName());
+        savedItemRepository.deleteSavedItem(new SavedItem(tvId,show.getName(),show.getPosterPath()));
     }
 
     public LiveData<TVShow> getTvShowDetails() {
@@ -107,5 +122,8 @@ public class TVShowDetailsFragmentViewModel extends ViewModel {
     }
     public LiveData<List<Review>> getTvShowReviews(){
         return tvShowRepository.getTvShowReview();
+    }
+    public LiveData<Boolean> getTvShowExists(){
+        return savedItemRepository.getSavedItemExists();
     }
 }

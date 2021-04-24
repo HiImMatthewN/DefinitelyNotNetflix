@@ -1,17 +1,19 @@
 package com.example.pinayflix.ui.fragments;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -23,6 +25,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
+import com.example.pinayflix.R;
 import com.example.pinayflix.adapter.recyclerview.movie.MovieReviewAdapter;
 import com.example.pinayflix.adapter.recyclerview.movie.SimilarMovieAdapter;
 import com.example.pinayflix.databinding.LayoutDetailsMovieBinding;
@@ -132,13 +135,30 @@ public class MovieDetailsFragment extends Fragment {
             movieDetailsRV.setLayoutManager(new GridLayoutManager(requireContext(), 3));
             movieDetailsRV.setAdapter(similarMovieAdapter);
         });
-        viewModel.getIfMovieExistsFromList().observe(getViewLifecycleOwner(),doesExists ->{
-            Log.d(TAG, "Does this movie exists? " + doesExists);
+        viewModel.getIfMovieExistsFromList().observe(getViewLifecycleOwner(), doesExists -> {
+            Drawable drawable;
+            if (doesExists)
+                drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_check);
+            else
+                drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_add);
+
+
+            addToListBtn.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
+            addToListBtn.setText("My List");
+
         });
-        addToListBtn.setOnClickListener(btn ->{
+        addToListBtn.setOnClickListener(btn -> {
             Movie movie = viewModel.getMovieDetails().getValue();
-            if(movie == null) return;
-            viewModel.addMovieToList(movie);
+            if (movie == null) return;
+            if (viewModel.getIfMovieExistsFromList().getValue() == null) return;
+            boolean doesItemExists = viewModel.getIfMovieExistsFromList().getValue();
+            if(doesItemExists){
+                viewModel.removeMovieFromList(movie);
+                Toast.makeText(getContext(), movie.getTitle() + " removed from list", Toast.LENGTH_SHORT).show();
+            }else{
+                viewModel.addMovieToList(movie);
+                Toast.makeText(getContext(), movie.getTitle() + " added to list", Toast.LENGTH_SHORT).show();
+            }
 
         });
 

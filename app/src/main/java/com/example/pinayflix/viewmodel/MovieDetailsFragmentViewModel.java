@@ -1,11 +1,10 @@
 package com.example.pinayflix.viewmodel;
 
-import android.app.Application;
 import android.util.Log;
 
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.SavedStateHandle;
+import androidx.lifecycle.ViewModel;
 
 import com.example.pinayflix.model.datamodel.SavedItem;
 import com.example.pinayflix.model.datamodel.movie.Movie;
@@ -21,7 +20,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 
 @HiltViewModel
-public class MovieDetailsFragmentViewModel extends AndroidViewModel {
+public class MovieDetailsFragmentViewModel extends ViewModel {
     private MovieRepository movieRepository;
     private SavedItemRepository savedItemRepository;
     private List<Review> reviews;
@@ -30,11 +29,10 @@ public class MovieDetailsFragmentViewModel extends AndroidViewModel {
 
 
     @Inject
-    public MovieDetailsFragmentViewModel(Application application,SavedStateHandle savedStateHandle, MovieRepository movieRepository) {
-        super(application);
+    public MovieDetailsFragmentViewModel( SavedStateHandle savedStateHandle, MovieRepository movieRepository,SavedItemRepository savedItemRepository) {
         Log.d(TAG, "new ViewModelCreated");
         this.movieRepository = movieRepository;
-        this.savedItemRepository = new SavedItemRepository(application);
+        this.savedItemRepository = savedItemRepository;
         movieId = savedStateHandle.get(MovieDetailsFragment.DETAILS_KEY);
         savedItemRepository.checkIfSavedItemExists(movieId);
 
@@ -55,17 +53,21 @@ public class MovieDetailsFragmentViewModel extends AndroidViewModel {
 
 
     }
-    public void addMovieToList(Movie movie){
+
+
+
+    public void addMovieToList(Movie movie) {
         Log.d(TAG, "addMovieToList: Adding Movie...");
         savedItemRepository.insertSavedItem(new SavedItem(movie.getMovieId()
-                ,movie.getTitle(),movie.getPosterPath()));
+                , movie.getTitle(), movie.getPosterPath()));
+    }
+
+    public void removeMovieFromList(Movie movie) {
+        Log.d(TAG, "removeMovieFromList: Removing Movie....");
+        savedItemRepository.deleteSavedItem(new SavedItem(movieId, movie.getTitle(), movie.getPosterPath()));
 
     }
-    public void removeMovieFromList(Movie movie){
-        Log.d(TAG, "removeMovieFromList: Removing Movie....");
-        savedItemRepository.deleteSavedItem(new SavedItem(movieId,movie.getTitle(),movie.getPosterPath()));
-        
-    }
+
     public LiveData<Movie> getMovieDetails() {
         return movieRepository.getMovieDetailsLiveData();
     }
@@ -83,9 +85,11 @@ public class MovieDetailsFragmentViewModel extends AndroidViewModel {
     public LiveData<List<Movie>> getSimilarMovies() {
         return movieRepository.getMovieRecommendations();
     }
-    public LiveData<Boolean> getIfMovieExistsFromList(){
-      return   savedItemRepository.getSavedItemExists();
+
+    public LiveData<Boolean> getIfMovieExistsFromList() {
+        return savedItemRepository.getSavedItemExists();
     }
+
     @Override
     protected void onCleared() {
         super.onCleared();

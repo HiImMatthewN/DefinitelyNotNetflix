@@ -1,5 +1,6 @@
 package com.example.pinayflix.ui.fragments;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -7,10 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -22,6 +25,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
+import com.example.pinayflix.R;
 import com.example.pinayflix.adapter.recyclerview.tvshow.EpisodeTVShowAdapter;
 import com.example.pinayflix.adapter.recyclerview.tvshow.SimilarTVShowAdapter;
 import com.example.pinayflix.adapter.recyclerview.tvshow.TVShowReviewsAdapter;
@@ -59,6 +63,13 @@ public class TVShowDetailsFragment extends Fragment {
     private RecyclerView rv;
     private EpisodeTVShowAdapter episodesAdapter;
     private SimilarTVShowAdapter similarAdapter;
+
+    private AppCompatButton addToListBtn;
+    private AppCompatButton rateTvShowBtn;
+    private AppCompatButton shareTvShowBtn;
+
+
+
     private static final String TAG = "TVShowDetailsFragment";
 
     @Inject
@@ -83,6 +94,11 @@ public class TVShowDetailsFragment extends Fragment {
 
         backDrop.setFadeBottom(true);
         seasonBtn = binder.seasonBtn;
+
+        addToListBtn = binder.myListBtn;
+        rateTvShowBtn = binder.rateBtn;
+        shareTvShowBtn = binder.shareBtn;
+
 
         rv = binder.episodesRv;
 
@@ -124,6 +140,20 @@ public class TVShowDetailsFragment extends Fragment {
             }
         });
 
+        addToListBtn.setOnClickListener(btn ->{
+            TVShow tvShow = viewModel.getTvShowDetails().getValue();
+            if (tvShow == null) return;
+            if (viewModel.getTvShowExists().getValue() == null) return;
+            boolean doesItemExists = viewModel.getTvShowExists().getValue();
+            if(doesItemExists){
+                viewModel.removeTvShowFromList(tvShow);
+                Toast.makeText(getContext(), tvShow.getName() + " removed from list", Toast.LENGTH_SHORT).show();
+            }else{
+                viewModel.addTvShowToList(tvShow);
+                Toast.makeText(getContext(), tvShow.getName() + " added to list", Toast.LENGTH_SHORT).show();
+            }
+
+        });
 
         seasonBtn.setOnClickListener(btn -> {
             showSeasonList();
@@ -140,6 +170,19 @@ public class TVShowDetailsFragment extends Fragment {
         });
         viewModel.getSelectedSeason().observe(getViewLifecycleOwner(), value -> {
             seasonBtn.setText("Season " + value);
+
+        });
+        viewModel.getTvShowExists().observe(getViewLifecycleOwner(),doesExists ->{
+            Drawable drawable;
+            if (doesExists)
+                drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_check);
+            else
+                drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_add);
+
+
+            addToListBtn.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
+            addToListBtn.setText("My List");
+
 
         });
         setEpisodeViewModel();

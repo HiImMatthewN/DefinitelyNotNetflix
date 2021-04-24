@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -79,6 +80,10 @@ public class ChildTVShowAdapter extends RecyclerView.Adapter<ChildTVShowAdapter.
         public void setOnClick(TVShow tvShow) {
             posterImageView.setOnClickListener(btn -> {
                 callback.onTVShowSelect(tvShow);
+            });
+            posterImageView.setOnLongClickListener(btn -> {
+                Toast.makeText(itemView.getContext(), tvShow.getName(), Toast.LENGTH_SHORT).show();
+                return true;
             });
         }
     }

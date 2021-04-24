@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -75,6 +76,10 @@ public class ChildMovieAdapter extends RecyclerView.Adapter<ChildMovieAdapter.Ch
         public void setOnClick(Movie movie) {
             posterImageView.setOnClickListener(btn -> {
                 callback.onMovieSelected(movie);
+            });
+            posterImageView.setOnLongClickListener(btn -> {
+                Toast.makeText(itemView.getContext(), movie.getTitle(), Toast.LENGTH_SHORT).show();
+                return true;
             });
         }
     }
