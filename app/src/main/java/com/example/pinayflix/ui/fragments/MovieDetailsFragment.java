@@ -154,10 +154,10 @@ public class MovieDetailsFragment extends Fragment {
             boolean doesItemExists = viewModel.getIfMovieExistsFromList().getValue();
             if(doesItemExists){
                 viewModel.removeMovieFromList(movie);
-                Toast.makeText(getContext(), movie.getTitle() + " removed from list", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(),  "Removed from My List", Toast.LENGTH_SHORT).show();
             }else{
                 viewModel.addMovieToList(movie);
-                Toast.makeText(getContext(), movie.getTitle() + " added to list", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Added to My List", Toast.LENGTH_SHORT).show();
             }
 
         });

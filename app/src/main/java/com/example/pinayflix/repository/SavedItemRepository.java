@@ -34,7 +34,7 @@ public class SavedItemRepository {
         Disposable disposable = Completable.fromRunnable(() -> {
             savedItemDao.insert(savedItem);
         }).subscribeOn(Schedulers.io()).subscribe(() -> {
-            Log.d(TAG, "insertSavedItem: " + savedItem.getName());
+            Log.d(TAG, "insertSavedItem: " + savedItem.getTitle());
             savedItemExists.postValue(true);
         });
         compositeDisposable.add(disposable);
@@ -44,7 +44,7 @@ public class SavedItemRepository {
         Disposable disposable = Completable.fromRunnable(() -> {
             savedItemDao.delete(savedItem.getId());
         }).subscribeOn(Schedulers.io()).subscribe(() -> {
-            Log.d(TAG, "deleteSavedItem: Name " + savedItem.getName());
+            Log.d(TAG, "deleteSavedItem: Name " + savedItem.getTitle());
             savedItemExists.postValue(false);
 
         });

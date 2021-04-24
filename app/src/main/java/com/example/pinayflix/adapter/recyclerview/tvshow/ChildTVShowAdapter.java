@@ -82,7 +82,7 @@ public class ChildTVShowAdapter extends RecyclerView.Adapter<ChildTVShowAdapter.
                 callback.onTVShowSelect(tvShow);
             });
             posterImageView.setOnLongClickListener(btn -> {
-                Toast.makeText(itemView.getContext(), tvShow.getName(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(itemView.getContext(), tvShow.getTitle(), Toast.LENGTH_SHORT).show();
                 return true;
             });
         }

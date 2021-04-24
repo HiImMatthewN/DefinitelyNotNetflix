@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.pinayflix.DataClassification;
 import com.example.pinayflix.DataGenre;
+import com.example.pinayflix.model.datamodel.Item;
 import com.example.pinayflix.model.datamodel.SavedItem;
 import com.example.pinayflix.model.datamodel.movie.Movie;
 import com.example.pinayflix.model.datamodel.trailer.Trailer;
@@ -61,10 +62,10 @@ public class MainFragmentViewModel extends ViewModel {
 
 
     @Inject
-    public MainFragmentViewModel(MovieRepository movieRepository, TVShowRepository tvShowRepository,SavedItemRepository savedItemRepository) {
+    public MainFragmentViewModel(MovieRepository movieRepository, TVShowRepository tvShowRepository, SavedItemRepository savedItemRepository) {
         this.movieRepository = movieRepository;
         this.tvShowRepository = tvShowRepository;
-        this.savedItemRepository= savedItemRepository;
+        this.savedItemRepository = savedItemRepository;
         requestMovieData();
     }
 
@@ -78,7 +79,7 @@ public class MainFragmentViewModel extends ViewModel {
         } else if (dataClassification == DataClassification.TV_SHOW) {
             requestTvShowData();
             onDataClassificationChange.setValue(DataClassification.TV_SHOW);
-        }else if(dataClassification == DataClassification.MY_LIST){
+        } else if (dataClassification == DataClassification.MY_LIST) {
             requestMyListData();
             onDataClassificationChange.setValue(DataClassification.MY_LIST);
         }
@@ -113,14 +114,16 @@ public class MainFragmentViewModel extends ViewModel {
         currentSelectClassification = DataClassification.TV_SHOW;
 
     }
-    private void requestMyListData(){
-        if(currentSelectClassification == DataClassification.MY_LIST) return;
-            savedItemRepository.getAllSavedItem();
 
-            currentSelectClassification = DataClassification.MY_LIST;
+    private void requestMyListData() {
+        if (currentSelectClassification == DataClassification.MY_LIST) return;
+        savedItemRepository.getAllSavedItem();
+
+        currentSelectClassification = DataClassification.MY_LIST;
 
 
     }
+
     //Request Movies
     private void requestLatestMovie() {
         movieRepository.requestLatestMovie();
@@ -289,10 +292,25 @@ public class MainFragmentViewModel extends ViewModel {
 
     }
 
+
     public void requestMovieDetails(int movieId) {
         requestMovieDetailsLiveData.setValue(new Event<>(movieId));
     }
 
+    public void checkIfSavedItemExists(int id) {
+        Log.d(TAG, "checkIfSavedItemExists: ");
+        savedItemRepository.checkIfSavedItemExists(id);
+    }
+
+    public void addItemToList(Item item) {
+
+        savedItemRepository.insertSavedItem(new SavedItem(item.getId(), item.getTitle(), item.getPosterPath()));
+
+    }
+    public void removeItemFromList(Item item){
+        savedItemRepository.deleteSavedItem(new SavedItem(item.getId(),item.getTitle(),item.getPosterPath()));
+
+    }
     public LiveData<List<Movie>> getNewRequestedMovie() {
         return movieRepository.getRequestedNewMoviesLiveData();
     }
@@ -331,6 +349,7 @@ public class MainFragmentViewModel extends ViewModel {
     public LiveData<List<TVShow>> getRomanceTvShows() {
         return tvShowRepository.getRomanceTvShowsLiveData();
     }
+
     public LiveData<TVShow> getHighlightedTvShow() {
         LiveData<List<TVShow>> liveData = tvShowRepository.getNowPlayingTvShowsLiveData();
         liveData.observeForever(tvShows -> {
@@ -346,9 +365,11 @@ public class MainFragmentViewModel extends ViewModel {
     public LiveData<List<TVShow>> getDocumentaryTvShows() {
         return tvShowRepository.getDocumentaryTvShowsLiveData();
     }
+
     public void requestTvShowDetails(int tvShowId) {
         requestTvShowDetailsLiveData.setValue(new Event<>(tvShowId));
     }
+
     public LiveData<List<TVShow>> getNewRequestedTvShow() {
         return tvShowRepository.getNewTVShowsLiveData();
 
@@ -357,7 +378,8 @@ public class MainFragmentViewModel extends ViewModel {
     public LiveData<List<Trailer>> getTvShowTrailer() {
         return tvShowRepository.getTvShowTrailerLiveData();
     }
-    public LiveData<Event<Integer>> getTvShowDetails(){
+
+    public LiveData<Event<Integer>> getTvShowDetails() {
         return requestTvShowDetailsLiveData;
     }
 
@@ -369,9 +391,15 @@ public class MainFragmentViewModel extends ViewModel {
         return enablePlayBtnLiveData;
 
     }
-    public LiveData<List<SavedItem>> getSavedItems(){
+
+    public LiveData<List<SavedItem>> getSavedItems() {
         return savedItemRepository.getSaveItemsLiveData();
     }
+
+    public LiveData<Boolean> getSavedItemExists() {
+        return savedItemRepository.getSavedItemExists();
+    }
+
     @Override
     protected void onCleared() {
         Log.d(TAG, "onCleared: Called ");

@@ -69,7 +69,6 @@ public class TVShowDetailsFragment extends Fragment {
     private AppCompatButton shareTvShowBtn;
 
 
-
     private static final String TAG = "TVShowDetailsFragment";
 
     @Inject
@@ -140,17 +139,17 @@ public class TVShowDetailsFragment extends Fragment {
             }
         });
 
-        addToListBtn.setOnClickListener(btn ->{
+        addToListBtn.setOnClickListener(btn -> {
             TVShow tvShow = viewModel.getTvShowDetails().getValue();
             if (tvShow == null) return;
             if (viewModel.getTvShowExists().getValue() == null) return;
             boolean doesItemExists = viewModel.getTvShowExists().getValue();
-            if(doesItemExists){
+            if (doesItemExists) {
                 viewModel.removeTvShowFromList(tvShow);
-                Toast.makeText(getContext(), tvShow.getName() + " removed from list", Toast.LENGTH_SHORT).show();
-            }else{
+                Toast.makeText(getContext(), "Removed from My List", Toast.LENGTH_SHORT).show();
+            } else {
                 viewModel.addTvShowToList(tvShow);
-                Toast.makeText(getContext(), tvShow.getName() + " added to list", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Added to My List", Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -172,7 +171,7 @@ public class TVShowDetailsFragment extends Fragment {
             seasonBtn.setText("Season " + value);
 
         });
-        viewModel.getTvShowExists().observe(getViewLifecycleOwner(),doesExists ->{
+        viewModel.getTvShowExists().observe(getViewLifecycleOwner(), doesExists -> {
             Drawable drawable;
             if (doesExists)
                 drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_check);
@@ -214,7 +213,7 @@ public class TVShowDetailsFragment extends Fragment {
         viewModel.getSimilarTVShows().observe(getViewLifecycleOwner(), tvShows -> {
             if (tvShows == null) return;
             for (TVShow tvShow : tvShows) {
-                Log.d(TAG, "Similar TV Show name " + tvShow.getName());
+                Log.d(TAG, "Similar TV Show name " + tvShow.getTitle());
 
             }
 
@@ -234,7 +233,7 @@ public class TVShowDetailsFragment extends Fragment {
 
     private void setReviewsViewModel() {
         viewModel.getTvShowReviews().observe(getViewLifecycleOwner(), reviews -> {
-            if (reviews == null ||reviews.size() == 0)return;
+            if (reviews == null || reviews.size() == 0) return;
             setReviewsRV(reviews);
         });
 

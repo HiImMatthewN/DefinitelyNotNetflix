@@ -58,7 +58,7 @@ public class MovieDetailsFragmentViewModel extends ViewModel {
 
     public void addMovieToList(Movie movie) {
         Log.d(TAG, "addMovieToList: Adding Movie...");
-        savedItemRepository.insertSavedItem(new SavedItem(movie.getMovieId()
+        savedItemRepository.insertSavedItem(new SavedItem(movie.getId()
                 , movie.getTitle(), movie.getPosterPath()));
     }
 

@@ -67,13 +67,13 @@ public class TVShowDetailsFragmentViewModel extends ViewModel {
     }
 
     public void addTvShowToList(TVShow show){
-        Log.d(TAG, "saveTvShowToList: Adding TV Show " + show.getName());
-        savedItemRepository.insertSavedItem(new SavedItem(tvId,show.getName(),show.getPosterPath()));
+        Log.d(TAG, "saveTvShowToList: Adding TV Show " + show.getTitle());
+        savedItemRepository.insertSavedItem(new SavedItem(tvId,show.getTitle(),show.getPosterPath()));
 
     }
     public void removeTvShowFromList(TVShow show){
-        Log.d(TAG, "removeTvShowFromList: Removing TV Show " + show.getName());
-        savedItemRepository.deleteSavedItem(new SavedItem(tvId,show.getName(),show.getPosterPath()));
+        Log.d(TAG, "removeTvShowFromList: Removing TV Show " + show.getTitle());
+        savedItemRepository.deleteSavedItem(new SavedItem(tvId,show.getTitle(),show.getPosterPath()));
     }
 
     public LiveData<TVShow> getTvShowDetails() {

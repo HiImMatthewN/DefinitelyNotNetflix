@@ -1,14 +1,15 @@
 package com.example.pinayflix.model.datamodel.movie;
 
 import com.example.pinayflix.model.datamodel.Genre;
+import com.example.pinayflix.model.datamodel.Item;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 
-public class Movie {
+public class Movie extends Item {
     @SerializedName("id")
-    private int movieId;
-    @SerializedName("title")
+    private int id;
+    @SerializedName("name")
     private String title;
     @SerializedName("genres")
     private ArrayList<Genre> genres;
@@ -81,7 +82,7 @@ public class Movie {
         return releaseDate;
     }
 
-    public int getMovieId() {
-        return movieId;
+    public int getId() {
+        return id;
     }
 }

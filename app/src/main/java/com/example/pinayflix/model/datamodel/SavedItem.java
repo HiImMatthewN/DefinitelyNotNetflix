@@ -5,18 +5,18 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "savedItems")
-public class SavedItem {
+public class SavedItem extends Item {
     @PrimaryKey
     @ColumnInfo(name ="id")
     private int id;
     @ColumnInfo(name ="name")
-    private String name;
+    private String title;
     @ColumnInfo(name = "poster_path")
     private String posterPath;
 
-    public SavedItem(int id, String name, String posterPath) {
+    public SavedItem(int id, String title, String posterPath) {
         this.id = id;
-        this.name = name;
+        this.title = title;
         this.posterPath = posterPath;
     }
 
@@ -24,8 +24,8 @@ public class SavedItem {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
     public String getPosterPath() {

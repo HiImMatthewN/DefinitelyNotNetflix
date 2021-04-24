@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -95,7 +96,7 @@ public class MainFragment extends Fragment {
         contentBinding = binder.content;
         statusBarView = contentBinding.statusBarView;
 
-                myListTV = binder.myListTV;
+        myListTV = binder.myListTV;
         parentRv = contentBinding.parentRv;
         parentRv.setLayoutManager(new SpeedyLinearLayoutManager(requireContext()));
         toolbar = binder.toolbar;
@@ -129,17 +130,16 @@ public class MainFragment extends Fragment {
 
         });
         mainFragmentViewModel.getOnDataClassification().observe(getViewLifecycleOwner(), dataClassification -> {
-            if (dataClassification == DataClassification.MOVIE){
+            if (dataClassification == DataClassification.MOVIE) {
                 createMovieRVAdapter();
                 handleCategoryOnClick(R.id.movieCategoryTV);
                 statusBarView.setVisibility(View.GONE);
-            }
-            else if (dataClassification == DataClassification.TV_SHOW){
+            } else if (dataClassification == DataClassification.TV_SHOW) {
                 createTVShowAdapter();
                 handleCategoryOnClick(R.id.tvShowCategoryTV);
                 statusBarView.setVisibility(View.GONE);
 
-            }else if(dataClassification == DataClassification.MY_LIST){
+            } else if (dataClassification == DataClassification.MY_LIST) {
                 createMyListAdapter();
                 handleCategoryOnClick(R.id.myListTV);
                 statusBarView.setVisibility(View.VISIBLE);
@@ -161,6 +161,22 @@ public class MainFragment extends Fragment {
         concatAdapter = new ConcatAdapter(highlightedMovieAdapter, movieParentAdapter);
         parentRv.setLayoutManager(new LinearLayoutManager(requireContext()));
         parentRv.setAdapter(concatAdapter);
+
+        highlightedMovieAdapter.getOnAddSelect().observe(getViewLifecycleOwner(), event -> {
+            Boolean isItemExists = mainFragmentViewModel.getSavedItemExists().getValue();
+            if (event.isHandled() || isItemExists == null) return;
+
+            if (isItemExists) {
+                mainFragmentViewModel.removeItemFromList(event.getContentIfNotHandled());
+                Toast.makeText(getContext(), "Removed to My List", Toast.LENGTH_SHORT).show();
+            } else {
+                mainFragmentViewModel.addItemToList(event.getContentIfNotHandled());
+                Toast.makeText(getContext(), "Added to My List", Toast.LENGTH_SHORT).show();
+
+            }
+
+
+        });
 
         movieParentAdapter.getSelectedMovie().observe(getViewLifecycleOwner(), selectedMovie -> {
                     MovieDetailsDialog dialog = new MovieDetailsDialog(selectedMovie);
@@ -188,7 +204,9 @@ public class MainFragment extends Fragment {
                 }
             }, 500);
         });
-
+        mainFragmentViewModel.getSavedItemExists().observe(getViewLifecycleOwner(), value -> {
+            highlightedMovieAdapter.isSelectedMovieSaved(value);
+        });
     }
 
     private void createTVShowAdapter() {
@@ -196,8 +214,20 @@ public class MainFragment extends Fragment {
         tvShowParentAdapter = new ParentTVShowAdapter(requestManager);
         concatAdapter = new ConcatAdapter(highlightedTVShowAdapter, tvShowParentAdapter);
         parentRv.setLayoutManager(new LinearLayoutManager(requireContext()));
-
         parentRv.setAdapter(concatAdapter);
+
+        highlightedTVShowAdapter.getOnAddSelect().observe(getViewLifecycleOwner(), event -> {
+            Boolean isItemExists = mainFragmentViewModel.getSavedItemExists().getValue();
+            if (event.isHandled() || isItemExists == null) return;
+
+            if (isItemExists) {
+                mainFragmentViewModel.removeItemFromList(event.getContentIfNotHandled());
+                Toast.makeText(getContext(), "Removed to My List", Toast.LENGTH_SHORT).show();
+            } else {
+                mainFragmentViewModel.addItemToList(event.getContentIfNotHandled());
+                Toast.makeText(getContext(), "Added to My List", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         tvShowParentAdapter.getSelectedTvShow().observe(getViewLifecycleOwner(),
                 selectedTvShow -> {
@@ -224,16 +254,19 @@ public class MainFragment extends Fragment {
                     swipeRefreshLayout.setRefreshing(false);
                 }
             }, 500);
-
-
+        });
+        mainFragmentViewModel.getSavedItemExists().observe(getViewLifecycleOwner(), value -> {
+            highlightedTVShowAdapter.isSelectedTvShowSaved(value);
         });
     }
-    private void createMyListAdapter(){
+
+    private void createMyListAdapter() {
         savedItemAdapter = new SavedItemAdapter(requestManager);
-        parentRv.setLayoutManager(new GridLayoutManager(requireContext(),3));
+        parentRv.setLayoutManager(new GridLayoutManager(requireContext(), 3));
         parentRv.setAdapter(savedItemAdapter);
 
     }
+
     private void initTVShowLiveData() {
         mainFragmentViewModel.getNowPlayingTvShows().observe(getViewLifecycleOwner(), nowPlayingTVShows -> {
 //            highlightedTVShowAdapter.insertData(nowPlayingTVShows.get(randomNum));
@@ -241,6 +274,8 @@ public class MainFragment extends Fragment {
         });
         mainFragmentViewModel.getHighlightedTvShow().observe(getViewLifecycleOwner(), tvShow -> {
             highlightedTVShowAdapter.insertData(tvShow);
+            mainFragmentViewModel.checkIfSavedItemExists(tvShow.getId());
+
         });
         mainFragmentViewModel.getPopularTvShows().observe(getViewLifecycleOwner(), popularTvShows -> {
             tvShowParentAdapter.insertData(new TVShowCategoryModel(DataGenre.Popular, popularTvShows));
@@ -262,12 +297,12 @@ public class MainFragment extends Fragment {
             tvShowParentAdapter.insertData(new TVShowCategoryModel(DataGenre.Documentary, documentaryTvShows));
 
         });
-        mainFragmentViewModel.getTvShowDetails().observe(getViewLifecycleOwner(),event ->{
-            if(event.isHandled()) return;
+        mainFragmentViewModel.getTvShowDetails().observe(getViewLifecycleOwner(), event -> {
+            if (event.isHandled()) return;
             int tvShowId = event.getContentIfNotHandled();
             Bundle bundle = new Bundle();
             bundle.putSerializable(TVShowDetailsFragment.DETAILS_KEY, tvShowId);
-            navController.navigate(R.id.action_mainFragment_to_TVShowDetailsFragment,bundle);
+            navController.navigate(R.id.action_mainFragment_to_TVShowDetailsFragment, bundle);
 
         });
 
@@ -283,6 +318,7 @@ public class MainFragment extends Fragment {
 
         mainFragmentViewModel.getHighlightedMovieLiveData().observe(getViewLifecycleOwner(), movie -> {
             highlightedMovieAdapter.insertData(movie);
+            mainFragmentViewModel.checkIfSavedItemExists(movie.getId());
 
         });
 
@@ -324,15 +360,17 @@ public class MainFragment extends Fragment {
 
         });
     }
-    private void initSavedItemsLiveData(){
-        mainFragmentViewModel.getSavedItems().observe(getViewLifecycleOwner(),savedItems -> {
-            if (savedItems == null  || savedItems.size() == 0) return;
-                savedItemAdapter.insertData(savedItems);
+
+    private void initSavedItemsLiveData() {
+        mainFragmentViewModel.getSavedItems().observe(getViewLifecycleOwner(), savedItems -> {
+            if (savedItems == null || savedItems.size() == 0) return;
+            savedItemAdapter.insertData(savedItems);
 
         });
 
 
     }
+
     private void handleCategoryOnClick(int id) {
         switch (id) {
             case R.id.movieCategoryTV:
