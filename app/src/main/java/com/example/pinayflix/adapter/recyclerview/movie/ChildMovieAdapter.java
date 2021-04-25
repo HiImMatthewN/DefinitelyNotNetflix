@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.pinayflix.R;
 import com.example.pinayflix.callback.OnMovieRequest;
 import com.example.pinayflix.databinding.ItemChildBinding;
@@ -30,8 +32,9 @@ public class ChildMovieAdapter extends RecyclerView.Adapter<ChildMovieAdapter.Ch
     public ChildMovieAdapter(MovieCategoryModel movieCategoryModel, OnMovieRequest callback,RequestManager requestManager) {
         this.callback = callback;
         this.data = movieCategoryModel.getMovies();
-        notifyDataSetChanged();
         this.requestManager = requestManager;
+
+        notifyDataSetChanged();
     }
 
     public void insertData(List<Movie> movies) {
@@ -55,6 +58,7 @@ public class ChildMovieAdapter extends RecyclerView.Adapter<ChildMovieAdapter.Ch
         Movie movie = data.get(position);
         ImageView target = holder.posterImageView;
         requestManager.load(Uri.parse(Utils.POSTER_PATH + movie.getPosterPath()))
+                .apply(new RequestOptions().transform(new RoundedCorners(16)))
                 .into(target);
         holder.setOnClick(movie);
 
@@ -76,6 +80,7 @@ public class ChildMovieAdapter extends RecyclerView.Adapter<ChildMovieAdapter.Ch
         public void setOnClick(Movie movie) {
             posterImageView.setOnClickListener(btn -> {
                 callback.onMovieSelected(movie);
+
             });
             posterImageView.setOnLongClickListener(btn -> {
                 Toast.makeText(itemView.getContext(), movie.getTitle(), Toast.LENGTH_SHORT).show();

@@ -4,11 +4,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.pinayflix.R;
 import com.example.pinayflix.databinding.ItemSimilarTvShowsBinding;
 import com.example.pinayflix.model.datamodel.SavedItem;
@@ -41,7 +44,12 @@ public class SavedItemAdapter extends RecyclerView.Adapter<SavedItemAdapter.Save
     public void onBindViewHolder(@NonNull SavedItemViewHolder holder, int position) {
         SavedItem savedItem = data.get(position);
         requestManager.load(Utils.POSTER_PATH +savedItem.getPosterPath())
+                .apply(new RequestOptions().transform(new RoundedCorners(16)))
+
                 .into(holder.posterIv);
+
+        holder.bind(savedItem);
+
     }
 
     @Override
@@ -55,7 +63,12 @@ public class SavedItemAdapter extends RecyclerView.Adapter<SavedItemAdapter.Save
         public SavedItemViewHolder(@NonNull ItemSimilarTvShowsBinding binder) {
             super(binder.getRoot());
             posterIv = binder.posterIv;
-
+        }
+        public void bind(SavedItem savedItem){
+            posterIv.setOnLongClickListener(btn ->{
+                Toast.makeText(itemView.getContext(),savedItem.getTitle(),Toast.LENGTH_SHORT).show();
+                return true;
+            });
         }
     }
 }

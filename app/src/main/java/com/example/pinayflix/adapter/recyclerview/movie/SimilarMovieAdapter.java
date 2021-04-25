@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.pinayflix.R;
 import com.example.pinayflix.databinding.ItemSimilarTvShowsBinding;
 import com.example.pinayflix.model.datamodel.movie.Movie;
@@ -45,6 +47,8 @@ public class SimilarMovieAdapter extends RecyclerView.Adapter<SimilarMovieAdapte
 
         requestManager
                 .load(Uri.parse(Utils.POSTER_PATH + tvShow.getPosterPath())).transform(new CenterCrop())
+                .apply(new RequestOptions().transform(new RoundedCorners(16)))
+
                 .into(target);
 
     }

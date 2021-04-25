@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.pinayflix.R;
 import com.example.pinayflix.callback.OnTVShowRequest;
 import com.example.pinayflix.databinding.ItemChildBinding;
@@ -59,6 +61,7 @@ public class ChildTVShowAdapter extends RecyclerView.Adapter<ChildTVShowAdapter.
 
         requestManager
                 .load(Uri.parse(Utils.POSTER_PATH + tvShow.getPosterPath()))
+                .apply(new RequestOptions().transform(new RoundedCorners(16)))
                 .into(target);
         holder.setOnClick(tvShow);
 

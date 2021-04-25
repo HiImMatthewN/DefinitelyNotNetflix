@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class Movie extends Item {
     @SerializedName("id")
     private int id;
-    @SerializedName("name")
+    @SerializedName("title")
     private String title;
     @SerializedName("genres")
     private ArrayList<Genre> genres;

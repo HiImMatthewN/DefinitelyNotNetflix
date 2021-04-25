@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,7 +58,7 @@ public class MainFragment extends Fragment {
     private LayoutContentBinding contentBinding;
     private CollapsingToolbarLayout toolbar;
     private View statusBarView;
-
+    private ImageButton searchBtn;
     //Adapters
     private ParentMovieAdapter movieParentAdapter;
     private HighlightedMovieAdapter highlightedMovieAdapter;
@@ -95,11 +96,12 @@ public class MainFragment extends Fragment {
         tvListCategoryTV = binder.tvShowCategoryTV;
         contentBinding = binder.content;
         statusBarView = contentBinding.statusBarView;
-
         myListTV = binder.myListTV;
         parentRv = contentBinding.parentRv;
         parentRv.setLayoutManager(new SpeedyLinearLayoutManager(requireContext()));
         toolbar = binder.toolbar;
+        searchBtn  = binder.searchBtn;
+
 
 
         createMovieRVAdapter();
@@ -110,6 +112,10 @@ public class MainFragment extends Fragment {
             params.topMargin = insets.getSystemWindowInsetTop();
             return insets.consumeSystemWindowInsets();
         });
+        searchBtn.setOnClickListener(btn ->{
+            navController.navigate(R.id.action_mainFragment_to_searchFragment);
+        });
+
 
         movieCategoryTV.setOnClickListener(btn -> {
             handleCategoryOnClick(btn.getId());
