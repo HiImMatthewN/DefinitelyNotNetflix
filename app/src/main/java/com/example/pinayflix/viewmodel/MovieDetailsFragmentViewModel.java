@@ -94,5 +94,6 @@ public class MovieDetailsFragmentViewModel extends ViewModel {
     protected void onCleared() {
         super.onCleared();
         savedItemRepository.disposeSubscribers();
+        movieRepository.disposeSubscribers();
     }
 }
