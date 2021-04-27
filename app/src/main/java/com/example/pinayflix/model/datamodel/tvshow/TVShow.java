@@ -31,6 +31,8 @@ public class TVShow extends Item {
     private double voteAverage;
     @SerializedName("number_of_seasons")
     private int numOfSeasons;
+    @SerializedName("vote_count")
+    private int voteCount;
 
     public String getOverview() {
         return overview;
@@ -79,5 +81,9 @@ public class TVShow extends Item {
 
     public String getTitle() {
         return title;
+    }
+
+    public int getVoteCount() {
+        return voteCount;
     }
 }

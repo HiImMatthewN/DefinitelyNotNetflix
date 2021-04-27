@@ -9,12 +9,14 @@ import com.example.pinayflix.model.datamodel.review.Review;
 import com.example.pinayflix.model.datamodel.trailer.Trailer;
 import com.example.pinayflix.model.datamodel.tvshow.Season;
 import com.example.pinayflix.model.datamodel.tvshow.TVShow;
+import com.example.pinayflix.model.datamodel.tvshow.TVShowResult;
 import com.example.pinayflix.network.TVShowService;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -73,7 +75,10 @@ public class TVShowRepository {
 
     public void requestNowPlayingTvShows(int page) {
 
-        Disposable disposable = tvShowService.getOnTheAirTVShow(page).subscribeOn(Schedulers.io())
+        Disposable disposable = tvShowService.getOnTheAirTVShow(page)
+
+
+                .subscribeOn(Schedulers.io())
                 .subscribe(tvShowResult -> {
                     if (tvShowResult == null) return;
                     nowPlayingTvShowsLiveData.postValue(tvShowResult.getTvShows());
@@ -82,28 +87,43 @@ public class TVShowRepository {
     }
 
     public void requestMysteryTvShows(String genre, int page, String firstAirDate, int requiredVoteCount) {
-        Disposable disposable = tvShowService.getTvShowByGenre(genre, page, firstAirDate, requiredVoteCount).subscribeOn(Schedulers.io())
+        Disposable disposable = tvShowService.getTvShowByGenre(genre, page, firstAirDate)
+                .map(TVShowResult::getTvShows)
+                .flatMap(Observable::fromIterable)
+                .filter(tvShow -> tvShow.getVoteCount() >= requiredVoteCount)
+                .subscribeOn(Schedulers.io())
+                .toList()
                 .subscribe(tvShowResult -> {
                     if (tvShowResult == null) return;
-                    mysteryTvShowsLiveData.postValue(tvShowResult.getTvShows());
+                    mysteryTvShowsLiveData.postValue(tvShowResult);
                 });
         compositeDisposable.add(disposable);
     }
 
     public void requestRomanceTvShows(String genre, int page, String firstAirDate, int requiredVoteCount) {
-        Disposable disposable = tvShowService.getTvShowByGenre(genre, page, firstAirDate, requiredVoteCount).subscribeOn(Schedulers.io())
+        Disposable disposable = tvShowService.getTvShowByGenre(genre, page, firstAirDate)
+                .map(TVShowResult::getTvShows)
+                .flatMap(Observable::fromIterable)
+                .filter(tvShow -> tvShow.getVoteCount() >= requiredVoteCount)
+                .subscribeOn(Schedulers.io())
+                .toList()
                 .subscribe(tvShowResult -> {
                     if (tvShowResult == null) return;
-                    romanceTvShowsLiveData.postValue(tvShowResult.getTvShows());
+                    romanceTvShowsLiveData.postValue(tvShowResult);
                 });
         compositeDisposable.add(disposable);
     }
 
     public void requestDocumentaryTvShows(String genre, int page, String firstAirDate, int requiredVoteCount) {
-        Disposable disposable = tvShowService.getTvShowByGenre(genre, page, firstAirDate, requiredVoteCount).subscribeOn(Schedulers.io())
+        Disposable disposable = tvShowService.getTvShowByGenre(genre, page, firstAirDate)
+                .map(TVShowResult::getTvShows)
+                .flatMap(Observable::fromIterable)
+                .filter(tvShow -> tvShow.getVoteCount() >= requiredVoteCount)
+                .subscribeOn(Schedulers.io())
+                .toList()
                 .subscribe(tvShowResult -> {
                     if (tvShowResult == null) return;
-                    documentaryTvShowsLiveData.postValue(tvShowResult.getTvShows());
+                    documentaryTvShowsLiveData.postValue(tvShowResult);
                 });
         compositeDisposable.add(disposable);
     }
@@ -139,10 +159,15 @@ public class TVShowRepository {
     }
 
     public void requestNewTvShowsByGenre(String genre, int page, String firstAirDate, int requiredVoteCount) {
-        Disposable disposable = tvShowService.getTvShowByGenre(genre, page, firstAirDate, requiredVoteCount).subscribeOn(Schedulers.io())
+        Disposable disposable = tvShowService.getTvShowByGenre(genre, page, firstAirDate)
+                .map(TVShowResult::getTvShows)
+                .flatMap(Observable::fromIterable)
+                .filter(tvShow -> tvShow.getVoteCount() >= requiredVoteCount)
+                .subscribeOn(Schedulers.io())
+                .toList()
                 .subscribe(tvShowResult -> {
                     if (tvShowResult == null) return;
-                    requestNewTvShows.postValue(tvShowResult.getTvShows());
+                    requestNewTvShows.postValue(tvShowResult);
                 });
         compositeDisposable.add(disposable);
     }

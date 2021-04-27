@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.pinayflix.model.datamodel.movie.Movie;
+import com.example.pinayflix.model.datamodel.movie.MovieResult;
 import com.example.pinayflix.model.datamodel.review.Review;
 import com.example.pinayflix.model.datamodel.trailer.Trailer;
 import com.example.pinayflix.network.MovieService;
@@ -14,6 +15,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -24,7 +26,7 @@ public class MovieRepository {
 
 
     // LiveData For Initialization
-    private MutableLiveData<List<Movie>> popularMoviesLiveData= new MutableLiveData<>();
+    private MutableLiveData<List<Movie>> popularMoviesLiveData = new MutableLiveData<>();
     private MutableLiveData<List<Movie>> upcomingMoviesLiveData = new MutableLiveData<>();
     private MutableLiveData<List<Movie>> horrorMoviesLiveData = new MutableLiveData<>();
     private MutableLiveData<List<Movie>> documentaryLiveData = new MutableLiveData<>();
@@ -43,7 +45,7 @@ public class MovieRepository {
     private MutableLiveData<Movie> movieDetailsLiveData = new MutableLiveData<>();
 
     //Reviews
-    private MutableLiveData<List<Review>> reviewsLiveData =  new MutableLiveData<>();
+    private MutableLiveData<List<Review>> reviewsLiveData = new MutableLiveData<>();
     private MutableLiveData<List<Movie>> recoMovieLiveData = new MutableLiveData<>();
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
@@ -67,37 +69,49 @@ public class MovieRepository {
     }
 
     public void requestNowPlayingMovies(int page) {
-      Disposable disposable =   movieService.getNowPlayingMovies(String.valueOf(page))
-        .subscribeOn(Schedulers.io()).subscribe(movieResult -> {
-            if (movieResult == null) return;
-            nowPlayingLiveData.postValue(movieResult.getMovies());
-        });
+        Disposable disposable = movieService.getNowPlayingMovies(String.valueOf(page))
+                .subscribeOn(Schedulers.io()).subscribe(movieResult -> {
+                    if (movieResult == null) return;
+                    nowPlayingLiveData.postValue(movieResult.getMovies());
+                });
         compositeDisposable.add(disposable);
     }
 
     public void requestHorrorMovies(String genre, int page, String startReleaseDate, int requiredVoteCount) {
-        Disposable disposable = movieService.getMoviesByGenre(genre, page, startReleaseDate, requiredVoteCount)
-                .subscribeOn(Schedulers.io()).subscribe(movieResult -> {
+        Disposable disposable = movieService.getMoviesByGenre(genre, page, startReleaseDate)
+                .map(MovieResult::getMovies)
+                .flatMap(Observable::fromIterable)
+                .filter(movie -> movie.getVoteCount() >= requiredVoteCount)
+                .toList()
+                .subscribeOn(Schedulers.io())
+                .subscribe(movieResult -> {
                     if (movieResult == null) return;
-                    horrorMoviesLiveData.postValue(movieResult.getMovies());
+                    horrorMoviesLiveData.postValue(movieResult);
                 });
         compositeDisposable.add(disposable);
     }
 
     public void requestDocumentaryMovies(String genre, int page, String startReleaseDate, int requiredVoteCount) {
-        Disposable disposable = movieService.getMoviesByGenre(genre, page, startReleaseDate, requiredVoteCount)
-                .subscribeOn(Schedulers.io()).subscribe(movieResult -> {
+        Disposable disposable = movieService.getMoviesByGenre(genre, page, startReleaseDate)
+                .map(MovieResult::getMovies)
+                .subscribeOn(Schedulers.io())
+                .subscribe(movieResult -> {
                     if (movieResult == null) return;
-                    documentaryLiveData.postValue(movieResult.getMovies());
+                    documentaryLiveData.postValue(movieResult);
                 });
         compositeDisposable.add(disposable);
     }
 
     public void requestRomanceMovies(String genre, int page, String startReleaseDate, int requiredVoteCount) {
-        Disposable disposable = movieService.getMoviesByGenre(genre, page, startReleaseDate, requiredVoteCount)
-                .subscribeOn(Schedulers.io()).subscribe(movieResult -> {
+        Disposable disposable = movieService.getMoviesByGenre(genre, page, startReleaseDate)
+                .map(MovieResult::getMovies)
+                .flatMap(Observable::fromIterable)
+                .filter(movie -> movie.getVoteCount() >= requiredVoteCount)
+                .toList()
+                .subscribeOn(Schedulers.io())
+                .subscribe(movieResult -> {
                     if (movieResult == null) return;
-                    romanceMoviesLiveData.postValue(movieResult.getMovies());
+                    romanceMoviesLiveData.postValue(movieResult);
                 });
         compositeDisposable.add(disposable);
 
@@ -132,10 +146,15 @@ public class MovieRepository {
     }
 
     public void requestNewMovieByGenre(String genre, int page, String startReleaseDate, int requiredVoteCount) {
-        Disposable disposable = movieService.getMoviesByGenre(genre, page, startReleaseDate
-                , requiredVoteCount).subscribeOn(Schedulers.io()).subscribe(movieResult -> {
+        Disposable disposable = movieService.getMoviesByGenre(genre, page, startReleaseDate)
+                .map(MovieResult::getMovies)
+                .flatMap(Observable::fromIterable)
+                .filter(movie -> movie.getVoteCount() >= requiredVoteCount)
+                .toList()
+                .subscribeOn(Schedulers.io())
+              .subscribe(movieResult -> {
             if (movieResult == null) return;
-            requestNewMoviesLiveData.postValue(movieResult.getMovies());
+            requestNewMoviesLiveData.postValue(movieResult);
         });
         compositeDisposable.add(disposable);
 

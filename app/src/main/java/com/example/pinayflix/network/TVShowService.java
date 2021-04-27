@@ -6,6 +6,7 @@ import com.example.pinayflix.model.datamodel.tvshow.Season;
 import com.example.pinayflix.model.datamodel.tvshow.TVShow;
 import com.example.pinayflix.model.datamodel.tvshow.TVShowResult;
 
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -23,9 +24,8 @@ public interface TVShowService {
     Single<TVShowResult> getAiringToday(@Query("page") int page);
 
     @GET("discover/tv")
-    Single<TVShowResult> getTvShowByGenre(@Query("with_genres") String genre, @Query("page") int page,
-                                       @Query("first_air_date.gte") String release,
-                                       @Query("vote_count.gte") int voteCount);
+    Observable<TVShowResult> getTvShowByGenre(@Query("with_genres") String genre, @Query("page") int page,
+                                              @Query("first_air_date.gte") String release);
 
     @GET("tv/{id}")
     Single<TVShow> getTvShowDetails(@Path("id") int id);

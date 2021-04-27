@@ -5,6 +5,7 @@ import com.example.pinayflix.model.datamodel.movie.MovieResult;
 import com.example.pinayflix.model.datamodel.review.ReviewResult;
 import com.example.pinayflix.model.datamodel.trailer.TrailerResult;
 
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -28,9 +29,8 @@ public interface MovieService {
     Single<Movie> getLatestMovie();
 
     @GET("discover/movie")
-    Single<MovieResult> getMoviesByGenre(@Query("with_genres") String genre, @Query("page") int page,
-                                       @Query("primary_release_date.gte") String release,
-                                       @Query("vote_count.gte") int voteCount);
+    Observable<MovieResult> getMoviesByGenre(@Query("with_genres") String genre, @Query("page") int page,
+                                             @Query("primary_release_date.gte") String release);
     @GET("movie/{id}/videos")
     Single<TrailerResult> getTrailer(@Path("id")int movieId);
 

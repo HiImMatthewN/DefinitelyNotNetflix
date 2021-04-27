@@ -26,7 +26,8 @@ public class Movie extends Item {
     private int runTime;
     @SerializedName("genre_ids")
     private ArrayList<Integer> genreIds;
-
+    @SerializedName("vote_count")
+    private int voteCount;
     public double getVoteAverage() {
         return voteAverage;
     }
@@ -84,5 +85,9 @@ public class Movie extends Item {
 
     public int getId() {
         return id;
+    }
+
+    public int getVoteCount() {
+        return voteCount;
     }
 }
