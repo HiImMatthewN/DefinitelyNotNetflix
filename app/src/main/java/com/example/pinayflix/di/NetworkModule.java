@@ -48,6 +48,7 @@ public class NetworkModule {
                 .client(client)
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory( RxJava3CallAdapterFactory.create())
                 .build().create(TVShowService.class);
 
     }
