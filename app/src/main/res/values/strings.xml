@@ -2,4 +2,19 @@
     <string name="app_name">DefinitelyNotNetflix</string>
     <string name="tmdb_api_key">1a9be3fd53844f172e7fb74a75a6c5fd</string>
     <string name="youtube_player_developer_key">AIzaSyDWZ0jbYT_KNPRhItwqtwJKgpJTPVteRNo</string>
+
+
+    <string name="my_list">My List</string>
+    <string name="play">Play</string>
+    <string name="details">Details</string>
+    <string name="movie">Movie</string>
+    <string name="tv_show">TV Show</string>
+    <string name="info">Info</string>
+    <string name="ave_vote">Average Vote:</string>
+    <string name="rate">Rate</string>
+    <string name="share">Share</string>
+
+
+
+
 </resources>

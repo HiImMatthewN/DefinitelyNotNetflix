@@ -6,9 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.pinayflix.model.datamodel.review.Review;
-import com.example.pinayflix.model.datamodel.review.ReviewResult;
 import com.example.pinayflix.model.datamodel.trailer.Trailer;
-import com.example.pinayflix.model.datamodel.trailer.TrailerResult;
 import com.example.pinayflix.model.datamodel.tvshow.Season;
 import com.example.pinayflix.model.datamodel.tvshow.TVShow;
 import com.example.pinayflix.model.datamodel.tvshow.TVShowResult;
@@ -18,31 +16,34 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class TVShowRepository {
 
     private TVShowService tvShowService;
 
-    private MutableLiveData<List<TVShow>> popularTvShowsLiveData;
-    private MutableLiveData<List<TVShow>> upcomingTvShowsLiveData;
-    private MutableLiveData<List<TVShow>> nowPlayingTvShowsLiveData;
-    private MutableLiveData<List<TVShow>> mysteryTvShowsLiveData;
-    private MutableLiveData<List<TVShow>> romanceTvShowsLiveData;
-    private MutableLiveData<List<TVShow>> documentaryTvShowsLiveData;
-    private MutableLiveData<List<Trailer>> trailerTvShowLiveData;
+    private MutableLiveData<List<TVShow>> popularTvShowsLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<TVShow>> upcomingTvShowsLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<TVShow>> nowPlayingTvShowsLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<TVShow>> mysteryTvShowsLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<TVShow>> romanceTvShowsLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<TVShow>> documentaryTvShowsLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<Trailer>> trailerTvShowLiveData = new MutableLiveData<>();
 
-    private MutableLiveData<List<TVShow>> requestNewTvShows;
+    private MutableLiveData<List<TVShow>> requestNewTvShows = new MutableLiveData<>();
 
     //LiveData for TvShowDetails
-    private MutableLiveData<TVShow> tvShowDetailsLiveData;
+    private MutableLiveData<TVShow> tvShowDetailsLiveData = new MutableLiveData<>();
 
-    private MutableLiveData<Season> tvShowSeasonLiveData;
-    private MutableLiveData<List<TVShow>> recoTvShowLiveData;
+    private MutableLiveData<Season> tvShowSeasonLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<TVShow>> recoTvShowLiveData = new MutableLiveData<>();
 
-    private MutableLiveData<List<Review>> tvShowReviewsLiveData;
+    private MutableLiveData<List<Review>> tvShowReviewsLiveData = new MutableLiveData<>();
+
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private String TAG = "TVShowRepository";
 
@@ -50,289 +51,163 @@ public class TVShowRepository {
     @Inject
     public TVShowRepository(TVShowService tvShowService) {
         this.tvShowService = tvShowService;
-
-        popularTvShowsLiveData = new MutableLiveData<>();
-        upcomingTvShowsLiveData = new MutableLiveData<>();
-        nowPlayingTvShowsLiveData = new MutableLiveData<>();
-        mysteryTvShowsLiveData = new MutableLiveData<>();
-        romanceTvShowsLiveData = new MutableLiveData<>();
-        documentaryTvShowsLiveData = new MutableLiveData<>();
-        trailerTvShowLiveData = new MutableLiveData<>();
-        requestNewTvShows = new MutableLiveData<>();
-        tvShowDetailsLiveData = new MutableLiveData<>();
-        tvShowSeasonLiveData = new MutableLiveData<>();
-        recoTvShowLiveData = new MutableLiveData<>();
-        tvShowReviewsLiveData = new MutableLiveData<>();
     }
-
 
     public void requestPopularTvShows(int page) {
 
-        tvShowService.getPopularTVShow(page).enqueue(new Callback<TVShowResult>() {
-            @Override
-            public void onResponse(Call<TVShowResult> call, Response<TVShowResult> response) {
-                if (response.isSuccessful() && response.body() != null)
-                    popularTvShowsLiveData.postValue(response.body().getTvShows());
-                Log.d(TAG, "onResponse: GET Popular TV Show Success");
-            }
-
-            @Override
-            public void onFailure(Call<TVShowResult> call, Throwable t) {
-                Log.d(TAG, "onResponse: GET Popular TV Show Failed" + t.getMessage());
-
-            }
-        });
-
+        Disposable disposable = tvShowService.getPopularTVShow(page).subscribeOn(Schedulers.io())
+                .subscribe(tvShowResult -> {
+                    if (tvShowResult == null) return;
+                    popularTvShowsLiveData.postValue(tvShowResult.getTvShows());
+                });
+        compositeDisposable.add(disposable);
     }
 
     public void requestUpcomingTvShows(int page) {
 
-        tvShowService.getAiringToday(page).enqueue(new Callback<TVShowResult>() {
-            @Override
-            public void onResponse(Call<TVShowResult> call, Response<TVShowResult> response) {
-                if (response.isSuccessful() && response.body() != null)
-                    upcomingTvShowsLiveData.postValue(response.body().getTvShows());
-                Log.d(TAG, "onResponse: GET Upcoming TV Show Success");
-            }
-
-            @Override
-            public void onFailure(Call<TVShowResult> call, Throwable t) {
-                Log.d(TAG, "onResponse: GET Popular TV Show Failed" + t.getMessage());
-
-            }
-        });
-
+        Disposable disposable = tvShowService.getAiringToday(page).subscribeOn(Schedulers.io())
+                .subscribe(tvShowResult -> {
+                    if (tvShowResult == null) return;
+                    upcomingTvShowsLiveData.postValue(tvShowResult.getTvShows());
+                });
+        compositeDisposable.add(disposable);
     }
 
     public void requestNowPlayingTvShows(int page) {
 
-        tvShowService.getOnTheAirTVShow(page).enqueue(new Callback<TVShowResult>() {
-            @Override
-            public void onResponse(Call<TVShowResult> call, Response<TVShowResult> response) {
-                if (response.isSuccessful() && response.body() != null)
-                    nowPlayingTvShowsLiveData.postValue(response.body().getTvShows());
-                Log.d(TAG, "onResponse: GET Now Playing TV Show Success");
-            }
+        Disposable disposable = tvShowService.getOnTheAirTVShow(page)
 
-            @Override
-            public void onFailure(Call<TVShowResult> call, Throwable t) {
-                Log.d(TAG, "onResponse: GET Popular TV Show Failed" + t.getMessage());
 
-            }
-        });
+                .subscribeOn(Schedulers.io())
+                .subscribe(tvShowResult -> {
+                    if (tvShowResult == null) return;
+                    nowPlayingTvShowsLiveData.postValue(tvShowResult.getTvShows());
+                });
+        compositeDisposable.add(disposable);
     }
 
     public void requestMysteryTvShows(String genre, int page, String firstAirDate, int requiredVoteCount) {
-        tvShowService.getTvShowByGenre(genre, page, firstAirDate, requiredVoteCount).enqueue(new Callback<TVShowResult>() {
-            @Override
-            public void onResponse(Call<TVShowResult> call, Response<TVShowResult> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    mysteryTvShowsLiveData.postValue(response.body().getTvShows());
-                    Log.d(TAG, "onResponse: Mystery size " + response.body().getTvShows().size());
-                    Log.d(TAG, "onResponse: GET Mystery TV Show Success");
-
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<TVShowResult> call, Throwable t) {
-                Log.d(TAG, "onResponse: GET Horror TV Show Failed" + t.getMessage());
-
-            }
-        });
+        Disposable disposable = tvShowService.getTvShowByGenre(genre, page, firstAirDate)
+                .map(TVShowResult::getTvShows)
+                .flatMap(Observable::fromIterable)
+                .filter(tvShow -> tvShow.getVoteCount() >= requiredVoteCount)
+                .subscribeOn(Schedulers.io())
+                .toList()
+                .subscribe(tvShowResult -> {
+                    if (tvShowResult == null) return;
+                    mysteryTvShowsLiveData.postValue(tvShowResult);
+                });
+        compositeDisposable.add(disposable);
     }
 
     public void requestRomanceTvShows(String genre, int page, String firstAirDate, int requiredVoteCount) {
-        tvShowService.getTvShowByGenre(genre, page, firstAirDate, requiredVoteCount).enqueue(new Callback<TVShowResult>() {
-            @Override
-            public void onResponse(Call<TVShowResult> call, Response<TVShowResult> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    romanceTvShowsLiveData.postValue(response.body().getTvShows());
-                    Log.d(TAG, "onResponse: GET Romance TV Show Success");
-
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<TVShowResult> call, Throwable t) {
-                Log.d(TAG, "onResponse: GET Romance TV Show Failed" + t.getMessage());
-
-            }
-        });
+        Disposable disposable = tvShowService.getTvShowByGenre(genre, page, firstAirDate)
+                .map(TVShowResult::getTvShows)
+                .flatMap(Observable::fromIterable)
+                .filter(tvShow -> tvShow.getVoteCount() >= requiredVoteCount)
+                .subscribeOn(Schedulers.io())
+                .toList()
+                .subscribe(tvShowResult -> {
+                    if (tvShowResult == null) return;
+                    romanceTvShowsLiveData.postValue(tvShowResult);
+                });
+        compositeDisposable.add(disposable);
     }
 
     public void requestDocumentaryTvShows(String genre, int page, String firstAirDate, int requiredVoteCount) {
-        tvShowService.getTvShowByGenre(genre, page, firstAirDate, requiredVoteCount).enqueue(new Callback<TVShowResult>() {
-            @Override
-            public void onResponse(Call<TVShowResult> call, Response<TVShowResult> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    documentaryTvShowsLiveData.postValue(response.body().getTvShows());
-                    Log.d(TAG, "onResponse: GET Documentary TV Show Success");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<TVShowResult> call, Throwable t) {
-                Log.d(TAG, "onResponse: GET Documentary TV Show Failed" + t.getMessage());
-
-            }
-        });
+        Disposable disposable = tvShowService.getTvShowByGenre(genre, page, firstAirDate)
+                .map(TVShowResult::getTvShows)
+                .flatMap(Observable::fromIterable)
+                .filter(tvShow -> tvShow.getVoteCount() >= requiredVoteCount)
+                .subscribeOn(Schedulers.io())
+                .toList()
+                .subscribe(tvShowResult -> {
+                    if (tvShowResult == null) return;
+                    documentaryTvShowsLiveData.postValue(tvShowResult);
+                });
+        compositeDisposable.add(disposable);
     }
 
     public void requestTvShowTrailer(int tvShowId) {
-        tvShowService.getTrailer(tvShowId).enqueue(new Callback<TrailerResult>() {
-            @Override
-            public void onResponse(Call<TrailerResult> call, Response<TrailerResult> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    trailerTvShowLiveData.postValue(response.body().getTrailers());
-                    Log.d(TAG, "onResponse: GET TV Show Trailer Success");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<TrailerResult> call, Throwable t) {
-                Log.d(TAG, "onResponse: GET TV Show Trailer Failed" + t.getMessage());
-
-            }
-        });
-
+        Disposable disposable = tvShowService.getTrailer(tvShowId).subscribeOn(Schedulers.io())
+                .subscribe(trailerResult -> {
+                    if (trailerResult == null) return;
+                    trailerTvShowLiveData.postValue(trailerResult.getTrailers());
+                });
+        compositeDisposable.add(disposable);
 
     }
 
     public void requestNewPopularTvShows(int page) {
 
-        tvShowService.getPopularTVShow(page).enqueue(new Callback<TVShowResult>() {
-            @Override
-            public void onResponse(Call<TVShowResult> call, Response<TVShowResult> response) {
-                if (response.isSuccessful() && response.body() != null)
-                    requestNewTvShows.postValue(response.body().getTvShows());
-            }
-
-            @Override
-            public void onFailure(Call<TVShowResult> call, Throwable t) {
-
-            }
-        });
-
+        Disposable disposable = tvShowService.getPopularTVShow(page).subscribeOn(Schedulers.io())
+                .subscribe(tvShowResult -> {
+                    if (tvShowResult == null) return;
+                    requestNewTvShows.postValue(tvShowResult.getTvShows());
+                });
+        compositeDisposable.add(disposable);
     }
 
     public void requestNewUpcomingTvShows(int page) {
 
-        tvShowService.getAiringToday(page).enqueue(new Callback<TVShowResult>() {
-            @Override
-            public void onResponse(Call<TVShowResult> call, Response<TVShowResult> response) {
-                if (response.isSuccessful() && response.body() != null)
-                    requestNewTvShows.postValue(response.body().getTvShows());
-            }
-
-            @Override
-            public void onFailure(Call<TVShowResult> call, Throwable t) {
-
-            }
-        });
-
+        Disposable disposable = tvShowService.getAiringToday(page).subscribeOn(Schedulers.io())
+                .subscribe(tvShowResult -> {
+                    if (tvShowResult == null) return;
+                    requestNewTvShows.postValue(tvShowResult.getTvShows());
+                });
+        compositeDisposable.add(disposable);
     }
 
     public void requestNewTvShowsByGenre(String genre, int page, String firstAirDate, int requiredVoteCount) {
-        tvShowService.getTvShowByGenre(genre, page, firstAirDate, requiredVoteCount).enqueue(new Callback<TVShowResult>() {
-            @Override
-            public void onResponse(Call<TVShowResult> call, Response<TVShowResult> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    requestNewTvShows.postValue(response.body().getTvShows());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<TVShowResult> call, Throwable t) {
-
-
-            }
-        });
+        Disposable disposable = tvShowService.getTvShowByGenre(genre, page, firstAirDate)
+                .map(TVShowResult::getTvShows)
+                .flatMap(Observable::fromIterable)
+                .filter(tvShow -> tvShow.getVoteCount() >= requiredVoteCount)
+                .subscribeOn(Schedulers.io())
+                .toList()
+                .subscribe(tvShowResult -> {
+                    if (tvShowResult == null) return;
+                    requestNewTvShows.postValue(tvShowResult);
+                });
+        compositeDisposable.add(disposable);
     }
 
     public void requestTvShowDetails(int tvShowId) {
-        tvShowService.getTvShowDetails(tvShowId).enqueue(new Callback<TVShow>() {
-            @Override
-            public void onResponse(Call<TVShow> call, Response<TVShow> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    tvShowDetailsLiveData.postValue(response.body());
-                    Log.d(TAG, "onResponse: GET TVShowDetails success");
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<TVShow> call, Throwable t) {
-                Log.d(TAG, "onFailure: GET TVShowDetails failed " + t.getMessage());
-            }
-        });
+        Disposable disposable = tvShowService.getTvShowDetails(tvShowId).subscribeOn(Schedulers.io())
+                .subscribe(tvShow -> {
+                    if (tvShow == null) return;
+                    tvShowDetailsLiveData.postValue(tvShow);
+                });
+        compositeDisposable.add(disposable);
     }
 
     public void requestTvShowSeason(int tvShowId, int seasonNum) {
-        tvShowService.getSeason(tvShowId, seasonNum).enqueue(new Callback<Season>() {
-            @Override
-            public void onResponse(Call<Season> call, Response<Season> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    tvShowSeasonLiveData.postValue(response.body());
-                    Log.d(TAG, "onResponse: GET TV Season success");
-
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<Season> call, Throwable t) {
-                Log.d(TAG, "onResponse: GET TV Season failed " + t.getMessage());
-
-            }
-        });
+        Disposable disposable = tvShowService.getSeason(tvShowId, seasonNum).subscribeOn(Schedulers.io())
+                .subscribe(tvShow -> {
+                    if (tvShow == null) return;
+                    tvShowSeasonLiveData.postValue(tvShow);
+                });
+        compositeDisposable.add(disposable);
 
     }
 
     public void requestRecos(int tvId) {
         Log.d(TAG, "requestRecos: Requesting TV Show ");
-        tvShowService.getRecommendations(tvId).enqueue(new Callback<TVShowResult>() {
-            @Override
-            public void onResponse(Call<TVShowResult> call, Response<TVShowResult> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    recoTvShowLiveData.postValue(response.body().getTvShows());
-                    Log.d(TAG, "onResponse: GET TV Recommendations success");
-                } else {
-                    Log.d(TAG, "onResponse: GET TV Recommendations failed" + (response.body() == null));
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<TVShowResult> call, Throwable t) {
-                Log.d(TAG, "Getting TV Show Recommendations failed: " + t.getMessage());
-            }
-        });
-
+        Disposable disposable = tvShowService.getRecommendations(tvId).subscribeOn(Schedulers.io())
+                .subscribe(tvShowResult -> {
+                    if (tvShowResult == null) return;
+                    recoTvShowLiveData.postValue(tvShowResult.getTvShows());
+                });
+        compositeDisposable.add(disposable);
     }
 
     public void requestTvShowReviews(int tvShowId) {
-        tvShowService.getTvShowReviews(tvShowId).enqueue(new Callback<ReviewResult>() {
-            @Override
-            public void onResponse(Call<ReviewResult> call, Response<ReviewResult> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    tvShowReviewsLiveData.postValue(response.body().getReviews());
-                    Log.d(TAG, "onResponse: GET TV Show Reviews success");
-                    Log.d(TAG, "Review Size" + response.body().getReviews().size());
-                } else {
-                    Log.d(TAG, "onResponse: GET TV Show Reviews failed" + (response.body() == null));
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ReviewResult> call, Throwable t) {
-
-            }
-        });
-
+        Disposable disposable = tvShowService.getTvShowReviews(tvShowId).subscribeOn(Schedulers.io())
+                .subscribe(tvReviews -> {
+                    if (tvReviews == null) return;
+                    tvShowReviewsLiveData.postValue(tvReviews.getReviews());
+                });
+        compositeDisposable.add(disposable);
     }
 
     public LiveData<List<TVShow>> getPopularTvShowsLiveData() {
@@ -378,7 +253,8 @@ public class TVShowRepository {
     public LiveData<List<TVShow>> getRecommendationsLiveData() {
         return recoTvShowLiveData;
     }
-    public LiveData<List<Review>> getTvShowReview(){
+
+    public LiveData<List<Review>> getTvShowReview() {
         return tvShowReviewsLiveData;
     }
 }

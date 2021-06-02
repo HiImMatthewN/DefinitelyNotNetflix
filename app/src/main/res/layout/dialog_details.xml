@@ -25,7 +25,7 @@
         android:layout_marginEnd="16dp"
         android:fontFamily="@font/main_font"
         android:maxLines="2"
-        android:text="Movie Title"
+        tools:text="Movie Title"
         android:textColor="@color/netflix_white"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -37,14 +37,14 @@
         app:layout_constraintEnd_toEndOf="@id/backDropIV"
         app:layout_constraintStart_toStartOf="@id/backDropIV"
 
-        tools:layout_editor_absoluteY="250dp" />
+     />
 
     <TextView
         android:id="@+id/movieYear"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:fontFamily="@font/main_font"
-        android:text="Movie Year"
+        tools:text="Movie Year"
         android:textColor="@color/cardview_light_background"
         app:layout_constraintBottom_toBottomOf="@id/backDropIV"
         app:layout_constraintEnd_toEndOf="@id/backDropIV"
@@ -77,7 +77,7 @@
         android:minWidth="0dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:text="Play"
+        android:text="@string/play"
         android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent"
         android:textColor="@color/netflix_black"
@@ -101,7 +101,7 @@
         android:minHeight="0dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:text="Details"
+        android:text="@string/details"
 
         android:textAllCaps="false"
         android:textColor="@color/netflix_white"

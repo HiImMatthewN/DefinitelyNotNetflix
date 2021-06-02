@@ -5,7 +5,9 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,6 +18,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.ConcatAdapter;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -26,6 +30,7 @@ import com.example.pinayflix.R;
 import com.example.pinayflix.adapter.recyclerview.movie.ChildMovieAdapter;
 import com.example.pinayflix.adapter.recyclerview.movie.HighlightedMovieAdapter;
 import com.example.pinayflix.adapter.recyclerview.movie.ParentMovieAdapter;
+import com.example.pinayflix.adapter.recyclerview.mylist.SavedItemAdapter;
 import com.example.pinayflix.adapter.recyclerview.tvshow.ChildTVShowAdapter;
 import com.example.pinayflix.adapter.recyclerview.tvshow.HighlightedTVShowAdapter;
 import com.example.pinayflix.adapter.recyclerview.tvshow.ParentTVShowAdapter;
@@ -52,14 +57,14 @@ public class MainFragment extends Fragment {
     private ConcatAdapter concatAdapter;
     private LayoutContentBinding contentBinding;
     private CollapsingToolbarLayout toolbar;
-
-
+    private View statusBarView;
+    private ImageButton searchBtn;
     //Adapters
     private ParentMovieAdapter movieParentAdapter;
     private HighlightedMovieAdapter highlightedMovieAdapter;
     private ParentTVShowAdapter tvShowParentAdapter;
     private HighlightedTVShowAdapter highlightedTVShowAdapter;
-
+    private SavedItemAdapter savedItemAdapter;
 
     //Movie Category
     private TextView movieCategoryTV;
@@ -90,11 +95,13 @@ public class MainFragment extends Fragment {
         movieCategoryTV = binder.movieCategoryTV;
         tvListCategoryTV = binder.tvShowCategoryTV;
         contentBinding = binder.content;
-
+        statusBarView = contentBinding.statusBarView;
         myListTV = binder.myListTV;
         parentRv = contentBinding.parentRv;
         parentRv.setLayoutManager(new SpeedyLinearLayoutManager(requireContext()));
         toolbar = binder.toolbar;
+        searchBtn  = binder.searchBtn;
+
 
 
         createMovieRVAdapter();
@@ -105,6 +112,10 @@ public class MainFragment extends Fragment {
             params.topMargin = insets.getSystemWindowInsetTop();
             return insets.consumeSystemWindowInsets();
         });
+        searchBtn.setOnClickListener(btn ->{
+            navController.navigate(R.id.action_mainFragment_to_searchFragment);
+        });
+
 
         movieCategoryTV.setOnClickListener(btn -> {
             handleCategoryOnClick(btn.getId());
@@ -121,18 +132,24 @@ public class MainFragment extends Fragment {
 
         myListTV.setOnClickListener(btn -> {
             handleCategoryOnClick(btn.getId());
+            mainFragmentViewModel.requestData(DataClassification.MY_LIST);
 
         });
         mainFragmentViewModel.getOnDataClassification().observe(getViewLifecycleOwner(), dataClassification -> {
-            if (dataClassification == DataClassification.MOVIE){
+            if (dataClassification == DataClassification.MOVIE) {
                 createMovieRVAdapter();
                 handleCategoryOnClick(R.id.movieCategoryTV);
-            }
-
-
-            else if (dataClassification == DataClassification.TV_SHOW){
+                statusBarView.setVisibility(View.GONE);
+            } else if (dataClassification == DataClassification.TV_SHOW) {
                 createTVShowAdapter();
                 handleCategoryOnClick(R.id.tvShowCategoryTV);
+                statusBarView.setVisibility(View.GONE);
+
+            } else if (dataClassification == DataClassification.MY_LIST) {
+                createMyListAdapter();
+                handleCategoryOnClick(R.id.myListTV);
+                statusBarView.setVisibility(View.VISIBLE);
+
             }
         });
 
@@ -141,14 +158,31 @@ public class MainFragment extends Fragment {
         // is received from repository
         initMovieDataLiveData();
         initTVShowLiveData();
-
+        initSavedItemsLiveData();
     }
 
     private void createMovieRVAdapter() {
         highlightedMovieAdapter = new HighlightedMovieAdapter(requestManager);
         movieParentAdapter = new ParentMovieAdapter(requestManager);
         concatAdapter = new ConcatAdapter(highlightedMovieAdapter, movieParentAdapter);
+        parentRv.setLayoutManager(new LinearLayoutManager(requireContext()));
         parentRv.setAdapter(concatAdapter);
+
+        highlightedMovieAdapter.getOnAddSelect().observe(getViewLifecycleOwner(), event -> {
+            Boolean isItemExists = mainFragmentViewModel.getSavedItemExists().getValue();
+            if (event.isHandled() || isItemExists == null) return;
+
+            if (isItemExists) {
+                mainFragmentViewModel.removeItemFromList(event.getContentIfNotHandled());
+                Toast.makeText(getContext(), "Removed to My List", Toast.LENGTH_SHORT).show();
+            } else {
+                mainFragmentViewModel.addItemToList(event.getContentIfNotHandled());
+                Toast.makeText(getContext(), "Added to My List", Toast.LENGTH_SHORT).show();
+
+            }
+
+
+        });
 
         movieParentAdapter.getSelectedMovie().observe(getViewLifecycleOwner(), selectedMovie -> {
                     MovieDetailsDialog dialog = new MovieDetailsDialog(selectedMovie);
@@ -176,14 +210,30 @@ public class MainFragment extends Fragment {
                 }
             }, 500);
         });
-
+        mainFragmentViewModel.getSavedItemExists().observe(getViewLifecycleOwner(), value -> {
+            highlightedMovieAdapter.isSelectedMovieSaved(value);
+        });
     }
 
     private void createTVShowAdapter() {
         highlightedTVShowAdapter = new HighlightedTVShowAdapter(requestManager);
         tvShowParentAdapter = new ParentTVShowAdapter(requestManager);
         concatAdapter = new ConcatAdapter(highlightedTVShowAdapter, tvShowParentAdapter);
+        parentRv.setLayoutManager(new LinearLayoutManager(requireContext()));
         parentRv.setAdapter(concatAdapter);
+
+        highlightedTVShowAdapter.getOnAddSelect().observe(getViewLifecycleOwner(), event -> {
+            Boolean isItemExists = mainFragmentViewModel.getSavedItemExists().getValue();
+            if (event.isHandled() || isItemExists == null) return;
+
+            if (isItemExists) {
+                mainFragmentViewModel.removeItemFromList(event.getContentIfNotHandled());
+                Toast.makeText(getContext(), "Removed to My List", Toast.LENGTH_SHORT).show();
+            } else {
+                mainFragmentViewModel.addItemToList(event.getContentIfNotHandled());
+                Toast.makeText(getContext(), "Added to My List", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         tvShowParentAdapter.getSelectedTvShow().observe(getViewLifecycleOwner(),
                 selectedTvShow -> {
@@ -210,9 +260,17 @@ public class MainFragment extends Fragment {
                     swipeRefreshLayout.setRefreshing(false);
                 }
             }, 500);
-
-
         });
+        mainFragmentViewModel.getSavedItemExists().observe(getViewLifecycleOwner(), value -> {
+            highlightedTVShowAdapter.isSelectedTvShowSaved(value);
+        });
+    }
+
+    private void createMyListAdapter() {
+        savedItemAdapter = new SavedItemAdapter(requestManager);
+        parentRv.setLayoutManager(new GridLayoutManager(requireContext(), 3));
+        parentRv.setAdapter(savedItemAdapter);
+
     }
 
     private void initTVShowLiveData() {
@@ -222,6 +280,8 @@ public class MainFragment extends Fragment {
         });
         mainFragmentViewModel.getHighlightedTvShow().observe(getViewLifecycleOwner(), tvShow -> {
             highlightedTVShowAdapter.insertData(tvShow);
+            mainFragmentViewModel.checkIfSavedItemExists(tvShow.getId());
+
         });
         mainFragmentViewModel.getPopularTvShows().observe(getViewLifecycleOwner(), popularTvShows -> {
             tvShowParentAdapter.insertData(new TVShowCategoryModel(DataGenre.Popular, popularTvShows));
@@ -243,12 +303,12 @@ public class MainFragment extends Fragment {
             tvShowParentAdapter.insertData(new TVShowCategoryModel(DataGenre.Documentary, documentaryTvShows));
 
         });
-        mainFragmentViewModel.getTvShowDetails().observe(getViewLifecycleOwner(),event ->{
-            if(event.isHandled()) return;
+        mainFragmentViewModel.getTvShowDetails().observe(getViewLifecycleOwner(), event -> {
+            if (event.isHandled()) return;
             int tvShowId = event.getContentIfNotHandled();
             Bundle bundle = new Bundle();
             bundle.putSerializable(TVShowDetailsFragment.DETAILS_KEY, tvShowId);
-            navController.navigate(R.id.action_mainFragment_to_TVShowDetailsFragment,bundle);
+            navController.navigate(R.id.action_mainFragment_to_TVShowDetailsFragment, bundle);
 
         });
 
@@ -264,6 +324,7 @@ public class MainFragment extends Fragment {
 
         mainFragmentViewModel.getHighlightedMovieLiveData().observe(getViewLifecycleOwner(), movie -> {
             highlightedMovieAdapter.insertData(movie);
+            mainFragmentViewModel.checkIfSavedItemExists(movie.getId());
 
         });
 
@@ -304,6 +365,16 @@ public class MainFragment extends Fragment {
             }
 
         });
+    }
+
+    private void initSavedItemsLiveData() {
+        mainFragmentViewModel.getSavedItems().observe(getViewLifecycleOwner(), savedItems -> {
+            if (savedItems == null || savedItems.size() == 0) return;
+            savedItemAdapter.insertData(savedItems);
+
+        });
+
+
     }
 
     private void handleCategoryOnClick(int id) {

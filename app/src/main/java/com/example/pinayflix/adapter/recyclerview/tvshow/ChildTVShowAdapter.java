@@ -6,11 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.pinayflix.R;
 import com.example.pinayflix.callback.OnTVShowRequest;
 import com.example.pinayflix.databinding.ItemChildBinding;
@@ -58,6 +61,7 @@ public class ChildTVShowAdapter extends RecyclerView.Adapter<ChildTVShowAdapter.
 
         requestManager
                 .load(Uri.parse(Utils.POSTER_PATH + tvShow.getPosterPath()))
+                .apply(new RequestOptions().transform(new RoundedCorners(16)))
                 .into(target);
         holder.setOnClick(tvShow);
 
@@ -73,12 +77,16 @@ public class ChildTVShowAdapter extends RecyclerView.Adapter<ChildTVShowAdapter.
 
         public ChildTVShowViewHolder(@NonNull ItemChildBinding binder) {
             super(binder.getRoot());
-            posterImageView = binder.moviePosterIv;
+            posterImageView = binder.posterIv;
         }
 
         public void setOnClick(TVShow tvShow) {
             posterImageView.setOnClickListener(btn -> {
                 callback.onTVShowSelect(tvShow);
+            });
+            posterImageView.setOnLongClickListener(btn -> {
+                Toast.makeText(itemView.getContext(), tvShow.getTitle(), Toast.LENGTH_SHORT).show();
+                return true;
             });
         }
     }

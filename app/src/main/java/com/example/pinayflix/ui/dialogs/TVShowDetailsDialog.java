@@ -105,7 +105,7 @@ public class TVShowDetailsDialog extends BottomSheetDialogFragment {
             dismiss();
         });
 
-        tvShowTitle.setText(tvShow.getName());
+        tvShowTitle.setText(tvShow.getTitle());
         tvShowYear.setText(tvShow.getFirstAirDate().substring(0, 4));
         RequestOptions requestOptions = new RequestOptions();
         GranularRoundedCorners roundedCorners = new GranularRoundedCorners(48, 48, 0, 0);

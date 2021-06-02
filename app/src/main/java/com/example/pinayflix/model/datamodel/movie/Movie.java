@@ -1,13 +1,14 @@
 package com.example.pinayflix.model.datamodel.movie;
 
 import com.example.pinayflix.model.datamodel.Genre;
+import com.example.pinayflix.model.datamodel.Item;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 
-public class Movie {
+public class Movie extends Item {
     @SerializedName("id")
-    private int movieId;
+    private int id;
     @SerializedName("title")
     private String title;
     @SerializedName("genres")
@@ -25,7 +26,8 @@ public class Movie {
     private int runTime;
     @SerializedName("genre_ids")
     private ArrayList<Integer> genreIds;
-
+    @SerializedName("vote_count")
+    private int voteCount;
     public double getVoteAverage() {
         return voteAverage;
     }
@@ -81,7 +83,11 @@ public class Movie {
         return releaseDate;
     }
 
-    public int getMovieId() {
-        return movieId;
+    public int getId() {
+        return id;
+    }
+
+    public int getVoteCount() {
+        return voteCount;
     }
 }

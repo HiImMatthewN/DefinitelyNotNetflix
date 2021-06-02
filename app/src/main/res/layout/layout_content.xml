@@ -1,19 +1,30 @@
+
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:background="@android:color/transparent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
 
     >
-    <androidx.recyclerview.widget.RecyclerView
 
+    <androidx.recyclerview.widget.RecyclerView
+       app:layout_constraintTop_toBottomOf="@id/statusBarView"
         android:id="@+id/parentRv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:overScrollMode="never"
 
-        />
+        app:layout_constraintBottom_toBottomOf="parent"
 
+        />
+    <View
+        android:background="@android:color/transparent"
+        android:visibility="gone"
+        android:id="@+id/statusBarView"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,18 +8,17 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.pinayflix.model.datamodel.movie.Movie;
 import com.example.pinayflix.model.datamodel.movie.MovieResult;
 import com.example.pinayflix.model.datamodel.review.Review;
-import com.example.pinayflix.model.datamodel.review.ReviewResult;
 import com.example.pinayflix.model.datamodel.trailer.Trailer;
-import com.example.pinayflix.model.datamodel.trailer.TrailerResult;
 import com.example.pinayflix.network.MovieService;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class MovieRepository {
 
@@ -27,306 +26,185 @@ public class MovieRepository {
 
 
     // LiveData For Initialization
-    private MutableLiveData<List<Movie>> popularMoviesLiveData;
-    private MutableLiveData<List<Movie>> upcomingMoviesLiveData;
-    private MutableLiveData<List<Movie>> horrorMoviesLiveData;
-    private MutableLiveData<List<Movie>> documentaryLiveData;
-    private MutableLiveData<List<Movie>> romanceMoviesLiveData;
-    private MutableLiveData<List<Movie>> nowPlayingLiveData;
+    private MutableLiveData<List<Movie>> popularMoviesLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<Movie>> upcomingMoviesLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<Movie>> horrorMoviesLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<Movie>> documentaryLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<Movie>> romanceMoviesLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<Movie>> nowPlayingLiveData = new MutableLiveData<>();
 
-    private MutableLiveData<Movie> latestMovieLiveData;
+    private MutableLiveData<Movie> latestMovieLiveData = new MutableLiveData<>();
 
     //Video
-    private MutableLiveData<List<Trailer>> movieVideosLiveData;
+    private MutableLiveData<List<Trailer>> movieVideosLiveData = new MutableLiveData<>();
 
     //LiveData for Updating
-    private MutableLiveData<List<Movie>> requestNewMoviesLiveData;
+    private MutableLiveData<List<Movie>> requestNewMoviesLiveData = new MutableLiveData<>();
 
     //LiveData for MovieDetails
-    private MutableLiveData<Movie> movieDetailsLiveData;
+    private MutableLiveData<Movie> movieDetailsLiveData = new MutableLiveData<>();
 
     //Reviews
-    private MutableLiveData<List<Review>> reviewsLiveData;
-    private MutableLiveData<List<Movie>> recoMovieLiveData;
+    private MutableLiveData<List<Review>> reviewsLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<Movie>> recoMovieLiveData = new MutableLiveData<>();
 
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private String TAG = "MovieRepository";
 
+
     @Inject
     public MovieRepository(MovieService movieService) {
-        popularMoviesLiveData = new MutableLiveData<>();
-        upcomingMoviesLiveData = new MutableLiveData<>();
-        nowPlayingLiveData = new MutableLiveData<>();
-        horrorMoviesLiveData = new MutableLiveData<>();
-        documentaryLiveData = new MutableLiveData<>();
-        romanceMoviesLiveData = new MutableLiveData<>();
-        requestNewMoviesLiveData = new MutableLiveData<>();
-        movieVideosLiveData = new MutableLiveData<>();
-        latestMovieLiveData = new MutableLiveData<>();
-        movieDetailsLiveData = new MutableLiveData<>();
-        reviewsLiveData = new MutableLiveData<>();
-        recoMovieLiveData = new MutableLiveData<>();
         this.movieService = movieService;
-
 
     }
 
-
     public void requestPopularMovies(int page) {
-        movieService.getPopularMovies(String.valueOf(page))
-                .enqueue(new Callback<MovieResult>() {
-                    @Override
-                    public void onResponse(Call<MovieResult> call, Response<MovieResult> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            popularMoviesLiveData.postValue(response.body().getMovies());
-                            Log.d(TAG, "onResponse: Success");
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<MovieResult> call, Throwable t) {
-                        Log.d(TAG, "onFailure: Request Failed" + t.getMessage());
-                    }
+        Disposable disposable = movieService.getPopularMovies(String.valueOf(page)).subscribeOn(Schedulers.io())
+                .subscribe(movieResult -> {
+                    if (movieResult != null)
+                        popularMoviesLiveData.postValue(movieResult.getMovies());
                 });
-
+        compositeDisposable.add(disposable);
     }
 
     public void requestNowPlayingMovies(int page) {
-        movieService.getNowPlayingMovies(String.valueOf(page))
-                .enqueue(new Callback<MovieResult>() {
-                    @Override
-                    public void onResponse(Call<MovieResult> call, Response<MovieResult> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            nowPlayingLiveData.postValue(response.body().getMovies());
-                            Log.d(TAG, "onResponse: Success");
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<MovieResult> call, Throwable t) {
-                        Log.d(TAG, "onFailure: Request Failed" + t.getMessage());
-                    }
+        Disposable disposable = movieService.getNowPlayingMovies(String.valueOf(page))
+                .subscribeOn(Schedulers.io()).subscribe(movieResult -> {
+                    if (movieResult == null) return;
+                    nowPlayingLiveData.postValue(movieResult.getMovies());
                 });
-
+        compositeDisposable.add(disposable);
     }
 
     public void requestHorrorMovies(String genre, int page, String startReleaseDate, int requiredVoteCount) {
-        movieService.getMoviesByGenre(genre, page, startReleaseDate, requiredVoteCount).enqueue(new Callback<MovieResult>() {
-            @Override
-            public void onResponse(Call<MovieResult> call, Response<MovieResult> response) {
-                if (response.isSuccessful() && response.body() != null)
-                    horrorMoviesLiveData.postValue(response.body().getMovies());
-
-            }
-
-            @Override
-            public void onFailure(Call<MovieResult> call, Throwable t) {
-                Log.d(TAG, "onFailure: Request Failed" + t.getMessage());
-            }
-        });
-
+        Disposable disposable = movieService.getMoviesByGenre(genre, page, startReleaseDate)
+                .map(MovieResult::getMovies)
+                .flatMap(Observable::fromIterable)
+                .filter(movie -> movie.getVoteCount() >= requiredVoteCount)
+                .toList()
+                .subscribeOn(Schedulers.io())
+                .subscribe(movieResult -> {
+                    if (movieResult == null) return;
+                    horrorMoviesLiveData.postValue(movieResult);
+                });
+        compositeDisposable.add(disposable);
     }
 
     public void requestDocumentaryMovies(String genre, int page, String startReleaseDate, int requiredVoteCount) {
-        movieService.getMoviesByGenre(genre, page, startReleaseDate, requiredVoteCount).enqueue(new Callback<MovieResult>() {
-            @Override
-            public void onResponse(Call<MovieResult> call, Response<MovieResult> response) {
-                if (response.isSuccessful() && response.body() != null)
-                    documentaryLiveData.postValue(response.body().getMovies());
-
-            }
-
-            @Override
-            public void onFailure(Call<MovieResult> call, Throwable t) {
-                Log.d(TAG, "onFailure: Request Failed" + t.getMessage());
-            }
-        });
-
-
+        Disposable disposable = movieService.getMoviesByGenre(genre, page, startReleaseDate)
+                .map(MovieResult::getMovies)
+                .subscribeOn(Schedulers.io())
+                .subscribe(movieResult -> {
+                    if (movieResult == null) return;
+                    documentaryLiveData.postValue(movieResult);
+                });
+        compositeDisposable.add(disposable);
     }
 
     public void requestRomanceMovies(String genre, int page, String startReleaseDate, int requiredVoteCount) {
-        movieService.getMoviesByGenre(genre, page, startReleaseDate, requiredVoteCount).enqueue(new Callback<MovieResult>() {
-            @Override
-            public void onResponse(Call<MovieResult> call, Response<MovieResult> response) {
-                if (response.isSuccessful() && response.body() != null)
-                    romanceMoviesLiveData.postValue(response.body().getMovies());
-
-            }
-
-            @Override
-            public void onFailure(Call<MovieResult> call, Throwable t) {
-                Log.d(TAG, "onFailure: Request Failed" + t.getMessage());
-            }
-        });
-
+        Disposable disposable = movieService.getMoviesByGenre(genre, page, startReleaseDate)
+                .map(MovieResult::getMovies)
+                .flatMap(Observable::fromIterable)
+                .filter(movie -> movie.getVoteCount() >= requiredVoteCount)
+                .toList()
+                .subscribeOn(Schedulers.io())
+                .subscribe(movieResult -> {
+                    if (movieResult == null) return;
+                    romanceMoviesLiveData.postValue(movieResult);
+                });
+        compositeDisposable.add(disposable);
 
     }
 
     public void requestUpComingMovies(int page) {
-        movieService.getUpComingMovies(String.valueOf(page))
-                .enqueue(new Callback<MovieResult>() {
-                    @Override
-                    public void onResponse(Call<MovieResult> call, Response<MovieResult> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            upcomingMoviesLiveData.postValue(response.body().getMovies());
-                            Log.d(TAG, "onResponse: Success");
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<MovieResult> call, Throwable t) {
-                        Log.d(TAG, "onFailure: Request Failed" + t.getMessage());
-                    }
+        Disposable disposable = movieService.getUpComingMovies(String.valueOf(page))
+                .subscribeOn(Schedulers.io()).subscribe(movieResult -> {
+                    if (movieResult == null) return;
+                    upcomingMoviesLiveData.postValue(movieResult.getMovies());
                 });
-
+        compositeDisposable.add(disposable);
 
     }
 
     public void requestLatestMovie() {
-        movieService.getLatestMovie()
-                .enqueue(new Callback<Movie>() {
-                    @Override
-                    public void onResponse(Call<Movie> call, Response<Movie> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            latestMovieLiveData.postValue(response.body());
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Movie> call, Throwable t) {
-
-                    }
+        Disposable disposable = movieService.getLatestMovie()
+                .subscribeOn(Schedulers.io()).subscribe(movie -> {
+                    if (movie == null) return;
+                    latestMovieLiveData.postValue(movie);
                 });
-
+        compositeDisposable.add(disposable);
     }
 
     public void requestNewPopularMovies(int page) {
-        movieService.getPopularMovies(String.valueOf(page))
-                .enqueue(new Callback<MovieResult>() {
-                    @Override
-                    public void onResponse(Call<MovieResult> call, Response<MovieResult> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            requestNewMoviesLiveData.postValue(response.body().getMovies());
-                            Log.d(TAG, "onResponse: Success");
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<MovieResult> call, Throwable t) {
-                        Log.d(TAG, "onFailure: Request Failed" + t.getMessage());
-                    }
+        Disposable disposable = movieService.getPopularMovies(String.valueOf(page))
+                .subscribeOn(Schedulers.io()).subscribe(movieResult -> {
+                    if (movieResult == null) return;
+                    requestNewMoviesLiveData.postValue(movieResult.getMovies());
                 });
-
+        compositeDisposable.add(disposable);
     }
 
     public void requestNewMovieByGenre(String genre, int page, String startReleaseDate, int requiredVoteCount) {
-        movieService.getMoviesByGenre(genre, page, startReleaseDate, requiredVoteCount).enqueue(new Callback<MovieResult>() {
-            @Override
-            public void onResponse(Call<MovieResult> call, Response<MovieResult> response) {
-                if (response.isSuccessful() && response.body() != null)
-                    requestNewMoviesLiveData.postValue(response.body().getMovies());
-                Log.d(TAG, "onResponse: Requested  new movie success");
-            }
-
-            @Override
-            public void onFailure(Call<MovieResult> call, Throwable t) {
-                Log.d(TAG, "onFailure: Request Failed" + t.getMessage());
-            }
+        Disposable disposable = movieService.getMoviesByGenre(genre, page, startReleaseDate)
+                .map(MovieResult::getMovies)
+                .flatMap(Observable::fromIterable)
+                .filter(movie -> movie.getVoteCount() >= requiredVoteCount)
+                .toList()
+                .subscribeOn(Schedulers.io())
+              .subscribe(movieResult -> {
+            if (movieResult == null) return;
+            requestNewMoviesLiveData.postValue(movieResult);
         });
-
+        compositeDisposable.add(disposable);
 
     }
 
     public void requestNewUpcomingMovies(int page) {
-        movieService.getPopularMovies(String.valueOf(page))
-                .enqueue(new Callback<MovieResult>() {
-                    @Override
-                    public void onResponse(Call<MovieResult> call, Response<MovieResult> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            requestNewMoviesLiveData.postValue(response.body().getMovies());
-                            Log.d(TAG, "onResponse: Success");
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<MovieResult> call, Throwable t) {
-                        Log.d(TAG, "onFailure: Request Failed" + t.getMessage());
-                    }
+        Disposable disposable = movieService.getPopularMovies(String.valueOf(page)).subscribeOn(Schedulers.io())
+                .subscribe(movieResult -> {
+                    if (movieResult == null) return;
+                    requestNewMoviesLiveData.postValue(movieResult.getMovies());
                 });
-
+        compositeDisposable.add(disposable);
     }
 
     public void requestVideos(int movieId) {
-        movieService.getTrailer(movieId).enqueue(new Callback<TrailerResult>() {
-            @Override
-            public void onResponse(Call<TrailerResult> call, Response<TrailerResult> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    movieVideosLiveData.postValue(response.body().getTrailers());
-                    Log.d(TAG, "onResponse: Video Retrieve Success");
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<TrailerResult> call, Throwable t) {
-                Log.d(TAG, "onFailure: Request Failed" + t.getMessage());
-
-            }
-        });
+        Disposable disposable = movieService.getTrailer(movieId).subscribeOn(Schedulers.io())
+                .subscribe(trailerResult -> {
+                    if (trailerResult == null) return;
+                    movieVideosLiveData.postValue(trailerResult.getTrailers());
+                });
+        compositeDisposable.add(disposable);
 
     }
 
     public void requestMovieDetails(int movieId) {
-        movieService.getMovieDetails(movieId).enqueue(new Callback<Movie>() {
-            @Override
-            public void onResponse(Call<Movie> call, Response<Movie> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    Log.d(TAG, "onResponse: Movie Details Success");
-                    movieDetailsLiveData.postValue(response.body());
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Movie> call, Throwable t) {
-
-            }
-        });
+        Disposable disposable = movieService.getMovieDetails(movieId).subscribeOn(Schedulers.io())
+                .subscribe(movie -> {
+                    if (movie == null) return;
+                    movieDetailsLiveData.postValue(movie);
+                });
+        compositeDisposable.add(disposable);
     }
-    public void requestReviews(int movieId){
-        movieService.getMovieReviews(movieId).enqueue(new Callback<ReviewResult>() {
-            @Override
-            public void onResponse(Call<ReviewResult> call, Response<ReviewResult> response) {
-                if(response.isSuccessful() && response.body() != null){
-                    reviewsLiveData.postValue(response.body().getReviews());
-                    Log.d(TAG, "onResponse: Requesting Reviews success");
-                }
-            }
 
-            @Override
-            public void onFailure(Call<ReviewResult> call, Throwable t) {
-                Log.d(TAG, "onFailure: Requesting Reviews failed" + t.getMessage());
-            }
-        });
+    public void requestReviews(int movieId) {
+        Disposable disposable = movieService.getMovieReviews(movieId).subscribeOn(Schedulers.io())
+                .subscribe(reviewResult -> {
+                    if (reviewResult == null) return;
+                    reviewsLiveData.postValue(reviewResult.getReviews());
+                });
+        compositeDisposable.add(disposable);
     }
-    public void requestRecos(int tvId){
+
+    public void requestRecos(int tvId) {
         Log.d(TAG, "requestRecos: Requesting TV Show ");
-        movieService.getRecommendations(tvId).enqueue(new Callback<MovieResult>() {
-            @Override
-            public void onResponse(Call<MovieResult> call, Response<MovieResult> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    recoMovieLiveData.postValue(response.body().getMovies());
-                    Log.d(TAG, "onResponse: GET Movie Recommendations success");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<MovieResult> call, Throwable t) {
-                Log.d(TAG, "Getting TV Show Recommendations failed: " + t.getMessage());
-            }
-        });
-
+        Disposable disposable = movieService.getRecommendations(tvId).subscribeOn(Schedulers.io())
+                .subscribe(movieResult -> {
+                    if (movieResult == null) return;
+                    recoMovieLiveData.postValue(movieResult.getMovies());
+                });
+        compositeDisposable.add(disposable);
     }
 
     public LiveData<List<Movie>> getPopularMoviesLiveData() {
@@ -368,10 +246,16 @@ public class MovieRepository {
     public LiveData<Movie> getMovieDetailsLiveData() {
         return movieDetailsLiveData;
     }
-    public LiveData<List<Review>> getReviewsLiveData(){
+
+    public LiveData<List<Review>> getReviewsLiveData() {
         return reviewsLiveData;
     }
-    public LiveData<List<Movie>> getMovieRecommendations(){
+
+    public LiveData<List<Movie>> getMovieRecommendations() {
         return recoMovieLiveData;
+    }
+
+    public void disposeSubscribers() {
+        compositeDisposable.dispose();
     }
 }

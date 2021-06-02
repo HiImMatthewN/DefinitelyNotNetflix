@@ -98,7 +98,7 @@ public class MovieDetailsDialog extends BottomSheetDialogFragment {
 
 
         detailsBtn.setOnClickListener(btn ->{
-            mainFragmentViewModel.requestMovieDetails(movie.getMovieId());
+            mainFragmentViewModel.requestMovieDetails(movie.getId());
             dismiss();
         });
 
@@ -137,7 +137,7 @@ public class MovieDetailsDialog extends BottomSheetDialogFragment {
         youTubePlayerView.setVisibility(View.VISIBLE);
 
 
-        mainFragmentViewModel.requestMovieTrailer(movie.getMovieId());
+        mainFragmentViewModel.requestMovieTrailer(movie.getId());
         mainFragmentViewModel.getMovieTrailer().observe(getViewLifecycleOwner(), videos -> {
             String videoId = getTrailerYoutubeKey(videos);
             player.loadVideo(videoId, 0);

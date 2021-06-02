@@ -1,24 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/nav_graph"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
     app:startDestination="@id/mainFragment">
 
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.example.pinayflix.ui.fragments.MainFragment"
-        android:label="MainFragment" >
+        android:label="MainFragment">
         <action
-            app:popExitAnim="@anim/slide_out_right"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
             android:id="@+id/action_mainFragment_to_movieDetailsFragment"
-            app:destination="@id/movieDetailsFragment" />
-        <action
-            app:popExitAnim="@anim/slide_out_right"
+            app:destination="@id/movieDetailsFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
             android:id="@+id/action_mainFragment_to_TVShowDetailsFragment"
-            app:destination="@id/TVShowDetailsFragment" />
+            app:destination="@id/TVShowDetailsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_mainFragment_to_searchFragment"
+            app:destination="@id/searchFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/movieDetailsFragment"
@@ -28,6 +35,10 @@
         android:id="@+id/TVShowDetailsFragment"
         android:name="com.example.pinayflix.ui.fragments.TVShowDetailsFragment"
         android:label="TVShowDetailsFragment" />
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.example.pinayflix.ui.fragments.SearchFragment"
+        android:label="SearchFragment" />
 
 
 </navigation>

@@ -1,10 +1,11 @@
 package com.example.pinayflix.model.datamodel.tvshow;
 
+import com.example.pinayflix.model.datamodel.Item;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 
-public class TVShow {
+public class TVShow extends Item {
 
     @SerializedName("poster_path")
     private String posterPath;
@@ -21,7 +22,7 @@ public class TVShow {
     @SerializedName("genre_ids")
     private ArrayList<Integer> genreIds;
     @SerializedName("name")
-    private String name;
+    private String title;
     @SerializedName("episode_run_time")
     private ArrayList<Integer> episodeRuntime;
     @SerializedName("seasons")
@@ -30,6 +31,8 @@ public class TVShow {
     private double voteAverage;
     @SerializedName("number_of_seasons")
     private int numOfSeasons;
+    @SerializedName("vote_count")
+    private int voteCount;
 
     public String getOverview() {
         return overview;
@@ -76,7 +79,11 @@ public class TVShow {
         return genreIds;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
+    }
+
+    public int getVoteCount() {
+        return voteCount;
     }
 }

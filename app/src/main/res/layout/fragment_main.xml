@@ -6,18 +6,18 @@
     android:layout_height="match_parent"
     android:background="@color/netflix_black"
     android:fitsSystemWindows="false"
-
-    app:statusBarBackground="@android:color/transparent">
+  >
 
     <include
-
         android:id="@+id/content"
         layout="@layout/layout_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+
+        />
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/toolBarLayoutView"
+        android:id="@+id/appbarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
@@ -28,16 +28,17 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+
             app:layout_scrollFlags="scroll|enterAlways">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-
+                app:layout_collapseMode="pin"
                 android:orientation="vertical">
 
                 <ImageView
+
                     android:id="@+id/netflix_logo_toolbar"
                     android:layout_width="56dp"
                     android:layout_height="?attr/actionBarSize"
@@ -46,8 +47,21 @@
                     app:layout_constraintStart_toStartOf="parent"
 
                     app:layout_constraintTop_toTopOf="parent" />
-
+                <ImageButton
+                    app:layout_constraintHorizontal_bias=".95"
+                    app:layout_constraintStart_toEndOf="@id/netflix_logo_toolbar"
+                    android:id="@+id/searchBtn"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat ="@drawable/ic_search"
+                    android:background="@android:color/transparent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_margin="8dp"
+                        />
                 <LinearLayout
+
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
                     android:gravity="center"
@@ -67,7 +81,7 @@
                         android:shadowDx="0.0"
                         android:shadowDy="0.0"
                         android:shadowRadius="8"
-                        android:text="Movie"
+                        android:text="@string/movie"
                         android:textColor="@color/netflix_category_selected"
 
                         android:textSize="20sp"
@@ -81,7 +95,7 @@
                         android:layout_weight="1"
                         android:gravity="center"
 
-                        android:text="TV Show"
+                        android:text="@string/tv_show"
                         android:textColor="@color/netflix_category_not_selected"
 
                         android:textSize="20sp"
@@ -94,7 +108,7 @@
                         android:layout_weight="1"
                         android:gravity="start"
 
-                        android:text="My List"
+                        android:text="@string/my_list"
                         android:textColor="@color/netflix_category_not_selected"
                         android:textSize="20sp"
 
@@ -105,5 +119,8 @@
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
+
+
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

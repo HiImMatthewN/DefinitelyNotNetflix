@@ -1,5 +1,6 @@
 package com.example.pinayflix.ui.fragments;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,9 +8,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -21,6 +25,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
+import com.example.pinayflix.R;
 import com.example.pinayflix.adapter.recyclerview.movie.MovieReviewAdapter;
 import com.example.pinayflix.adapter.recyclerview.movie.SimilarMovieAdapter;
 import com.example.pinayflix.databinding.LayoutDetailsMovieBinding;
@@ -44,6 +49,9 @@ public class MovieDetailsFragment extends Fragment {
     private RatingBar ratingBar;
     private ExpandableTextView overViewTv;
 
+    private AppCompatButton addToListBtn;
+    private AppCompatButton rateBtn;
+    private AppCompatButton shareBtn;
 
     private TabLayout tabLayout;
     private TextView noReviewsMsg;
@@ -78,6 +86,9 @@ public class MovieDetailsFragment extends Fragment {
         noReviewsMsg = binder.noReviewsMsg;
         movieDetailsRV = binder.movieDetailsRV;
         tabLayout = binder.tabLayout;
+        addToListBtn = binder.myListBtn;
+        rateBtn = binder.rateBtn;
+        shareBtn = binder.shareBtn;
 
 
         tabLayout.addTab(tabLayout.newTab().setText("More like this"));
@@ -124,6 +135,33 @@ public class MovieDetailsFragment extends Fragment {
             movieDetailsRV.setLayoutManager(new GridLayoutManager(requireContext(), 3));
             movieDetailsRV.setAdapter(similarMovieAdapter);
         });
+        viewModel.getIfMovieExistsFromList().observe(getViewLifecycleOwner(), doesExists -> {
+            Drawable drawable;
+            if (doesExists)
+                drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_check);
+            else
+                drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_add);
+
+
+            addToListBtn.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
+            addToListBtn.setText("My List");
+
+        });
+        addToListBtn.setOnClickListener(btn -> {
+            Movie movie = viewModel.getMovieDetails().getValue();
+            if (movie == null) return;
+            if (viewModel.getIfMovieExistsFromList().getValue() == null) return;
+            boolean doesItemExists = viewModel.getIfMovieExistsFromList().getValue();
+            if(doesItemExists){
+                viewModel.removeMovieFromList(movie);
+                Toast.makeText(getContext(),  "Removed from My List", Toast.LENGTH_SHORT).show();
+            }else{
+                viewModel.addMovieToList(movie);
+                Toast.makeText(getContext(), "Added to My List", Toast.LENGTH_SHORT).show();
+            }
+
+        });
+
 
     }
 
