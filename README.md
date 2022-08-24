@@ -33,14 +33,18 @@ Tools Used
 * RxJava
 
 Home
-![Alt text](/Screenshot/Home.png?raw=true )
+---------------
+<img src="https://github.com/HiImMatthewN/DefinitelyNotNetflix/blob/master/Screenshots/Home.png" width="420">
 
 Movie/TV Show Trailer
-![Alt text](/Screenshot/PlayTrailer.png?raw=true )
+---------------
+<img src="https://github.com/HiImMatthewN/DefinitelyNotNetflix/blob/master/Screenshots/PlayTrailer.png" width="420">
 
 Movie/TV Show Trailer
-![Alt text](/Screenshot/Details.png?raw=true )
+---------------
+<img src="https://github.com/HiImMatthewN/DefinitelyNotNetflix/blob/master/Screenshots/Details.png" width="420">
 
 Reviews
-![Alt text](/Screenshot/Reviews.png?raw=true )
+---------------
+<img src="https://github.com/HiImMatthewN/DefinitelyNotNetflix/blob/master/Screenshots/Reviews.png" width="420">
           
