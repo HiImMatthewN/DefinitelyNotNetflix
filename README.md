@@ -32,7 +32,15 @@ Tools Used
 * Dagger2/Hilt
 * RxJava
 
+Home
+![Alt text](/Screenshot/Home.png?raw=true )
 
+Movie/TV Show Trailer
+![Alt text](/Screenshot/PlayTrailer.png?raw=true )
 
- 
+Movie/TV Show Trailer
+![Alt text](/Screenshot/Details.png?raw=true )
+
+Reviews
+![Alt text](/Screenshot/Reviews.png?raw=true )
           
