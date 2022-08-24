@@ -34,17 +34,17 @@ Tools Used
 
 Home
 ---------------
-<img src="https://github.com/HiImMatthewN/DefinitelyNotNetflix/blob/master/Screenshots/Home.png" width="420">
+<img src="https://github.com/HiImMatthewN/DefinitelyNotNetflix/blob/master/Screenshots/Home.png" width="240">
 
 Movie/TV Show Trailer
 ---------------
-<img src="https://github.com/HiImMatthewN/DefinitelyNotNetflix/blob/master/Screenshots/PlayTrailer.png" width="420">
+<img src="https://github.com/HiImMatthewN/DefinitelyNotNetflix/blob/master/Screenshots/PlayTrailer.png" width="240">
 
 Movie/TV Show Trailer
 ---------------
-<img src="https://github.com/HiImMatthewN/DefinitelyNotNetflix/blob/master/Screenshots/Details.png" width="420">
+<img src="https://github.com/HiImMatthewN/DefinitelyNotNetflix/blob/master/Screenshots/Details.png" width="240">
 
 Reviews
 ---------------
-<img src="https://github.com/HiImMatthewN/DefinitelyNotNetflix/blob/master/Screenshots/Reviews.png" width="420">
+<img src="https://github.com/HiImMatthewN/DefinitelyNotNetflix/blob/master/Screenshots/Reviews.png" width="240">
           
