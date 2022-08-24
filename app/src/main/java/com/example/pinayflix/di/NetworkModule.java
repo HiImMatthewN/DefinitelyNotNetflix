@@ -1,6 +1,8 @@
 package com.example.pinayflix.di;
 
 
+import androidx.annotation.Nullable;
+
 import com.example.pinayflix.network.MovieService;
 import com.example.pinayflix.network.TVShowService;
 
@@ -28,9 +30,8 @@ public class NetworkModule {
 
     @Singleton
     @Provides
-    public MovieService provideMovieService() {
-        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(this::addApiKeyToRequests)
-                .build();
+    public MovieService provideMovieService(OkHttpClient client) {
+
         return new Retrofit.Builder()
                 .client(client)
                 .baseUrl(BASE_URL)
@@ -41,9 +42,7 @@ public class NetworkModule {
     }
     @Singleton
     @Provides
-    public TVShowService provideTvShowService() {
-        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(this::addApiKeyToRequests)
-                .build();
+    public TVShowService provideTvShowService(OkHttpClient client) {
         return new Retrofit.Builder()
                 .client(client)
                 .baseUrl(BASE_URL)
@@ -52,17 +51,23 @@ public class NetworkModule {
                 .build().create(TVShowService.class);
 
     }
-    private okhttp3.Response addApiKeyToRequests(Interceptor.Chain chain) {
-        Request.Builder request = chain.request().newBuilder();
-        HttpUrl originalHttp = chain.request().url();
-        HttpUrl newUrl = originalHttp.newBuilder().addQueryParameter("api_key", API_KEY).build();
-        request.url(newUrl);
-        try {
-            return chain.proceed(request.build());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+
+    @Singleton
+    @Provides
+    public OkHttpClient providesOkHTTP(){
+        return new OkHttpClient.Builder().addInterceptor(chain -> {
+                    Request.Builder request = chain.request().newBuilder();
+                    HttpUrl originalHttp = chain.request().url();
+                    HttpUrl newUrl = originalHttp.newBuilder().addQueryParameter("api_key", API_KEY).build();
+                    request.url(newUrl);
+                    try {
+                        return chain.proceed(request.build());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                })
+                .build();
     }
 
 }

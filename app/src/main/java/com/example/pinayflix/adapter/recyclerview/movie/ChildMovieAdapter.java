@@ -64,21 +64,8 @@ public class ChildMovieAdapter extends RecyclerView.Adapter<ChildMovieAdapter.Ch
         Movie movie = data.get(position);
         ImageView target = holder.posterImageView;
 
-        Log.d(TAG, "onBindViewHolder: Shimmer");
-
-        requestManager.
-                load(Uri.parse(Utils.POSTER_PATH + movie.getPosterPath())).addListener(new RequestListener<Drawable>() {
-            @Override
-            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                return false;
-            }
-
-            @Override
-            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-
-                return true;
-            }
-        })
+        requestManager
+                .load(Uri.parse(Utils.POSTER_PATH + movie.getPosterPath()))
                 .apply(new RequestOptions().transform(new RoundedCorners(16)))
                 .into(target);
         holder.setOnClick(movie);
